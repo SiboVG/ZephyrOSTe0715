@@ -3,5 +3,5 @@ board:
   full_name: TE0715-05-71I33-L
   vendor: trenz
   socs:
-    - name: xc7z015
+    - name: xc7z030
 

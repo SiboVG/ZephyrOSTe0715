@@ -3,4 +3,4 @@
 # Author: Sibo Van Gool <sibo.vangool@kuleuven.be>
 
 config BOARD_TE0715
-    select SOC_XC7Z015
+    select SOC_XC7Z030
