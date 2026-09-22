@@ -8,7 +8,11 @@ TE0715-05-71I33-L (Zynq-7030) on a TE0701 carrier.
 ```sh
 west init -l app      # app/west.yml pins Zephyr and the modules it needs
 west update
+west patch clean && west patch apply   # patches in zephyr/patches.yml
 ```
+
+`west update` resets the patched projects (libcsp, libparam, fprime-zephyr),
+so rerun the patch commands after every update.
 
 Toolchain: Zephyr SDK 1.0.1 (`west sdk install -t arm-zephyr-eabi`).
 Loading over JTAG needs AMD `xsdb` (Vitis 2022.1 in `/tools/Xilinx`) and the
@@ -44,6 +48,48 @@ app/scripts/hw_test.py run app --until "D4 on"
 
 Build directories and console logs go to `build/hw/`. Tests that ask for
 keyboard input are answered automatically.
+
+## Applications
+
+| Directory | What it does |
+|---|---|
+| `.` (`src/main.c`) | Blinks LED D4 and toggles MIO9 on Pmod J1 |
+| `apps/can_bringup` | Echoes CAN ID 0x100 as 0x101, 1 Hz heartbeat on 0x7F0 |
+| `apps/csp_node` | libcsp node 101/8 with the CSP services and a libparam server |
+| `apps/fprime_csp_bench` | F Prime `CspBench` server role (node 101, parameter 200) |
+
+The CAN applications use CAN1 on the TE0701 Pmod J1 (`boards/te0701-can1.overlay`,
+1 Mbit/s) with an external 3.3 V transceiver:
+
+| Pmod J1 | Signal | Transceiver (e.g. SN65HVD233) |
+|---|---|---|
+| 10 | MIO12, CAN1 TX | D (TXD) |
+| 7 | MIO13, CAN1 RX | R (RXD) |
+| 6 | 3.3 V (check with a meter) | V<sub>CC</sub> |
+| 12 | GND (check with a meter) | GND |
+
+Raw CAN check against a SocketCAN interface on the host:
+
+```sh
+app/scripts/hw_test.py run app/apps/can_bringup --seconds 5
+sudo ip link set can0 type can bitrate 1000000 && sudo ip link set can0 up
+app/scripts/can_echo_test.py can0 --count 1000
+```
+
+`apps/fprime_csp_bench` is an F Prime project, built with `fprime-util` from the
+workspace virtual environment. It expects the `fprime-csp-libparam`
+(`zephyr-can-transport` branch) and `CspLibparamFprimeTest` (`zephyr-transport`
+branch) checkouts next to this workspace:
+
+```sh
+cd app/apps/fprime_csp_bench
+fprime-util generate && fprime-util build
+PATH=/tools/Xilinx/Vitis/2022.1/bin:$PATH xsdb ../../boards/trenz/te0715/support/xsdb.cfg \
+    build-fprime-automatic-zephyr/zephyr/zephyr.elf
+```
+
+The Linux bench then talks to it as usual, e.g.
+`CspBench --role client --can can0 --node 100 --peer 101`.
 
 ## Board notes
 
