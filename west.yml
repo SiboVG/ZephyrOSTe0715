@@ -10,6 +10,8 @@ manifest:
       url-base: https://github.com/zephyrproject-rtos
     - name: sibovg
       url-base: https://github.com/SiboVG
+    - name: spaceinventor
+      url-base: https://github.com/spaceinventor
 
   projects:
     # Zephyr v4.4.2 plus the uart_xlnx_ps driver fixes from
@@ -23,3 +25,9 @@ manifest:
         name-allowlist:
           - cmsis
           - cmsis_6
+
+    # Space Inventor libcsp, the csh/2.10 release matched with libparam
+    - name: libcsp
+      remote: spaceinventor
+      revision: 5a95e5c48826c3602bf4a34aa5d60e2af9e4a004
+      path: modules/lib/libcsp

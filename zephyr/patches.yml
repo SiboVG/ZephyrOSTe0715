@@ -1,0 +1,11 @@
+patches:
+  - path: libcsp/0001-zephyr-include-time.h-from-the-C-library.patch
+    sha256sum: 4ffa5182402caeaefc11a3a6c30eeb81eca9b7cfb9d6328ec127be2d5ae52df5
+    module: libcsp
+    author: Sibo Van Gool
+    email: sibo.vangool@hotmail.com
+    date: 2026-09-22
+    upstreamable: true
+    comments: |
+      Zephyr 4.x removed <zephyr/posix/time.h>; the POSIX clock functions
+      are declared by the C library's <time.h>.

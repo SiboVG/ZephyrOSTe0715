@@ -1,0 +1,24 @@
+# SPDX-License-Identifier: Apache-2.0
+
+mainmenu "TE0715 CSP node"
+
+config APP_CSP_NODE
+	int "Local CSP node address"
+	range 1 16381
+	default 101
+
+config APP_CSP_PEER
+	int "CSP node to ping (0: do not ping)"
+	range 0 16381
+	default 100
+
+config APP_CSP_NETMASK
+	int "CSP network prefix length"
+	range 0 13
+	default 8
+
+config APP_CSP_PING_PERIOD_MS
+	int "Ping period in milliseconds"
+	default 2000
+
+source "Kconfig.zephyr"

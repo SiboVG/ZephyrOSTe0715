@@ -1,0 +1,25 @@
+diff --git a/src/arch/zephyr/csp_clock.c b/src/arch/zephyr/csp_clock.c
+index 902de2ff..6fbcac8a 100644
+--- a/src/arch/zephyr/csp_clock.c
++++ b/src/arch/zephyr/csp_clock.c
+@@ -1,6 +1,6 @@
+ #include <csp/csp_types.h>
+ #include <zephyr/kernel.h>
+-#include <zephyr/posix/time.h>
++#include <time.h>
+ #include <zephyr/logging/log.h>
+ LOG_MODULE_DECLARE(libcsp);
+ 
+diff --git a/src/arch/zephyr/csp_zephyr_init.c b/src/arch/zephyr/csp_zephyr_init.c
+index 32f1c6cb..2bd0a191 100644
+--- a/src/arch/zephyr/csp_zephyr_init.c
++++ b/src/arch/zephyr/csp_zephyr_init.c
+@@ -2,7 +2,7 @@
+ 
+ #include <zephyr/kernel.h>
+ #include <zephyr/init.h>
+-#include <zephyr/posix/time.h>
++#include <time.h>
+ #include <csp/csp_debug.h>
+ 
+ #include <zephyr/logging/log.h>
