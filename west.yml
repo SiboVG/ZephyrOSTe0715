@@ -31,3 +31,10 @@ manifest:
       remote: spaceinventor
       revision: 5a95e5c48826c3602bf4a34aa5d60e2af9e4a004
       path: modules/lib/libcsp
+
+    # Space Inventor libparam, the csh/2.10 release matched with libcsp.
+    # Built by the zephyr/ directory of this repository (CONFIG_LIBPARAM).
+    - name: libparam
+      remote: spaceinventor
+      revision: d78da56e7cbc8b6be30d8890b6f01cdf80d0b9b9
+      path: modules/lib/libparam

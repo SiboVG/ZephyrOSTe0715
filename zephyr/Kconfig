@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: Apache-2.0
+
+config LIBPARAM
+	bool "Space Inventor libparam"
+	depends on LIBCSP
+	depends on PICOLIBC
+	help
+	  Build Space Inventor libparam (csh/2.10) from modules/lib/libparam,
+	  with the same source set and dynamic parameter list profile as the
+	  Linux fprime-csp-libparam build. Parameters are registered at run
+	  time with param_list_add(); the static "param" linker section is not
+	  supported. The dynamic list allocates with malloc(), so the C library
+	  heap must be large enough (CONFIG_COMMON_LIBC_MALLOC_ARENA_SIZE).

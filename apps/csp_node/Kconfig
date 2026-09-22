@@ -21,4 +21,13 @@ config APP_CSP_PING_PERIOD_MS
 	int "Ping period in milliseconds"
 	default 2000
 
+config APP_PARAM_ID
+	int "ID of the libparam test parameter (bench_integer, uint32)"
+	range 0 65535
+	default 200
+
+config APP_PARAM_VALUE
+	hex "Initial value of the libparam test parameter"
+	default 0x12345678
+
 source "Kconfig.zephyr"

@@ -3,10 +3,16 @@
  * fprime-csp-libparam SocketCAN transport: CSP v2, the CAN interface as the
  * default route, and the standard CSP services (ping, ident, ...) on all
  * ports. It also pings CONFIG_APP_CSP_PEER periodically.
+ *
+ * It is also a libparam server like `CspBench --role server`: one uint32
+ * parameter "bench_integer" (CONFIG_APP_PARAM_ID) served on PARAM_PORT_SERVER.
  */
 
 #include <csp/csp.h>
 #include <csp/drivers/can_zephyr.h>
+#include <param/param.h>
+#include <param/param_list.h>
+#include <param/param_server.h>
 #include <zephyr/device.h>
 #include <zephyr/kernel.h>
 #include <zephyr/sys/printk.h>
@@ -15,6 +21,31 @@
 #define ROUTER_PRIORITY   5
 
 static const struct device *const can_dev = DEVICE_DT_GET(DT_CHOSEN(zephyr_canbus));
+
+static uint32_t param_value = CONFIG_APP_PARAM_VALUE;
+static uint16_t param_node; /* 0: local parameter */
+static csp_timestamp_t param_timestamp;
+
+static void param_changed(param_t *param, int offset)
+{
+	printk("PARAM %s = 0x%08x (written remotely)\n", param->name,
+	       param_get_uint32_array(param, offset));
+}
+
+static param_t bench_integer = {
+	.id = CONFIG_APP_PARAM_ID,
+	.node = &param_node,
+	.type = PARAM_TYPE_UINT32,
+	.mask = PM_CONF,
+	.name = "bench_integer",
+	.unit = "raw",
+	.docstr = "CSP/libparam bench integer",
+	.addr = &param_value,
+	.array_size = 1,
+	.array_step = sizeof(uint32_t),
+	.timestamp = &param_timestamp,
+	.callback = param_changed,
+};
 
 static void router_thread(void *p1, void *p2, void *p3)
 {
@@ -58,6 +89,18 @@ int main(void)
 	iface->netmask = CONFIG_APP_CSP_NETMASK;
 	iface->is_default = 1;
 
+	err = param_list_add(&bench_integer);
+	if (err < 0) {
+		printk("failed to add libparam parameter (err %d)\n", err);
+		return 0;
+	}
+
+	err = csp_bind_callback(param_serve, PARAM_PORT_SERVER);
+	if (err != CSP_ERR_NONE) {
+		printk("failed to bind libparam server (err %d)\n", err);
+		return 0;
+	}
+
 	err = csp_bind_callback(csp_service_handler, CSP_ANY);
 	if (err != CSP_ERR_NONE) {
 		printk("failed to bind CSP service handler (err %d)\n", err);
@@ -69,6 +112,8 @@ int main(void)
 	printk("CSP node %d/%d on %s, pinging %d every %d ms\n", CONFIG_APP_CSP_NODE,
 	       CONFIG_APP_CSP_NETMASK, can_dev->name, CONFIG_APP_CSP_PEER,
 	       CONFIG_APP_CSP_PING_PERIOD_MS);
+	printk("libparam server on port %d: %s (id %d) = 0x%08x\n", PARAM_PORT_SERVER,
+	       bench_integer.name, bench_integer.id, param_get_uint32(&bench_integer));
 
 	while (CONFIG_APP_CSP_PEER != 0) {
 		int rtt = csp_ping(CONFIG_APP_CSP_PEER, 1000, 32, CSP_O_NONE);

@@ -9,3 +9,13 @@ patches:
     comments: |
       Zephyr 4.x removed <zephyr/posix/time.h>; the POSIX clock functions
       are declared by the C library's <time.h>.
+  - path: libparam/0001-vmem-client-do-not-shadow-abort.patch
+    sha256sum: c31f0e48e587a22d0fdc36a74dd9471ab0492b92a1091a6b0dd9578711166f01
+    module: modules/lib/libparam
+    author: Sibo Van Gool
+    email: sibo.vangool@hotmail.com
+    date: 2026-09-22
+    upstreamable: true
+    comments: |
+      vmem_client.c declares a file-scope variable named abort, which
+      conflicts with abort() from <stdlib.h> in the Zephyr (picolibc) build.

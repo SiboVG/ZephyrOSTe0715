@@ -1,0 +1,53 @@
+diff --git a/src/vmem/vmem_client.c b/src/vmem/vmem_client.c
+index cd953a4..2fda872 100644
+--- a/src/vmem/vmem_client.c
++++ b/src/vmem/vmem_client.c
+@@ -12,10 +12,10 @@
+ 
+ #include <vmem/vmem_client.h>
+ 
+-static int abort = 0;
++static int abort_requested = 0;
+ 
+ void vmem_client_abort(void) {
+-	abort = 1;
++	abort_requested = 1;
+ }
+ 
+ int vmem_download(int node, int timeout, uint64_t address, uint32_t length, char * dataout, int version, int use_rdp) {
+@@ -27,7 +27,7 @@ int vmem_download(int node, int timeout, uint64_t address, uint32_t length, char
+ int vmem_download_progress(int node, int timeout, uint64_t address, uint32_t length, char * dataout, int version, int use_rdp, vmem_progress_cb cb)
+ {
+ 	uint32_t time_begin = csp_get_ms();
+-	abort = 0;
++	abort_requested = 0;
+ 
+ 	/* Establish RDP connection */
+ 	uint32_t opts = CSP_O_CRC32;
+@@ -70,7 +70,7 @@ int vmem_download_progress(int node, int timeout, uint64_t address, uint32_t len
+ 		if (packet == NULL)
+ 			break;
+ 
+-		if (abort) {
++		if (abort_requested) {
+ 			csp_buffer_free(packet);
+ 			break;
+ 		}
+@@ -127,7 +127,7 @@ int vmem_upload(int node, int timeout, uint64_t address, char * datain, uint32_t
+ 
+ int vmem_upload_progress(int node, int timeout, uint64_t address, char * datain, uint32_t length, int version, vmem_progress_cb cb) {
+ 
+-	abort = 0;
++	abort_requested = 0;
+ 
+ 	/* Establish RDP connection */
+ 	csp_conn_t * conn = csp_connect(CSP_PRIO_HIGH, node, VMEM_PORT_SERVER, timeout, CSP_O_RDP | CSP_O_CRC32);
+@@ -158,7 +158,7 @@ int vmem_upload_progress(int node, int timeout, uint64_t address, char * datain,
+ 	uint32_t count = 0;
+ 	while((count < length) && csp_conn_is_active(conn)) {
+ 
+-		if (abort) {
++		if (abort_requested) {
+ 			csp_buffer_free(packet);
+ 			break;
+ 		}

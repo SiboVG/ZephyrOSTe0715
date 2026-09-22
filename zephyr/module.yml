@@ -1,4 +1,6 @@
 name: te0715
 build:
+  cmake: zephyr
+  kconfig: zephyr/Kconfig
   settings:
     board_root: .
