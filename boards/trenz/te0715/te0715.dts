@@ -20,7 +20,7 @@
     };
 
     aliases {
-        
+        led0 = &led_d4;
     };
 
     cpus {
@@ -48,6 +48,16 @@
         compatible = "mmio-sram";
         reg = <0x00000000 0x40000000>;
     };
+
+    leds {
+        compatible = "gpio-leds";
+
+        /* Green user LED D4 on the module. MIO7 is muxed to GPIO by ps7_init. */
+        led_d4: led_d4 {
+            gpios = <&psgpio_bank0 7 GPIO_ACTIVE_HIGH>;
+            label = "D4";
+        };
+    };
 };
 
 &uart0 {
@@ -58,3 +68,6 @@
     pinctrl-names = "default";
 };
 
+&psgpio {
+    status = "okay";
+};

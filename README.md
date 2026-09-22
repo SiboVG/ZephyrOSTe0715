@@ -49,5 +49,6 @@ keyboard input are answered automatically.
 
 - UART0 pins are configured by Zephyr pinctrl. The GPIO pins (MIO7, MIO9) are
   muxed by `ps7_init.tcl`, because the Zynq GPIO driver does not apply pinctrl.
-- LED D4 (green, on the module) is on MIO7, available as `led0`.
+- LED D4 (green, on the module) is on MIO7, available as `led0`. MIO7 is an
+  output-only pin on the Zynq, so its level cannot be read back.
 - MIO9 goes to Pmod J1 on the TE0701 only (no other connections).

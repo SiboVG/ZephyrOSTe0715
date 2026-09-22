@@ -1,0 +1,10 @@
+/*
+ * TE0701 carrier: MIO9 is routed to Pmod J1 only. MIO9 is muxed to GPIO
+ * (3.3 V, pull-up) by ps7_init.
+ */
+
+/ {
+	zephyr,user {
+		pmod-gpios = <&psgpio_bank0 9 GPIO_ACTIVE_HIGH>;
+	};
+};
