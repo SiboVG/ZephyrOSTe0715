@@ -25,7 +25,9 @@ if(CONFIG_LIBPARAM)
     ${LIBPARAM_DIR}/src/vmem/vmem_block.c
     ${LIBPARAM_DIR}/src/objstore/objstore.c
   )
-  zephyr_include_directories(
+  # System includes, as in fprime-csp-libparam: consumers built with -Wpedantic
+  # -Werror must not fail on GNU extensions in the third-party headers
+  zephyr_system_include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/libparam
     ${LIBPARAM_DIR}/include
     ${LIBPARAM_DIR}

@@ -19,3 +19,25 @@ patches:
     comments: |
       vmem_client.c declares a file-scope variable named abort, which
       conflicts with abort() from <stdlib.h> in the Zephyr (picolibc) build.
+  - path: fprime-zephyr/0001-lora-enum-command-handler-signature.patch
+    sha256sum: 8750e54a90b8b10f5a4a5c855659c3856e3f6c88c3c81200c042b61842bf5ee7
+    module: modules/fprime/fprime-zephyr
+    author: Sibo Van Gool
+    email: sibo.vangool@hotmail.com
+    date: 2026-09-22
+    upstreamable: false
+    merge-pr: https://github.com/fprime-community/fprime-zephyr/pull/64
+    comments: |
+      LoRa part of fprime-zephyr b76db2b: the pinned F Prime already passes
+      enum command arguments by const reference.
+  - path: fprime-zephyr/0002-os-task-default-stack-size.patch
+    sha256sum: 52da6aecbe4ffa93c4d6c27d00ae4ef776d09c9f70ae4176553ea39f09ebfecf
+    module: modules/fprime/fprime-zephyr
+    author: Sibo Van Gool
+    email: sibo.vangool@hotmail.com
+    date: 2026-09-22
+    upstreamable: true
+    comments: |
+      Os::Task::TASK_DEFAULT as stack size was passed to k_thread_stack_alloc()
+      as SIZE_MAX, so every task started with default arguments failed. Use
+      CONFIG_DYNAMIC_THREAD_STACK_SIZE, and fix the priority warning format.

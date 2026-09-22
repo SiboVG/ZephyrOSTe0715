@@ -1,0 +1,14 @@
+register_fprime_module(
+    AUTOCODER_INPUTS
+        "${CMAKE_CURRENT_LIST_DIR}/instances.fpp"
+        "${CMAKE_CURRENT_LIST_DIR}/topology.fpp"
+    HEADERS
+        "${CMAKE_CURRENT_LIST_DIR}/CspBenchZephyrTopologyDefs.hpp"
+    DEPENDS
+        Components_CspLibparam
+        Svc_ActiveRateGroup
+        Svc_CmdDispatcher
+        Svc_PassiveConsoleTextLogger
+        fprime-zephyr_Drv_ZephyrRateDriver
+        fprime-zephyr_Svc_ZephyrTime
+)

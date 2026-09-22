@@ -1,0 +1,26 @@
+diff --git a/fprime-zephyr/Drv/LoRa/LoRa.cpp b/fprime-zephyr/Drv/LoRa/LoRa.cpp
+index b140779..4d3aca4 100644
+--- a/fprime-zephyr/Drv/LoRa/LoRa.cpp
++++ b/fprime-zephyr/Drv/LoRa/LoRa.cpp
+@@ -190,7 +190,7 @@ void LoRa ::CONTINUOUS_WAVE_cmdHandler(FwOpcodeType opCode, U32 cmdSeq, U16 seco
+                           (status == Status::SUCCESS) ? Fw::CmdResponse::OK : Fw::CmdResponse::EXECUTION_ERROR);
+ }
+ 
+-void LoRa ::TRANSMIT_cmdHandler(FwOpcodeType opCode, U32 cmdSeq, TransmitState enabled) {
++void LoRa ::TRANSMIT_cmdHandler(FwOpcodeType opCode, U32 cmdSeq, const TransmitState& enabled) {
+     Os::ScopeLock lock(this->m_mutex);
+     // Want to enable
+     if (enabled == TransmitState::ENABLED) {
+diff --git a/fprime-zephyr/Drv/LoRa/LoRa.hpp b/fprime-zephyr/Drv/LoRa/LoRa.hpp
+index acc4383..1d71678 100644
+--- a/fprime-zephyr/Drv/LoRa/LoRa.hpp
++++ b/fprime-zephyr/Drv/LoRa/LoRa.hpp
+@@ -78,7 +78,7 @@ class LoRa final : public LoRaComponentBase {
+     //! Start/stop transmission on the LoRa module
+     void TRANSMIT_cmdHandler(FwOpcodeType opCode,  //!< The opcode
+                              U32 cmdSeq,           //!< The command sequence number
+-                             TransmitState enabled) override;
++                             const TransmitState& enabled) override;
+ 
+   private:
+     U8 m_send_buffer[LoRa::MAX_PACKET_SIZE];  //!< Buffer for sending data (max LoRa packet size)

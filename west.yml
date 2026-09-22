@@ -12,6 +12,10 @@ manifest:
       url-base: https://github.com/SiboVG
     - name: spaceinventor
       url-base: https://github.com/spaceinventor
+    - name: nasa
+      url-base: https://github.com/nasa
+    - name: fprime-community
+      url-base: https://github.com/fprime-community
 
   projects:
     # Zephyr v4.4.2 plus the uart_xlnx_ps driver fixes from
@@ -38,3 +42,14 @@ manifest:
       remote: spaceinventor
       revision: d78da56e7cbc8b6be30d8890b6f01cdf80d0b9b9
       path: modules/lib/libparam
+
+    # F Prime at the revision pinned by fprime-csp-libparam, and the last
+    # fprime-zephyr revision that supports it (later ones need nasa/fprime#5615)
+    - name: fprime
+      remote: nasa
+      revision: 35d4c0e881482adf372b8eee3eb56ad2dee74618
+      path: modules/fprime/fprime
+    - name: fprime-zephyr
+      remote: fprime-community
+      revision: 6e2a4111a94be0278d8096d71a50cc7b6bbdba70
+      path: modules/fprime/fprime-zephyr
