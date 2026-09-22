@@ -1,0 +1,19 @@
+# West manifest for the TE0715 Zephyr application.
+# Pins Zephyr to a release and only pulls in the modules this app needs.
+
+manifest:
+  self:
+    path: app
+
+  remotes:
+    - name: zephyrproject-rtos
+      url-base: https://github.com/zephyrproject-rtos
+
+  projects:
+    - name: zephyr
+      remote: zephyrproject-rtos
+      revision: v4.4.2
+      import:
+        name-allowlist:
+          - cmsis
+          - cmsis_6

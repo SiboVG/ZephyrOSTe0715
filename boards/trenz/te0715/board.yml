@@ -1,0 +1,7 @@
+board:
+  name: te0715
+  full_name: TE0715-05-71I33-L
+  vendor: trenz
+  socs:
+    - name: xc7z015
+

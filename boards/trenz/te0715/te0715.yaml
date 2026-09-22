@@ -1,0 +1,14 @@
+
+
+identifier: te0715
+name: TE0715-05-71I33-L
+type: som
+arch: arm
+toolchain:
+  - zephyr
+  - gnuarmemb
+ram: 1073741824
+supported:
+  - gpio
+vendor: trenz
+

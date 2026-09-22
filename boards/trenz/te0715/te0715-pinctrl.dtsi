@@ -1,0 +1,23 @@
+/*
+ * Pin configuration for the Trenz TE0715, matching the PS settings of the
+ * Trenz TE0715 test_board reference design (Vivado 2022.2).
+ */
+
+#include <zephyr/dt-bindings/pinctrl/pinctrl-zynq.h>
+
+&pinctrl0 {
+	/* UART0 on MIO14 (RX) / MIO15 (TX), bank 0 is LVCMOS 3.3V */
+	pinctrl_uart0_default: uart0-default {
+		mux {
+			groups = "uart0_1_grp";
+			function = "uart0";
+		};
+
+		conf {
+			groups = "uart0_1_grp";
+			slew-rate = <IO_SPEED_SLOW>;
+			power-source = <IO_STANDARD_LVCMOS33>;
+			bias-pull-up;
+		};
+	};
+};
