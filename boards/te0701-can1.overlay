@@ -1,0 +1,15 @@
+/*
+ * TE0701 carrier: CAN1 on Pmod J1 (pin 10 = MIO12 = TX, pin 7 = MIO13 = RX),
+ * to an external 3.3 V CAN transceiver (e.g. TI SN65HVD233).
+ */
+
+/ {
+	chosen {
+		zephyr,canbus = &can1;
+	};
+};
+
+&can1 {
+	status = "okay";
+	bitrate = <1000000>;
+};

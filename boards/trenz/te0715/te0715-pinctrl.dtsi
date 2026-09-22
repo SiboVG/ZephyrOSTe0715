@@ -20,4 +20,28 @@
 			bias-pull-up;
 		};
 	};
+
+	/* CAN1 on MIO12 (TX) / MIO13 (RX) */
+	pinctrl_can1_default: can1-default {
+		mux {
+			groups = "can1_1_grp";
+			function = "can1";
+		};
+
+		conf {
+			groups = "can1_1_grp";
+			slew-rate = <IO_SPEED_SLOW>;
+			power-source = <IO_STANDARD_LVCMOS33>;
+		};
+
+		conf-rx {
+			pins = "MIO13";
+			bias-pull-up;
+		};
+
+		conf-tx {
+			pins = "MIO12";
+			bias-disable;
+		};
+	};
 };

@@ -105,10 +105,13 @@ class Console:
                 self.chunks.append(data)
 
     def text(self):
-        """Output since the last Zephyr boot banner (earlier boot stages dropped)."""
+        """Output since the last Zephyr boot banner, or everything if there is none yet.
+
+        A crash during device initialization happens before the banner.
+        """
         text = b''.join(self.chunks).decode(errors='replace')
         idx = text.rfind(BANNER)
-        return text[idx:] if idx >= 0 else ''
+        return text[idx:] if idx >= 0 else text
 
     def write(self, data):
         self.serial.write(data)
@@ -175,6 +178,9 @@ def cmd_test(args):
         for line in text.splitlines():
             if re.match(r'\s*(SUITE (PASS|FAIL|SKIP)|- FAIL -)', line):
                 print('   ', line.strip())
+        if result != 'SUCCESSFUL':
+            for line in text.splitlines()[-20:]:
+                print('    |', line.rstrip())
         garbled = sum(1 for c in text if c == '�' or (ord(c) < 32 and c not in '\t\r\n'))
         note = f', {garbled} garbled characters' if garbled else ''
         print(f'{result:<12} {test}{note}')
@@ -188,6 +194,8 @@ def cmd_run(args):
     until = re.compile(args.until) if args.until else None
 
     def finished(text, elapsed):
+        if BANNER not in text:
+            return None
         if until and until.search(text):
             return 'MATCHED'
         if not until and elapsed >= args.seconds:

@@ -71,3 +71,14 @@
 &psgpio {
     status = "okay";
 };
+
+/* CAN_REF_CLK is set up by board.c */
+&can0 {
+    clock-frequency = <100000000>;
+};
+
+&can1 {
+    clock-frequency = <100000000>;
+    pinctrl-0 = <&pinctrl_can1_default>;
+    pinctrl-names = "default";
+};
