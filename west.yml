@@ -1,5 +1,5 @@
 # West manifest for the TE0715 Zephyr application.
-# Pins Zephyr to a release and only pulls in the modules this app needs.
+# Pins Zephyr and only pulls in the modules this app needs.
 
 manifest:
   self:
@@ -8,11 +8,17 @@ manifest:
   remotes:
     - name: zephyrproject-rtos
       url-base: https://github.com/zephyrproject-rtos
+    - name: sibovg
+      url-base: https://github.com/SiboVG
 
   projects:
+    # Zephyr v4.4.2 plus the uart_xlnx_ps driver fixes from
+    # https://github.com/zephyrproject-rtos/zephyr/pull/119996
+    # (branch xuartps-fixes-v4.4.2 in the SiboVG fork). Switch back to
+    # remote zephyrproject-rtos and a release tag once those fixes are released.
     - name: zephyr
-      remote: zephyrproject-rtos
-      revision: v4.4.2
+      remote: sibovg
+      revision: 8ad6ae61020402ce08b1db028bafd596615203cf
       import:
         name-allowlist:
           - cmsis
