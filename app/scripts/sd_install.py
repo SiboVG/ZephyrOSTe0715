@@ -83,6 +83,8 @@ class UBoot:
         self.serial.write(cmd.encode() + b'\n')
         out = self._read_until(b'Zynq> ', timeout)
         print(out.strip())
+        if cmd.startswith('fatwrite') and 'bytes written' not in out:
+            sys.exit(f'U-Boot did not confirm `{cmd}`; the card may be unchanged')
         return out
 
     def load(self, path, addr):

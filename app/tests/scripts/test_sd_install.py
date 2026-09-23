@@ -122,7 +122,9 @@ def test_boot_script_hands_the_config_to_zephyr():
     load = script.index('fatload mmc 0 0x0f000100 te0715.txt')
     stamp = script.index('mw.l 0x0f000000 0x37304554')
     assert clear < load < stamp < script.index('go 0x0')
-    assert script.index('dcache flush') < script.index('go 0x0')
+    # MMU and caches off before the jump, after everything is loaded
+    assert script.index('fatload mmc 0 0x0 zephyr.bin') < script.index('dcache off') < script.index('go 0x0')
+    assert 'icache off' in script
 
 
 def test_boot_script_matches_the_firmware():
@@ -139,3 +141,30 @@ def test_boot_script_matches_the_firmware():
     assert f'mw.l {addr:#010x} {magic.lower()}' in script
     assert f'fatload mmc 0 {addr + offset:#010x} te0715.txt' in script
     assert f'mw.l {addr + 4:#010x} ${{filesize}}' in script
+
+
+class FakeSerial:
+    def __init__(self):
+        self.written = b''
+
+    def reset_input_buffer(self):
+        pass
+
+    def write(self, data):
+        self.written += data
+
+
+def uboot_answering(answer):
+    ub = object.__new__(sd_install.UBoot)  # no serial port, no xsdb
+    ub.serial = FakeSerial()
+    ub._read_until = lambda marker, timeout: answer
+    return ub
+
+
+def test_an_unconfirmed_fatwrite_stops_the_script():
+    # A board that did not reach the U-Boot prompt answers nothing
+    with pytest.raises(SystemExit):
+        uboot_answering('').run('fatwrite mmc 0 0x3000000 boot.scr 0x431')
+    ok = uboot_answering('1073 bytes written in 23 ms\nZynq> ')
+    assert 'bytes written' in ok.run('fatwrite mmc 0 0x3000000 boot.scr 0x431')
+    assert uboot_answering('').run('fatls mmc 0') == ''
