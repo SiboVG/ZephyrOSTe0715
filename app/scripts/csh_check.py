@@ -35,6 +35,18 @@ from hw_test import find_port
 ANSI = re.compile(r'\x1b\[[0-9;?]*[A-Za-z]|\r')
 
 
+def clean_transcript(raw, prompt):
+    """Readable csh output: no escape codes, and one line per command.
+
+    csh redraws its prompt (the host name) on every keystroke, so only what follows
+    the last prompt on a line is kept. The lines about the (empty) init file go.
+    """
+    lines = [line.split(prompt)[-1].rstrip()
+             for line in ANSI.sub('', raw).splitlines()
+             if 'Init file' not in line and 'not found' not in line]
+    return '\n'.join(lines)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -85,12 +97,8 @@ def main():
     time.sleep(1)
     stop.set()
 
-    # csh redraws its prompt (hostname) on every keystroke: keep what follows the last one
-    prompt = os.uname().nodename
-    lines = [line.split(prompt)[-1].rstrip()
-             for line in ANSI.sub('', transcript.getvalue()).splitlines()
-             if 'Init file' not in line and 'not found' not in line]
-    text = (f'=== csh ({args.csh})\n' + '\n'.join(lines) +
+    text = (f'=== csh ({args.csh})\n' + clean_transcript(transcript.getvalue(),
+                                                          os.uname().nodename) +
             '\n\n=== TE0715 console\n' + ANSI.sub('', board.decode(errors='replace')))
     with open(args.log, 'w') as f:
         f.write(text)
