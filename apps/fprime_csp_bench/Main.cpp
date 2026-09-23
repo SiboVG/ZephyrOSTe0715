@@ -1,7 +1,8 @@
 // CSP/libparam bench server on the TE0715, equivalent to
 //   CspBench --role server --node <node> --netmask <prefix> --param-id 200 --param-type u32
-// on Linux. The node is CONFIG_APP_CSP_NODE unless `bench start <node>` is typed
-// on the serial console during the start window (see shell_cmds.c).
+// on Linux, plus the led_d4 parameter (201) and libparam's list service. The node is
+// CONFIG_APP_CSP_NODE unless `bench start <node>` is typed on the serial console during
+// the start window (see shell_cmds.c).
 
 #include "Components/CspLibparam/CspLibparamCore.hpp"
 #include "Top/CspBenchZephyrTopologyAc.hpp"
@@ -32,7 +33,12 @@ int main() {
         Fw::Logger::log("CSP/libparam bench server failed to start\n");
         return 0;
     }
-    Fw::Logger::log("CSP/libparam bench server: node %u/%u, parameter 200 (u32)\n",
+    const int services = bench_start_services();
+    if (services != 0) {
+        Fw::Logger::log("led_d4 parameter / parameter list service failed to start (%d)\n", services);
+    }
+    Fw::Logger::log("CSP/libparam bench server: node %u/%u, parameters 200 bench_integer (u32), "
+                    "201 led_d4 (u8)\n",
                     static_cast<unsigned>(node), static_cast<unsigned>(prefix));
 
     while (true) {

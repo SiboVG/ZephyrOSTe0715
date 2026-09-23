@@ -8,6 +8,11 @@
  *
  * <type> is one of u8 i8 u16 i16 u32 i32 u64 i64 float double. Remote
  * parameters are accessed with libparam protocol version 2 on port 10.
+ *
+ * It also serves, next to the F Prime component's bench_integer (200):
+ * - led_d4 (201, u8): the green user LED D4 on MIO7, 1 on / 0 off;
+ * - libparam's list service (port 12, via vmem_server_loop), so csh can
+ *   `list download` this node's parameters.
  */
 
 #include <errno.h>
@@ -18,6 +23,8 @@
 #include <param/param.h>
 #include <param/param_client.h>
 #include <param/param_list.h>
+#include <vmem/vmem_server.h>
+#include <zephyr/drivers/gpio.h>
 #include <zephyr/kernel.h>
 #include <zephyr/shell/shell.h>
 
@@ -31,6 +38,69 @@ static K_SEM_DEFINE(start_sem, 0, 1);
 static uint16_t start_node = CONFIG_APP_CSP_NODE;
 static uint8_t start_prefix = CONFIG_APP_CSP_NETMASK;
 static bool started;
+
+/* led_d4: the green user LED D4, as a libparam parameter */
+#define LED_PARAM_ID 201
+
+static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(DT_ALIAS(led0), gpios);
+static uint8_t led_value;
+static uint16_t local_node; /* 0: a parameter of this node */
+static csp_timestamp_t led_timestamp;
+
+static void led_param_changed(param_t *param, int offset)
+{
+	ARG_UNUSED(offset);
+
+	(void)gpio_pin_set_dt(&led, led_value != 0U);
+	printk("PARAM %s = %u: LED D4 %s\n", param->name, led_value, led_value ? "on" : "off");
+}
+
+static param_t led_param = {
+	.id = LED_PARAM_ID,
+	.node = &local_node,
+	.type = PARAM_TYPE_UINT8,
+	.mask = PM_CONF,
+	.name = "led_d4",
+	.unit = "",
+	.docstr = "Green user LED D4 (MIO7): 1 on, 0 off",
+	.addr = &led_value,
+	.array_size = 1,
+	.array_step = sizeof(uint8_t),
+	.timestamp = &led_timestamp,
+	.callback = led_param_changed,
+};
+
+/* libparam's list and vmem services (ports 12 and 13); no vmem areas are registered */
+static void param_server_thread(void *p1, void *p2, void *p3)
+{
+	ARG_UNUSED(p1);
+	ARG_UNUSED(p2);
+	ARG_UNUSED(p3);
+
+	vmem_server_loop(NULL);
+}
+
+K_THREAD_DEFINE(param_server, 4096, param_server_thread, NULL, NULL, NULL, 10, 0, SYS_FOREVER_MS);
+
+int bench_start_services(void)
+{
+	int err;
+
+	if (!gpio_is_ready_dt(&led)) {
+		return -ENODEV;
+	}
+	err = gpio_pin_configure_dt(&led, GPIO_OUTPUT_INACTIVE);
+	if (err != 0) {
+		return err;
+	}
+	err = param_list_add(&led_param);
+	if (err < 0) {
+		return err;
+	}
+	k_thread_name_set(param_server, "param_server");
+	k_thread_start(param_server);
+	return 0;
+}
 
 void bench_wait_for_start(uint16_t *node, uint8_t *prefix)
 {
@@ -90,6 +160,8 @@ static int cmd_bench_info(const struct shell *sh, size_t argc, char **argv)
 
 	shell_print(sh, "node %u/%u (%s), libparam server port 10: parameter 200 (u32)",
 		    start_node, start_prefix, started ? "started" : "waiting for start");
+	shell_print(sh, "parameter %d led_d4 (u8) = %u: LED D4 %s; parameter list served on port 12",
+		    LED_PARAM_ID, led_value, led_value ? "on" : "off");
 	return 0;
 }
 

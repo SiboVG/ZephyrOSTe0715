@@ -4,7 +4,8 @@
 
 1. Optionally load an image over JTAG (--elf), or reset the board so it boots from
    the SD card (--sd-boot), and wait for the server's [CSP_BENCH_READY] marker.
-2. Run `CspBench --role client --write-test` on the host against the board.
+2. Run `CspBench --role client --write-test` on the host against the board, for
+   parameter 200 and for the LED parameter 201 (led_d4, u8).
 3. Start a Linux `CspBench --role server` (node 102) and exercise the board's serial
    shell: bench info, kernel thread list, csp ping (with and without CRC32),
    param get / set --confirm / read-back / restore, and can show.
@@ -111,6 +112,19 @@ def main():
     check(f'Linux client against node {args.node}: {result[-1] if result else "no result"}',
           client.returncode == 0 and bool(result) and 'PASS' in result[-1])
 
+    mark = len(console.buf)
+    led = subprocess.run(['timeout', '30', args.bench, '--role', 'client', '--can', args.can,
+                          '--node', '100', '--peer', str(args.node), '--param-id', '201',
+                          '--param-type', 'u8', '--write-test', '--write-value', '1',
+                          '--successes', '2', '--attempts', '3'], capture_output=True, text=True)
+    time.sleep(0.5)
+    led_log = ANSI.sub('', console.buf[mark:].decode(errors='replace'))
+    result = [line for line in led.stdout.splitlines() if 'CSP_BENCH_RESULT' in line]
+    check(f'Linux client switches led_d4 (201): {result[-1] if result else "no result"}',
+          led.returncode == 0 and bool(result) and 'PASS' in result[-1]
+          and 'led_d4 = 1: LED D4 on' in led_log and 'led_d4 = 0: LED D4 off' in led_log)
+    check('bench info: led_d4 off after the test', 'led_d4 (u8) = 0' in console.command('bench info'))
+
     server = subprocess.Popen(['timeout', '60', args.bench, '--role', 'server', '--can', args.can,
                                '--node', '102'], stdout=subprocess.PIPE,
                               stderr=subprocess.STDOUT, text=True)
@@ -150,6 +164,7 @@ def main():
     with open(args.log, 'w') as f:
         f.write('=== TE0715 console\n' + console.text())
         f.write('\n=== Linux CspBench client\n' + client.stdout + client.stderr)
+        f.write('\n=== Linux CspBench client, led_d4\n' + led.stdout + led.stderr)
         f.write('\n=== Linux CspBench server (node 102)\n' + server_out)
     failed = [name for name, ok in checks if not ok]
     print(f'{len(checks) - len(failed)}/{len(checks)} checks passed')
