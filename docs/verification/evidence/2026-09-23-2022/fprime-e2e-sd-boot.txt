@@ -1,0 +1,15 @@
+PASS  start window announced
+PASS  server ready on node 6061 (14.8 s after reset)
+PASS  bench info
+PASS  Linux client against node 6061: [CSP_BENCH_RESULT] PASS attempts=5 successes=5 failures=0
+PASS  csp ping 102 (CRC32)
+PASS  csp ping 102 --nocrc is dropped by the CRC-requiring peer
+PASS  param get 102 200 u32 = 0x12345678
+PASS  param set without --confirm is refused
+PASS  param set --confirm writes and reads back 0xCAFEBABE
+PASS  param get reads the new value
+PASS  param set --confirm restores 0x12345678
+PASS  csp ping to an absent node times out
+PASS  can show: no bus errors
+PASS  kernel reboot cold: back to CSP ready (13.6 s)
+14/14 checks passed

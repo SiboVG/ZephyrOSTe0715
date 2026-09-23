@@ -1,0 +1,91 @@
+
+
+U-Boot 2022.01 (Apr 04 2022 - 07:53:54 +0000)
+
+CPU:   Zynq 7z030
+Silicon: v3.1
+DRAM:  ECC disabled 1 GiB
+Flash: 0 Bytes
+NAND:  0 MiB
+MMC:   mmc@e0100000: 0
+Loading Environment from FAT... *** Error - No Valid Environment Area found
+*** Warning - bad env area, using default environment
+
+In:    serial@e0000000
+Out:   serial@e0000000
+Err:   serial@e0000000
+Net:   
+ZYNQ GEM: e000b000, mdio bus e000b000, phyaddr 0, interface rgmii-id
+zynq_gem ethernet@e000b000: Failed to read eth PHY id, err: -2
+eth0: ethernet@e000b000
+Hit any key to stop autoboot:  2 *** Booting Zephyr OS build v4.4.2-6-g70b56a29cd74 ***
+Running TESTSUITE stackprot
+===================================================================
+START - test_canary_value
+Starts alternate_thread_canary
+ PASS - test_canary_value in 0.101 seconds
+===================================================================
+START - test_create_alt_thread
+Starts alternate_thread
+alternate_thread: Input string is too long and stack overflowed!
+
+E: r0/a1:  0x00000002  r1/a2:  0x0000000a  r2/a3:  0x78449174
+E: r3/a4:  0x00000000 r12/ip:  0x00124ffc r14/lr:  0x00001970
+E:  xpsr:  0x2000011f
+E: s[ 0]:  0x20800080  s[ 1]:  0x00020090  s[ 2]:  0x00000080  s[ 3]:  0x00800002
+E: s[ 4]:  0x08800802  s[ 5]:  0x00000012  s[ 6]:  0x00088200  s[ 7]:  0x000004a2
+E: s[ 8]:  0x000a0424  s[ 9]:  0x82000090  s[10]:  0x10000002  s[11]:  0x00124ff3
+E: s[12]:  0x00000042  s[13]:  0x0000002f  s[14]:  0x00009367  s[15]:  0x00002000
+E: d[ 0]:  0x   a008480000880  d[ 1]:  0x      7380800000  d[ 2]:  0x    b9f000000018  d[ 3]:  0x    b9e900009367
+E: d[ 4]:  0x          124fb4  d[ 5]:  0x      7300124fbc  d[ 6]:  0x    b9fb00000000  d[ 7]:  0x    b9f100000000
+E: d[ 8]:  0x          124fd4  d[ 9]:  0x  124fb40000b9e9  d[10]:  0x               0  d[11]:  0x       800000000
+E: d[12]:  0x               0  d[13]:  0x   2000000001fac  d[14]:  0x            1f4c  d[15]:  0x       800000000
+E: fpscr:  0x0000dd9a
+E: Faulting instruction address (r15/pc): 0x00007e34
+E: >>> ZEPHYR FATAL ERROR 2: Stack overflow on CPU 0
+E: Current thread: 0x24000 (unknown)
+ PASS - test_create_alt_thread in 0.105 seconds
+===================================================================
+START - test_stackprot
+stackprot_test_stackprot: Stack ok
+stackprot_test_stackprot: Stack ok
+stackprot_test_stackprot: Stack ok
+stackprot_test_stackprot: Stack ok
+stackprot_test_stackprot: Stack ok
+stackprot_test_stackprot: Stack ok
+ PASS - test_stackprot in 0.019 seconds
+===================================================================
+TESTSUITE stackprot succeeded
+Running TESTSUITE stackprot_mapped_stack
+===================================================================
+START - test_guard_page_front
+ SKIP - test_guard_page_front in 0.001 seconds
+===================================================================
+START - test_guard_page_front_user
+ SKIP - test_guard_page_front_user in 0.001 seconds
+===================================================================
+START - test_guard_page_rear
+ SKIP - test_guard_page_rear in 0.001 seconds
+===================================================================
+START - test_guard_page_rear_user
+ SKIP - test_guard_page_rear_user in 0.001 seconds
+===================================================================
+TESTSUITE stackprot_mapped_stack succeeded
+
+------ TESTSUITE SUMMARY START ------
+
+SUITE PASS - 100.00% [stackprot]: pass = 3, fail = 0, skip = 0, total = 3 duration = 0.225 seconds
+ - PASS - [stackprot.test_canary_value] duration = 0.101 seconds
+ - PASS - [stackprot.test_create_alt_thread] duration = 0.105 seconds
+ - PASS - [stackprot.test_stackprot] duration = 0.019 seconds
+
+SUITE SKIP -   0.00% [stackprot_mapped_stack]: pass = 0, fail = 0, skip = 4, total = 4 duration = 0.004 seconds
+ - SKIP - [stackprot_mapped_stack.test_guard_page_front] duration = 0.001 seconds
+ - SKIP - [stackprot_mapped_stack.test_guard_page_front_user] duration = 0.001 seconds
+ - SKIP - [stackprot_mapped_stack.test_guard_page_rear] duration = 0.001 seconds
+ - SKIP - [stackprot_mapped_stack.test_guard_page_rear_user] duration = 0.001 seconds
+
+------ TESTSUITE SUMMARY END ------
+
+===================================================================
+PROJECT EXECUTION SUCCESSFUL

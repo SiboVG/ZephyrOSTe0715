@@ -1,0 +1,98 @@
+# yaml-language-server: $schema=https://squidfunk.github.io/mkdocs-material/schema.json
+
+site_name: TE0715 Zephyr Bring-up
+site_description: Zephyr board support, Zynq CAN driver, libcsp/libparam and F Prime on the Trenz TE0715, with test procedures and results
+docs_dir: docs
+site_dir: site
+strict: true
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.sections
+    - navigation.path
+    - navigation.tracking
+    - navigation.top
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: cyan
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: cyan
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn
+  anchors: warn
+
+nav:
+  - Home: index.md
+  - Getting started:
+      - The workspace: getting-started/index.md
+      - Installing the tools: getting-started/install.md
+      - Building and running: getting-started/build-and-run.md
+      - Building these docs: getting-started/docs.md
+  - User guide:
+      - Connecting to the board: guide/connect.md
+      - The serial shell: guide/shell.md
+      - Booting over JTAG or from the SD card: guide/boot.md
+      - Configuration: guide/configuration.md
+  - Architecture:
+      - System overview: architecture/index.md
+      - Board support: architecture/board.md
+      - CAN driver: architecture/can-driver.md
+      - UART driver fixes: architecture/uart-driver.md
+      - F Prime on Zephyr: architecture/fprime.md
+      - Dependencies and patches: architecture/dependencies.md
+  - Test guides:
+      - Overview: tests/index.md
+      - Hardware setup: tests/hardware-setup.md
+      - Zephyr test suites: tests/zephyr-suites.md
+      - CAN bus: tests/can-bus.md
+      - CSP and libparam with the Linux bench: tests/csp-libparam.md
+      - FlatSat test from macOS: tests/flatsat.md
+  - Verification:
+      - Requirements and verification: verification/requirements.md
+      - Test case specifications: verification/test-cases.md
+      - As-run record 2026-09-23: verification/as-run-2026-09-23.md
+      - FlatSat as-run record template: verification/flatsat-record-template.md
+  - Known issues: known-issues.md

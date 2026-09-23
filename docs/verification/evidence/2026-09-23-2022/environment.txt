@@ -1,0 +1,15 @@
+date: 2026-09-23T20:22:49+02:00
+app: 9ef68ad
+fprime-csp-libparam: 9c5f4fa
+CspLibparamFprimeTest: 16dac57
+fprime: v4.2.0-267-g35d4c0e881
+fprime-zephyr: 6e2a411
+libcsp: csh/2.10
+libparam: csh/2.10
+zephyr.bin sha256: aff50c900c7d7f666649f9c8f9d85961ad16039a1103f1bcc9ca5717d85958c2
+zephyr: v4.4.2-6-g70b56a29cd7
+zephyr (upstream CAN branch): v4.4.0-16569-gd836c4e2166
+sdk: 1.0.1
+4: can0: <NOARP,UP,LOWER_UP,ECHO> mtu 16 qdisc pfifo_fast state UP mode DEFAULT group default qlen 10
+    can state ERROR-ACTIVE restart-ms 0 
+	  bitrate 1000000 sample-point 0.750

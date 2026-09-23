@@ -1,0 +1,6 @@
+build/
+build-*/
+build-fprime-automatic-*/
+__pycache__/
+site/
+.venv-docs/

@@ -1,6 +1,9 @@
-build/
-build-*/
-build-fprime-automatic-*/
-__pycache__/
-site/
-.venv-docs/
+# The workspace root holds west-managed projects (zephyr/, modules/, ...), build
+# output and virtual environments. Only these paths belong to this repository.
+/*
+!/.gitignore
+!/README.md
+!/mkdocs.yml
+!/requirements-docs.txt
+!/app/
+!/docs/

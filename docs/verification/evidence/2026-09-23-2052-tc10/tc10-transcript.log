@@ -1,0 +1,91 @@
+=== csh 2.10.5, host node 100 on can0
+
+  ***********************
+  **     CSP   Shell   **
+  ***********************
+
+  Copyright (c) 2016-2025 Space Inventor A/S <info@space-inventor.com>
+  Compiled: Sep 23 2026 git: 2.10.5
+
+
+
+  csp init @ 20:52:48 d. 23/09/26
+  Version 2
+
+  Model: #28~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Wed Jul  1 15:50:57 UTC 2
+  Revision: 7.0.0-28-generic
+  Deduplication: 3
+  csp add can -c can0 -d 100 @ 20:52:50 d. 23/09/26
+INIT CAN0: device: [can0], bitrate: 1000000, promisc: 0
+RTNETLINK answers: Operation not permitted
+RTNETLINK answers: Operation not permitted
+RTNETLINK answers: Operation not permitted
+RTNETLINK answers: Operation not permitted
+  ping 6061 @ 20:52:51 d. 23/09/26
+Ping node 6061 size 0 timeout 1000: Reply in 2 [ms]
+  node 6061 @ 20:52:53 d. 23/09/26
+  6061  list download @ 20:52:55 d. 23/09/26
+Got param: led_d4:6061[1]
+Got param: bench_integer:6061[1]
+Received 2 parameters, of which 0 remote parameters were skipped
+  6061  list @ 20:52:59 d. 23/09/26
+ 200:6061  bench_integer        = - raw
+ 201:6061  led_d4               = -
+  6061  get bench_integer @ 20:53:00 d. 23/09/26
+ 200:6061  bench_integer        = 305419896 raw
+  6061  get led_d4 @ 20:53:02 d. 23/09/26
+ 201:6061  led_d4               = 0
+  6061  set led_d4 1 @ 20:53:04 d. 23/09/26
+ 201:6061  led_d4               = 1                    u08	 Rc
+  6061  get led_d4 @ 20:53:05 d. 23/09/26
+ 201:6061  led_d4               = 1
+  6061  sleep 2000 @ 20:53:07 d. 23/09/26
+  6061  set led_d4 0 @ 20:53:11 d. 23/09/26
+ 201:6061  led_d4               = 0                    u08	 Rc
+  6061  get led_d4 @ 20:53:13 d. 23/09/26
+ 201:6061  led_d4               = 0
+  6061  set bench_integer 42 @ 20:53:14 d. 23/09/26
+ 200:6061  bench_integer        = 42 raw               u32	 Rc
+  6061  get bench_integer @ 20:53:16 d. 23/09/26
+ 200:6061  bench_integer        = 42 raw
+  6061  set bench_integer 305419896 @ 20:53:18 d. 23/09/26
+ 200:6061  bench_integer        = 305419896 raw        u32	 Rc
+  6061  get bench_integer @ 20:53:19 d. 23/09/26
+ 200:6061  bench_integer        = 305419896 raw
+  6061  list forget 6061 @ 20:53:21 d. 23/09/26
+Removing param: bench_integer:6061[1]
+Removing param: led_d4:6061[1]
+Removed 2 parameters
+  6061  list @ 20:53:22 d. 23/09/26
+  6061  list add -n 6061 -a 1 -m c bench_integer 200 uint32 @ 20:53:24 d. 23/09/26
+  6061  list add -n 6061 -a 1 -m c led_d4 201 uint8 @ 20:53:26 d. 23/09/26
+  6061  list @ 20:53:27 d. 23/09/26
+ 201:6061  led_d4               = -
+ 200:6061  bench_integer        = -
+  6061  get bench_integer @ 20:53:29 d. 23/09/26
+ 200:6061  bench_integer        = 305419896
+  6061  get led_d4 @ 20:53:31 d. 23/09/26
+ 201:6061  led_d4               = 0
+  6061  set led_d4 1 @ 20:53:32 d. 23/09/26
+ 201:6061  led_d4               = 1                    u08	 c
+  6061  get led_d4 @ 20:53:34 d. 23/09/26
+ 201:6061  led_d4               = 1
+  6061  sleep 2000 @ 20:53:36 d. 23/09/26
+  6061  set led_d4 0 @ 20:53:40 d. 23/09/26
+ 201:6061  led_d4               = 0                    u08	 c
+  6061  get led_d4 @ 20:53:41 d. 23/09/26
+ 201:6061  led_d4               = 0
+  6061  list forget 6061 @ 20:53:43 d. 23/09/26
+Removing param: led_d4:6061[1]
+Removing param: bench_integer:6061[1]
+Removed 2 parameters
+  6061 
+
+=== TE0715 console
+bench info
+node 6061/8 (started), libparam server port 10: parameter 200 (u32)
+parameter 201 led_d4 (u8) = 0: LED D4 off; parameter list served on port 12
+uart:~$ PARAM led_d4 = 1: LED D4 on
+PARAM led_d4 = 0: LED D4 off
+PARAM led_d4 = 1: LED D4 on
+PARAM led_d4 = 0: LED D4 off

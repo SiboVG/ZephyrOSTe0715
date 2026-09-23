@@ -1,70 +1,53 @@
-# TE0715 Zephyr, CAN and F Prime bring-up
+# TE0715 Zephyr bring-up workspace
 
-Zephyr board support for the Trenz TE0715-05-71I33-L (Zynq-7030) on a TE0701
-carrier, a CAN bus on the carrier's Pmod J1 (new Zynq PS CAN driver), libcsp and
-libparam (`csh/2.10`) as Zephyr modules, and the CubeSpec F Prime CSP/libparam
-bench server running on Zephyr. Includes the hardware test tools and the FlatSat
-procedure.
+This is the west workspace for running Zephyr, CAN, libcsp/libparam and F Prime on
+the Trenz TE0715-05-71I33-L (AMD Zynq-7030) on a TE0701 carrier. The documentation
+for everything in it lives in `docs/` and is built with MkDocs.
 
-**Documentation: `../docs/` in the workspace root (MkDocs), built from
-`../mkdocs.yml`.** It covers setup, the user guide (serial shell commands), the
-architecture, the test procedures including the FlatSat test, and the verification
-records with the raw test logs.
+## What is where
 
-## Quick start
-
-```sh
-# workspace (this repository is the west manifest repository and a Zephyr module)
-west init -l app && west update
-west patch clean && west patch apply      # after every west update
-west sdk install -t arm-zephyr-eabi       # Zephyr SDK 1.0.1
-
-# build and load over JTAG (xsdb from Vitis 2022.1 on PATH)
-west build -b te0715 app/apps/can_bringup
-west flash
-
-# F Prime FlatSat image
-cd app/apps/fprime_csp_bench && fprime-util generate && fprime-util build
-```
-
-## Contents
-
-| Path | Contents |
+| Path | What it is |
 |---|---|
-| `west.yml` | Zephyr (SiboVG fork, v4.4.2 + UART fixes + CAN driver), libcsp, libparam, F Prime, fprime-zephyr |
-| `boards/trenz/te0715/` | Board: devicetree, pinctrl, CAN clock setup, JTAG loading (`west flash`) |
-| `boards/*.overlay` | TE0701 carrier: Pmod GPIO, CAN1 |
-| `src/`, `apps/` | LED/GPIO demo, CAN bring-up, libcsp node, F Prime bench server (FlatSat image) |
-| `zephyr/` | Module glue: libparam build (`CONFIG_LIBPARAM`), `patches.yml` + patches |
-| `boot/` | U-Boot script for booting Zephyr from the SD card |
-| `scripts/` | Hardware tests, SD card installer, FlatSat console |
+| `docs/`, `mkdocs.yml` | This documentation (user guide, architecture, test guides, verification records) |
+| `app/` | The application repository: west manifest, `te0715` board, applications, scripts, patches |
+| `zephyr/` | Zephyr (SiboVG fork, branch `te0715-can-v4.4.2`) |
+| `zephyr-main/`, `zephyr-can-main/` | Worktrees of the upstream-`main` branches for the Zephyr PRs (`xuartps-fixes`, `xlnx-can`) |
+| `modules/` | libcsp, libparam, F Prime, fprime-zephyr, CMSIS (managed by west) |
+| `.venv/` | Python environment with west, the Zephyr tools and the F Prime tools |
 
-## Tests
+The F Prime application also uses two checkouts next to this workspace:
+`../fprime-csp-libparam` (branch `zephyr-can-transport`) and
+`../CspLibparamFprimeTest` (branch `zephyr-transport`).
 
-```sh
-app/scripts/collect_results.sh path/to/CspBench can0   # all hardware tests, logs to ../docs/verification/evidence/
+## Read the documentation
+
+```bash
+python3 -m venv .venv-docs
+.venv-docs/bin/pip install -r requirements-docs.txt
+.venv-docs/bin/mkdocs serve            # open http://127.0.0.1:8000
 ```
 
-Individual tools: `hw_test.py` (ztest suites and apps), `can_echo_test.py` (CAN echo
-over SocketCAN), `fprime_e2e.py` (F Prime server and shell against the Linux
-CspBench), `sd_install.py` (SD card boot), `flatsat_console.py` (logging console for
-macOS/Linux). See `../docs/tests/`.
+`mkdocs build --strict` checks all pages and links and writes a static copy to
+`site/`, which can be opened without a server (for example on a laptop in the lab).
 
-## Documentation
+Good starting points:
 
-From the workspace root (`..`):
+- `docs/getting-started/` to set up the workspace and build the applications;
+- `docs/guide/` to connect to the board and use its serial shell;
+- `docs/tests/flatsat.md` for the FlatSat test procedure;
+- `docs/verification/` for the requirements, test cases and as-run records.
 
-```sh
-python3 -m venv .venv-docs && .venv-docs/bin/pip install -r requirements-docs.txt
-.venv-docs/bin/mkdocs serve            # http://127.0.0.1:8000
+## Repository layout
+
+This directory is both the Git repository (github.com/SiboVG/ZephyrOSTe0715) and the
+west workspace. The repository holds `app/`, `docs/` and the files next to them;
+`.gitignore` excludes everything west and the builds create (`zephyr/`, `modules/`,
+`build/`, the virtual environments). To set up a new workspace:
+
+```bash
+git clone git@github.com:SiboVG/ZephyrOSTe0715.git && cd ZephyrOSTe0715
+uv venv .venv && source .venv/bin/activate && uv pip install west
+west init -l app && west update
 ```
 
-## Related repositories
-
-- [SiboVG/zephyr](https://github.com/SiboVG/zephyr): branches `te0715-can-v4.4.2`
-  (pinned), `xuartps-fixes` (UART PR #119996), `xlnx-can` (CAN driver on upstream
-  `main`)
-- [SiboVG/fprime-csp-libparam](https://github.com/SiboVG/fprime-csp-libparam):
-  branch `zephyr-can-transport`
-- [SiboVG/CspLibparamFprimeTest](https://github.com/SiboVG/CspLibparamFprimeTest):
-  branch `zephyr-transport` (the Linux CspBench used as the test peer)
+and continue with `docs/getting-started/install.md`.

@@ -38,7 +38,7 @@ copy_console() {  # build-root, test-dir-prefix, destination-prefix
 
 {
     echo "date: $(date -Is)"
-    echo "app: $(git -C "$app" rev-parse --short HEAD)$(git -C "$app" diff --quiet || echo -dirty)"
+    echo "app: $(git -C "$app" rev-parse --short HEAD)$(git -C "$app" diff --quiet -- . || echo -dirty)"
     echo "fprime-csp-libparam: $(git -C "$ws/../fprime-csp-libparam" rev-parse --short HEAD 2>/dev/null)"
     echo "CspLibparamFprimeTest: $(git -C "$ws/../CspLibparamFprimeTest" rev-parse --short HEAD 2>/dev/null)"
     echo "fprime: $(git -C "$ws/modules/fprime/fprime" describe --tags --always 2>/dev/null)"

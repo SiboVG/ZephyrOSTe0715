@@ -1,0 +1,15 @@
+date: 2026-09-23T20:52:44+02:00
+test case: TC-10 csh against the TE0715
+csh: 2.10.5 (2e5bf780), built with meson 1.12.1
+   eb4d560618fd71b5d0d8f851ad6405c1e312cdc1 lib/apm_csh (csh/2.10.5)
+   9721ca4fb60076a3d7cfb01277d0f4933f167f3e lib/csp (csh/2.10.5)
+   8106ea7993b4895e4436d0f3b1c10f00c261e1e2 lib/ossi (csh/2.10.5)
+   d2ae99637c8dc087bb130223bd3d390ab3a59ca2 lib/param (csh/2.10.5)
+   d724385b211813020496b2221af239d74831b660 lib/pycsh_core (csh/2.10.5)
+   43fa22996f81173c310aae86dcd4342f7613e19c lib/slash (csh/2.10.5)
+TE0715 image: SD card, zephyr.bin sha256 6c1f12431e0fb2f3ba624fbc28e4d87a49b6f597ee93b5ee9d8131ee0a9708f8
+app: da84b09
+host: csh node 100 on can0
+4: can0: <NOARP,UP,LOWER_UP,ECHO> mtu 16 qdisc pfifo_fast state UP mode DEFAULT group default qlen 10
+    can state ERROR-ACTIVE restart-ms 0 
+	  bitrate 1000000 sample-point 0.750
