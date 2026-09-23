@@ -75,8 +75,8 @@ Common preconditions for all test cases: the workspace built as in
 |---|---|
 | **Verifies** | `TE-CSP-002`, `TE-CSP-003` |
 | **Preconditions** | TC-06 set-up; a Linux `CspBench --role server --can can0 --node 102` running |
-| **Procedure** | On the board's shell: `csp ping 102`; `csp ping 102 32 1000 --nocrc`; `param get 102 200 u32`; `param set 102 200 u32 0xCAFEBABE`; the same with `--confirm`; `param get 102 200 u32`; `param set 102 200 u32 0x12345678 --confirm`; `csp ping 4242 32 500`; `can show can@e0009000` |
-| **Pass criteria** | Ping replied; `--nocrc` ping not answered (the peer requires CRC32); value 0x12345678 read; unconfirmed write refused; confirmed write read back as 0xcafebabe; restore read back; ping to the absent node times out; CAN error counters 0 |
+| **Procedure** | On the board's shell: `csp ping 102`; `csp ping 102 32 1000 --nocrc`; `param get 102 200 u32`; `param set 102 200 u32 0xCAFEBABE`; the same with `--confirm`; `param set 102 200 u8 300 --confirm`; `param get 102 200 u32`; `param set 102 200 u32 0x12345678 --confirm`; `csp ping 4242 32 500`; `can show can@e0009000` |
+| **Pass criteria** | Ping replied; `--nocrc` ping not answered (the peer requires CRC32); value 0x12345678 read; unconfirmed write refused; out-of-range value refused; confirmed write read back as 0xcafebabe; restore read back; ping to the absent node times out; CAN error counters 0 |
 | **Evidence** | `fprime-e2e-*.txt`, `fprime-e2e-*-transcript.log` |
 
 ## TC-08 Standalone SD card boot

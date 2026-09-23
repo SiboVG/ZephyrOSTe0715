@@ -26,7 +26,7 @@ config APP_PARAM_ID
 	range 0 65535
 	default 200
 
-config APP_PARAM_VALUE
+config APP_BENCH_VALUE
 	hex "Initial value of the libparam test parameter"
 	default 0x12345678
 

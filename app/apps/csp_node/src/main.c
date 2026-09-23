@@ -22,7 +22,7 @@
 
 static const struct device *const can_dev = DEVICE_DT_GET(DT_CHOSEN(zephyr_canbus));
 
-static uint32_t param_value = CONFIG_APP_PARAM_VALUE;
+static uint32_t bench_value = CONFIG_APP_BENCH_VALUE;
 static uint16_t param_node; /* 0: local parameter */
 static csp_timestamp_t param_timestamp;
 
@@ -40,7 +40,7 @@ static param_t bench_integer = {
 	.name = "bench_integer",
 	.unit = "raw",
 	.docstr = "CSP/libparam bench integer",
-	.addr = &param_value,
+	.addr = &bench_value,
 	.array_size = 1,
 	.array_step = sizeof(uint32_t),
 	.timestamp = &param_timestamp,

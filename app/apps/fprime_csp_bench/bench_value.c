@@ -4,7 +4,7 @@
  * Parsing of the numbers and parameter values typed in the serial shell.
  */
 
-#include "param_value.h"
+#include "bench_value.h"
 
 #include <ctype.h>
 #include <errno.h>
@@ -13,21 +13,21 @@
 #include <stdlib.h>
 #include <string.h>
 
-const struct param_value_type param_value_types[] = {
-	{"u8", PARAM_VALUE_UNSIGNED, 1},  {"i8", PARAM_VALUE_SIGNED, 1},
-	{"u16", PARAM_VALUE_UNSIGNED, 2}, {"i16", PARAM_VALUE_SIGNED, 2},
-	{"u32", PARAM_VALUE_UNSIGNED, 4}, {"i32", PARAM_VALUE_SIGNED, 4},
-	{"u64", PARAM_VALUE_UNSIGNED, 8}, {"i64", PARAM_VALUE_SIGNED, 8},
-	{"float", PARAM_VALUE_FLOAT, 4},  {"double", PARAM_VALUE_FLOAT, 8},
+const struct bench_value_type bench_value_types[] = {
+	{"u8", BENCH_VALUE_UNSIGNED, 1},  {"i8", BENCH_VALUE_SIGNED, 1},
+	{"u16", BENCH_VALUE_UNSIGNED, 2}, {"i16", BENCH_VALUE_SIGNED, 2},
+	{"u32", BENCH_VALUE_UNSIGNED, 4}, {"i32", BENCH_VALUE_SIGNED, 4},
+	{"u64", BENCH_VALUE_UNSIGNED, 8}, {"i64", BENCH_VALUE_SIGNED, 8},
+	{"float", BENCH_VALUE_FLOAT, 4},  {"double", BENCH_VALUE_FLOAT, 8},
 };
 
-const size_t param_value_type_count = sizeof(param_value_types) / sizeof(param_value_types[0]);
+const size_t bench_value_type_count = sizeof(bench_value_types) / sizeof(bench_value_types[0]);
 
-const struct param_value_type *param_value_type_find(const char *name)
+const struct bench_value_type *bench_value_type_find(const char *name)
 {
-	for (size_t i = 0; i < param_value_type_count; i++) {
-		if (strcmp(param_value_types[i].name, name) == 0) {
-			return &param_value_types[i];
+	for (size_t i = 0; i < bench_value_type_count; i++) {
+		if (strcmp(bench_value_types[i].name, name) == 0) {
+			return &bench_value_types[i];
 		}
 	}
 	return NULL;
@@ -55,7 +55,7 @@ static int parse_unsigned(const char *arg, unsigned long long *out)
 	return (errno == ERANGE) ? -ERANGE : 0;
 }
 
-int param_value_parse_ulong(const char *arg, unsigned long max, unsigned long *out)
+int bench_value_parse_ulong(const char *arg, unsigned long max, unsigned long *out)
 {
 	unsigned long long v;
 	int err = parse_unsigned(arg, &v);
@@ -70,7 +70,7 @@ int param_value_parse_ulong(const char *arg, unsigned long max, unsigned long *o
 	return 0;
 }
 
-static int parse_signed(const struct param_value_type *t, const char *arg, uint8_t *out)
+static int parse_signed(const struct bench_value_type *t, const char *arg, uint8_t *out)
 {
 	/* Limits of an integer of t->size bytes */
 	const long long max = (long long)((1ULL << (8U * t->size - 1U)) - 1U);
@@ -93,7 +93,7 @@ static int parse_signed(const struct param_value_type *t, const char *arg, uint8
 	return 0;
 }
 
-static int parse_float(const struct param_value_type *t, const char *arg, uint8_t *out)
+static int parse_float(const struct bench_value_type *t, const char *arg, uint8_t *out)
 {
 	char *end;
 	double d;
@@ -124,18 +124,18 @@ static int parse_float(const struct param_value_type *t, const char *arg, uint8_
 	return 0;
 }
 
-int param_value_parse(const struct param_value_type *t, const char *arg,
-		      uint8_t out[PARAM_VALUE_MAX_SIZE])
+int bench_value_parse(const struct bench_value_type *t, const char *arg,
+		      uint8_t out[BENCH_VALUE_MAX_SIZE])
 {
 	unsigned long long v;
 	int err;
 
 	switch (t->kind) {
-	case PARAM_VALUE_SIGNED:
+	case BENCH_VALUE_SIGNED:
 		return parse_signed(t, arg, out);
-	case PARAM_VALUE_FLOAT:
+	case BENCH_VALUE_FLOAT:
 		return parse_float(t, arg, out);
-	case PARAM_VALUE_UNSIGNED:
+	case BENCH_VALUE_UNSIGNED:
 	default:
 		err = parse_unsigned(arg, &v);
 		if (err != 0) {

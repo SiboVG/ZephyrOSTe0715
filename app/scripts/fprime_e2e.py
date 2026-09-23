@@ -139,6 +139,9 @@ def main():
     check('param set --confirm writes and reads back 0xCAFEBABE',
           'written and read back: 3405691582 (0xcafebabe)'
           in console.command('param set 102 200 u32 0xCAFEBABE --confirm', 3))
+    check('param set refuses a value that does not fit the type (u8 300)',
+          'out of range; nothing written'
+          in console.command('param set 102 200 u8 300 --confirm'))
     check('param get reads the new value',
           '0xcafebabe' in console.command('param get 102 200 u32'))
     check('param set --confirm restores 0x12345678',
