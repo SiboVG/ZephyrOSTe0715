@@ -43,6 +43,7 @@ register_fprime_zephyr_deployment(
     SOURCES
         "${CMAKE_CURRENT_LIST_DIR}/Main.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/shell_cmds.c"
+        "${CMAKE_CURRENT_LIST_DIR}/param_value.c"
     DEPENDS
         Top
 )

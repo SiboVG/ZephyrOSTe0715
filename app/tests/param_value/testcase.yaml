@@ -1,0 +1,10 @@
+common:
+  tags: te0715
+  integration_platforms:
+    - native_sim/native/64
+tests:
+  te0715.param_value:
+    platform_allow:
+      - native_sim
+      - native_sim/native/64
+      - te0715

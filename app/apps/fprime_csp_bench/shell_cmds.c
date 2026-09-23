@@ -16,7 +16,6 @@
  */
 
 #include <errno.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include <csp/csp.h>
@@ -29,6 +28,7 @@
 #include <zephyr/shell/shell.h>
 
 #include "bench_start.h"
+#include "param_value.h"
 
 #define PARAM_VERSION    2
 #define PARAM_TIMEOUT_MS 1000
@@ -116,15 +116,12 @@ void bench_wait_for_start(uint16_t *node, uint8_t *prefix)
 static int parse_ulong(const struct shell *sh, const char *arg, unsigned long max,
 		       unsigned long *out)
 {
-	char *end;
-	unsigned long v = strtoul(arg, &end, 0);
+	int err = param_value_parse_ulong(arg, max, out);
 
-	if (*arg == '\0' || *end != '\0' || v > max) {
+	if (err != 0) {
 		shell_error(sh, "invalid number '%s' (max %lu)", arg, max);
-		return -EINVAL;
 	}
-	*out = v;
-	return 0;
+	return err;
 }
 
 static int cmd_bench_start(const struct shell *sh, size_t argc, char **argv)
@@ -213,19 +210,31 @@ SHELL_STATIC_SUBCMD_SET_CREATE(sub_csp,
 	SHELL_SUBCMD_SET_END);
 SHELL_CMD_REGISTER(csp, &sub_csp, "CSP tools", NULL);
 
+/* A shell type (param_value.h) with its libparam type */
 struct param_type_info {
-	const char *name;
+	const struct param_value_type *value;
 	param_type_e type;
 	uint8_t size;
 };
 
-static const struct param_type_info param_types[] = {
-	{"u8", PARAM_TYPE_UINT8, 1},   {"i8", PARAM_TYPE_INT8, 1},
-	{"u16", PARAM_TYPE_UINT16, 2}, {"i16", PARAM_TYPE_INT16, 2},
-	{"u32", PARAM_TYPE_UINT32, 4}, {"i32", PARAM_TYPE_INT32, 4},
-	{"u64", PARAM_TYPE_UINT64, 8}, {"i64", PARAM_TYPE_INT64, 8},
-	{"float", PARAM_TYPE_FLOAT, 4}, {"double", PARAM_TYPE_DOUBLE, 8},
-};
+static param_type_e libparam_type(const struct param_value_type *v)
+{
+	switch (v->kind) {
+	case PARAM_VALUE_FLOAT:
+		return (v->size == 4) ? PARAM_TYPE_FLOAT : PARAM_TYPE_DOUBLE;
+	case PARAM_VALUE_SIGNED:
+		return (v->size == 1)   ? PARAM_TYPE_INT8
+		       : (v->size == 2) ? PARAM_TYPE_INT16
+		       : (v->size == 4) ? PARAM_TYPE_INT32
+					: PARAM_TYPE_INT64;
+	case PARAM_VALUE_UNSIGNED:
+	default:
+		return (v->size == 1)   ? PARAM_TYPE_UINT8
+		       : (v->size == 2) ? PARAM_TYPE_UINT16
+		       : (v->size == 4) ? PARAM_TYPE_UINT32
+					: PARAM_TYPE_UINT64;
+	}
+}
 
 /* A remote parameter descriptor for one access */
 struct remote_param {
@@ -235,15 +244,21 @@ struct remote_param {
 	uint8_t storage[(PARAM_MAX_INDEX + 1) * 8] __aligned(8);
 };
 
+static struct param_type_info type_info; /* shell commands run one at a time */
+
 static const struct param_type_info *find_type(const struct shell *sh, const char *name)
 {
-	for (size_t i = 0; i < ARRAY_SIZE(param_types); i++) {
-		if (strcmp(param_types[i].name, name) == 0) {
-			return &param_types[i];
-		}
+	const struct param_value_type *v = param_value_type_find(name);
+
+	if (v == NULL) {
+		shell_error(sh, "unknown type '%s' (u8 i8 u16 i16 u32 i32 u64 i64 float double)",
+			    name);
+		return NULL;
 	}
-	shell_error(sh, "unknown type '%s' (u8 i8 u16 i16 u32 i32 u64 i64 float double)", name);
-	return NULL;
+	type_info.value = v;
+	type_info.type = libparam_type(v);
+	type_info.size = v->size;
+	return &type_info;
 }
 
 static void remote_param_init(struct remote_param *rp, const struct param_type_info *t,
@@ -351,53 +366,21 @@ static int cmd_param_get(const struct shell *sh, size_t argc, char **argv)
 static int parse_value(const struct shell *sh, const struct param_type_info *t, const char *arg,
 		       uint8_t *out)
 {
-	char *end;
+	int err = param_value_parse(t->value, arg, out);
 
-	if (t->type == PARAM_TYPE_FLOAT || t->type == PARAM_TYPE_DOUBLE) {
-		double d = strtod(arg, &end);
-
-		if (*end != '\0') {
-			goto invalid;
-		}
-		if (t->type == PARAM_TYPE_FLOAT) {
-			float f = (float)d;
-
-			memcpy(out, &f, sizeof(f));
-		} else {
-			memcpy(out, &d, sizeof(d));
-		}
-		return 0;
+	if (err == -ERANGE) {
+		shell_error(sh, "%s value '%s' out of range; nothing written", t->value->name, arg);
+	} else if (err != 0) {
+		shell_error(sh, "invalid %s value '%s'", t->value->name, arg);
 	}
-
-	if (t->type == PARAM_TYPE_INT8 || t->type == PARAM_TYPE_INT16 ||
-	    t->type == PARAM_TYPE_INT32 || t->type == PARAM_TYPE_INT64) {
-		long long v = strtoll(arg, &end, 0);
-
-		if (*end != '\0') {
-			goto invalid;
-		}
-		memcpy(out, &v, t->size); /* little endian: low bytes */
-		return 0;
-	}
-
-	unsigned long long v = strtoull(arg, &end, 0);
-
-	if (*end != '\0') {
-		goto invalid;
-	}
-	memcpy(out, &v, t->size);
-	return 0;
-
-invalid:
-	shell_error(sh, "invalid %s value '%s'", t->name, arg);
-	return -EINVAL;
+	return err;
 }
 
 static int cmd_param_set(const struct shell *sh, size_t argc, char **argv)
 {
 	const struct param_type_info *t;
 	unsigned long node, id, index = 0;
-	uint8_t value[8] = {0};
+	uint8_t value[PARAM_VALUE_MAX_SIZE] = {0};
 	bool confirmed = strcmp(argv[argc - 1], "--confirm") == 0;
 	size_t nargs = confirmed ? argc - 1 : argc;
 	int err;
