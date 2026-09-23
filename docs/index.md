@@ -41,11 +41,12 @@ flowchart LR
 | CAN traffic with an independent controller (Kvaser) at 1 Mbit/s | Verified on hardware |
 | F Prime CSP/libparam server interoperating with the Linux bench | Verified on hardware |
 | LED D4 switched remotely through the libparam parameter `led_d4` | Verified on hardware |
+| CSP keeps working when nobody acknowledges on the bus; node stored on the SD card | Verified on hardware |
 | Operation on the FlatSat bus | Pending hardware execution |
 
 The detailed traceability is in [Requirements and verification](verification/requirements.md),
 and the results of the latest full test run in the
-[as-run record of 2026-09-23](verification/as-run-2026-09-23.md).
+[as-run record of 2026-09-24](verification/as-run-2026-09-24.md) (the earlier runs: [2026-09-23](verification/as-run-2026-09-23.md)).
 
 ## How to use these docs
 

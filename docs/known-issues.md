@@ -4,12 +4,21 @@
 
 | Issue | Impact | Possible fix |
 |---|---|---|
-| libcsp's Zephyr CAN interface (`can_zephyr.c`) calls `can_send()` without a callback. Its 100 ms timeout only covers getting a TX slot; Zephyr then waits `K_FOREVER` for the frame to be sent | If nothing acknowledges on the bus (disconnected, or all other nodes off), the controller retransmits forever (error-passive, never bus-off) and the sending thread, and CSP with it, blocks until a node acknowledges | libcsp patch: pass a completion callback, so `can_send()` returns once the frame is queued; the next frame then waits at most 100 ms for the slot and fails with `-EAGAIN`, which CSP reports as a failed send. Upstreamable |
-| The libcsp router task runs at the lowest preemptible priority: `Stack::startRouter()` uses `TASK_PRIORITY_DEFAULT`, which fprime-zephyr maps to Zephyr priority 99 | Under load, any F Prime task, and even the shell, can delay CSP routing and with it every reply | fprime-csp-libparam: add a router priority (and stack size) to `StackConfig`, default unchanged; the TE0715 deployment sets it above `cspLibparam` |
-| The CSP node is chosen at boot (10 s window) and not stored | Must be retyped after every power cycle if not the default | Zephyr has no SD card or QSPI driver for the Zynq-7000, but U-Boot can read the card: `boot.cmd` imports a text file (`te0715.txt`, `csp_node=6062`) from the FAT partition and writes the value to a reserved RAM word that the application reads. Edit the file on any computer to change the node |
+| While no node acknowledges, the one frame that the CAN controller is retransmitting is sent as soon as a node appears, possibly long after its CSP packet was dropped | The receiver gets a fragment of an old packet, which CSP's reassembly discards | None needed; a CAN API to abort a pending frame would avoid it |
+| The TE0715 image needs the `router-task-config` branch of fprime-csp-libparam ([PR #2](https://github.com/SiboVG/fprime-csp-libparam/pull/2)) and `router-priority` of CspLibparamFprimeTest ([PR #3](https://github.com/SiboVG/CspLibparamFprimeTest/pull/3)) | With both repos on `main`, the F Prime image does not build (`Config::routerPriority` unknown) | Merge both pull requests |
 | `can_xlnx` does not support listen-only or one-shot modes | CSP does not need them | Listen-only needs a controller revision with snoop mode |
 | `led_d4` is not persistent and has no F Prime telemetry | After a reset the LED is off; F Prime does not see the value | Add it to the F Prime component if it becomes a real parameter |
 | No csh release pins exactly the libcsp revision used here | All csh 2.10.x releases use libcsp 9721ca4; the TE0715 uses libcsp `csh/2.10` 5a95e5c. The protocol is the same (CSP v2, libparam protocol 2) | – |
+
+## Fixed
+
+| Was | Fix |
+|---|---|
+| A CSP send blocked forever when no node acknowledged (libcsp called `can_send()` without a callback; also so on libcsp `develop`) | libcsp patch `0002`: a completion callback, so a send fails after at most 100 ms; test case TC-12 |
+| The CSP router ran at the lowest Zephyr priority | Router priority in fprime-csp-libparam's `StackConfig`, set to F Prime 45 (Zephyr 54) on the TE0715 |
+| The CSP node was not stored | `te0715.txt` on the SD card ([Configuration](guide/configuration.md#the-csp-node-te0715txt-on-the-sd-card)); test case TC-11 |
+| `param set` truncated out-of-range values | `bench_value.c`; TE-CSP-004 |
+| An SD boot could hang or crash depending on what was left in RAM (3 of 4 boots right after another image had run). U-Boot started Zephyr with its MMU and caches on | `boot.cmd` turns them off before `go` (`icache off; dcache off`), as for a JTAG load: 6 of 6 boots passed |
 
 ## Board and build
 

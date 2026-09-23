@@ -1,0 +1,19 @@
+PASS  start window announced
+PASS  boot banner: node 6061/8 (te0715.txt)
+PASS  server ready on node 6061 (14.2 s after reset)
+PASS  bench info
+PASS  Linux client against node 6061: [CSP_BENCH_RESULT] PASS attempts=5 successes=5 failures=0
+PASS  Linux client switches led_d4 (201): [CSP_BENCH_RESULT] PASS attempts=2 successes=2 failures=0
+PASS  bench info: led_d4 off after the test
+PASS  csp ping 102 (CRC32)
+PASS  csp ping 102 --nocrc is dropped by the CRC-requiring peer
+PASS  param get 102 200 u32 = 0x12345678
+PASS  param set without --confirm is refused
+PASS  param set --confirm writes and reads back 0xCAFEBABE
+PASS  param set refuses a value that does not fit the type (u8 300)
+PASS  param get reads the new value
+PASS  param set --confirm restores 0x12345678
+PASS  csp ping to an absent node times out
+PASS  can show: no bus errors
+PASS  kernel reboot cold: back to CSP ready (13.6 s)
+18/18 checks passed

@@ -98,5 +98,6 @@ nav:
       - Requirements and verification: verification/requirements.md
       - Test case specifications: verification/test-cases.md
       - As-run record 2026-09-23: verification/as-run-2026-09-23.md
+      - As-run record 2026-09-24: verification/as-run-2026-09-24.md
       - FlatSat as-run record template: verification/flatsat-record-template.md
   - Known issues: known-issues.md

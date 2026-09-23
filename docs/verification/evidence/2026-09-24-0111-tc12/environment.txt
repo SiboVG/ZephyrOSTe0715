@@ -1,0 +1,7 @@
+date: 2026-09-24T01:12:48+02:00
+test case: TC-12 no node acknowledges (can0 down)
+app: 8d163e2
+host can0: down
+csp_node before: build/noack-before (libcsp without patch 0002), sha256 63249a758a5ec709af605a73cc65f2204df3288aca1fdb4744e2a37af2f3fa97
+csp_node after: build/noack-after (with patch 0002), sha256 b6e3d28b79f135b3e211c1596a3aa482b1e64c01fe0115f84f046cd847478dd7
+FlatSat image: sha256 2337e3abcbcf13c36751acf05140b41a7de27e03a5c28a189bf2f01aec332d05

@@ -83,7 +83,7 @@ Measured with `kernel thread list` on the board:
 | `rateGroup_1Hz` | 43 | 56 | 1824 of 16384 |
 | `cspLibparam` | 42 | 57 | 1864 of 16384 |
 | `param_server` (libparam list service, port 12) | – | 10 | 368 of 4096 (idle) |
-| `CspRouter` (libcsp router) | default | 99 (lowest) | 384 of 16384 |
+| `CspRouter` (libcsp router; runs every CSP callback, the libparam server included) | 45 (`CONFIG_APP_CSP_ROUTER_PRIORITY`) | 54 | 384 of 16384 |
 | `shell_uart` | – | 99 | 1204 of 8192 |
 
 ## The serial shell and the start window

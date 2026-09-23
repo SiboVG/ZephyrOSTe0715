@@ -32,7 +32,7 @@ step of the boot is redirected to Zephyr:
 ```mermaid
 flowchart LR
     ROM["Zynq BootROM"] --> FSBL["FSBL<br/>(BOOT.BIN)"] --> UB["U-Boot<br/>(BOOT.BIN)"]
-    UB -- "runs /boot.scr" --> S["boot.scr:<br/>load zephyr.bin to 0x0,<br/>jump to 0x0"]
+    UB -- "runs /boot.scr" --> S["boot.scr:<br/>te0715.txt to 0x0f000100,<br/>zephyr.bin to 0x0,<br/>jump to 0x0"]
     S --> Z["Zephyr"]
 ```
 
@@ -46,6 +46,12 @@ The files on the card's first (FAT) partition are:
 | `boot.scr` | Script that boots Zephyr (replaced) |
 | `boot_petalinux.scr` | The original PetaLinux `boot.scr`, kept as a backup |
 | `zephyr.bin` | The Zephyr image |
+| `te0715.txt` | Optional board settings, such as the CSP node (see [Configuration](configuration.md#the-csp-node-te0715txt-on-the-sd-card)) |
+
+`boot.scr` turns U-Boot's caches and MMU off (`icache off`, `dcache off`) just before
+jumping to Zephyr, so Zephyr starts in the same state as after a JTAG load. Without
+that, the boot failed now and then, depending on what an earlier program had left in
+RAM. Keep these lines if you change `app/boot/boot.cmd`.
 
 ### Installing or updating the image
 

@@ -1,0 +1,18 @@
+fatwrite mmc 0 0x3000000 te0715.txt 0x85
+133 bytes written in 23 ms (4.9 KiB/s)
+Zynq>
+fatload mmc 0 0x3000000 te0715.txt
+133 bytes read in 9 ms (13.7 KiB/s)
+Zynq>
+md.b 0x3000000 0x85
+03000000: 23 20 54 45 30 37 31 35 20 62 6f 61 72 64 20 73  # TE0715 board s
+03000010: 65 74 74 69 6e 67 73 2c 20 72 65 61 64 20 62 79  ettings, read by
+03000020: 20 62 6f 6f 74 2e 73 63 72 20 61 74 20 65 76 65   boot.scr at eve
+03000030: 72 79 20 62 6f 6f 74 20 28 73 64 5f 69 6e 73 74  ry boot (sd_inst
+03000040: 61 6c 6c 2e 70 79 20 63 6f 6e 66 69 67 29 0a 23  all.py config).#
+03000050: 20 6e 6f 20 73 65 74 74 69 6e 67 73 3a 20 74 68   no settings: th
+03000060: 65 20 69 6d 61 67 65 20 64 65 66 61 75 6c 74 73  e image defaults
+03000070: 20 28 6e 6f 64 65 20 36 30 36 31 2f 38 29 20 61   (node 6061/8) a
+03000080: 70 70 6c 79 0a                                   pply.
+Zynq>
+done: power-cycle or reset the board to boot from the SD card

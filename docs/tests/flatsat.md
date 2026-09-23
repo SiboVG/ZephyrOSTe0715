@@ -48,7 +48,7 @@ One person can do both.
 ### Check the board
 
 The SD card must hold the FlatSat image. After a power cycle the console should show
-`*** CSP bench server: default node 6061/8 ...` within a few seconds; see
+`*** CSP bench server: node 6061/8 (default) ...` within a few seconds; see
 [Booting](../guide/boot.md) if it boots PetaLinux instead.
 
 ## Procedure
@@ -92,12 +92,16 @@ Power on the TE0701. After a few seconds:
 ```text
 *** Booting Zephyr OS build v4.4.2-6-g70b56a29cd74 ***
 
-*** CSP bench server: default node 6061/8. Type `bench start [node] [prefix]` within 10 s
+*** CSP bench server: node 6061/8 (default). Type `bench start [node] [prefix]` within 10 s
 to start (on another node), or wait for the defaults. ***
 ```
 
 - For node 6061, wait, or type `bench start`.
 - For another node, type `bench start <node> 8` within 10 seconds.
+- If the agreed node is known in advance, store it on the SD card instead, so it
+  survives power cycles: put `csp_node=<node>` in `te0715.txt` on the card (see
+  [Configuration](../guide/configuration.md#the-csp-node-te0715txt-on-the-sd-card)).
+  The banner then says `(te0715.txt)`.
 
 Continue when this line appears:
 
@@ -109,7 +113,7 @@ Then confirm the configuration:
 
 ```text
 uart:~$ bench info
-node 6061/8 (started), libparam server port 10: parameter 200 (u32)
+node 6061/8 (default, started), libparam server port 10: parameter 200 (u32)
 parameter 201 led_d4 (u8) = 0: LED D4 off; parameter list served on port 12
 ```
 

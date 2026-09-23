@@ -30,6 +30,7 @@ SN65HVD233 transceiver on a TCAN-SOIC8-EVM, Kvaser USBcan Light 2xHS (see
 | `TE-CAN-002` | The CAN1 signals on Pmod J1 shall drive an external 3.3 V transceiver. | Pinctrl, `board.c` clocks | [TC-04](test-cases.md#tc-04-transceiver-wiring-check) | Observed during bring-up |
 | `TE-CAN-003` | The TE0715 shall exchange frames with an independent CAN controller at 1 Mbit/s without loss or corruption. | `can_xlnx`, `apps/can_bringup` | [TC-05](test-cases.md#tc-05-can-echo) | Verified on hardware |
 | `TE-CAN-004` | The driver shall recover automatically from bus-off. | `can_xlnx` bus-off handling | Unwired run: bus-off, recovery, error-active cycle | Observed during bring-up |
+| `TE-CAN-005` | When no node acknowledges its frames, CSP sends on the TE0715 shall fail within a bounded time, and the rest of the software shall keep running. | libcsp patch `0002` (`can_zephyr.c`) | [TC-12](test-cases.md#tc-12-no-node-acknowledges) | Verified on hardware |
 
 ## CSP, libparam and F Prime
 
@@ -38,10 +39,12 @@ SN65HVD233 transceiver on a TCAN-SOIC8-EVM, Kvaser USBcan Light 2xHS (see
 | `TE-CSP-001` | The F Prime `CspLibparam` component shall run on the TE0715 in the server role and pass the unmodified Linux CspBench client test (ping, read, write with read-back, restore) 5 times. | `apps/fprime_csp_bench`, `ZephyrCanTransport` | [TC-06](test-cases.md#tc-06-f-prime-server-against-the-linux-client) | Verified on hardware |
 | `TE-CSP-002` | The TE0715 shall act as a CSP/libparam client from its serial shell: ping, read, confirmed write with read-back. | `shell_cmds.c` | [TC-07](test-cases.md#tc-07-serial-shell-client-tools) | Verified on hardware |
 | `TE-CSP-003` | A write from the shell shall be refused unless explicitly confirmed. | `param set ... --confirm` | TC-07 | Verified on hardware |
-| `TE-CSP-004` | A value typed for a remote parameter shall be sent exactly or not at all: a value that does not fit its type, a negative value for an unsigned type, inf, nan and non-numbers shall be refused. | `bench_value.c` | Unit test `app/tests/bench_value` (CI, native_sim); TC-07 (`u8 300` on the board) | Verified on hardware and in CI |
+| `TE-CSP-004` | A value typed for a remote parameter shall be sent exactly or not at all: a value that does not fit its type, a negative value for an unsigned type, inf, nan and non-numbers shall be refused. | `bench_value.c` | Unit test `app/tests/bench` (CI, native_sim); TC-07 (`u8 300` on the board) | Verified on hardware and in CI |
 | `TE-PAR-001` | The TE0715 shall expose its LED D4 as the libparam parameter `led_d4` (ID 201, `uint8`), so that another node can switch it and read its state. | `shell_cmds.c` | [TC-06](test-cases.md#tc-06-f-prime-server-against-the-linux-client) (LED part), TC-10; LED seen switching by the operator | Verified on hardware |
 | `TE-PAR-002` | csh shall be able to load the TE0715's parameters (`list download`) and read and write them by name. | libparam list service (`vmem_server_loop`) | [TC-10](test-cases.md#tc-10-csh-against-the-te0715) | Verified on hardware |
 | `TE-BOOT-001` | The TE0715 shall boot the FlatSat image from its SD card without JTAG and pass TC-06 and TC-07. | `boot/boot.cmd`, `sd_install.py` | [TC-08](test-cases.md#tc-08-standalone-sd-card-boot) | Verified on hardware |
+| `TE-BOOT-002` | The CSP node and prefix shall be settable in a file on the SD card and apply at every boot. A file that is not exactly understood shall be refused as a whole, and a JTAG-loaded image shall not use settings left over from an earlier SD boot. | `te0715.txt`, `boot.cmd`, `bench_config.c` | [TC-11](test-cases.md#tc-11-node-from-te0715txt); unit tests `app/tests/bench`, `app/tests/scripts` | Verified on hardware |
+| `TE-CSP-005` | The CSP router task shall run above the F Prime tasks that use CSP. | `CONFIG_APP_CSP_ROUTER_PRIORITY`, fprime-csp-libparam `StackConfig::routerPriority` | `kernel thread list` in the TC-06 transcript: `CspRouter` priority 54, `cspLibparam` 57 | Verified on hardware |
 
 ## FlatSat
 

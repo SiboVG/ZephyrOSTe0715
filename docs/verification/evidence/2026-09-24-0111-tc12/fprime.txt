@@ -1,0 +1,9 @@
+PASS  start window announced
+PASS  server ready
+PASS  csp ping 1: "no reply", not a hang
+PASS  csp ping 2: "no reply", not a hang
+PASS  csp ping 3: "no reply", not a hang
+PASS  param get fails instead of hanging
+PASS  shell still answers
+PASS  controller error-passive, not bus-off (nobody acknowledges)
+8/8 checks passed

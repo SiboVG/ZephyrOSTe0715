@@ -31,7 +31,7 @@ When the image starts, it waits 10 seconds before starting CSP, so that the node
 address can be chosen:
 
 ```text
-*** CSP bench server: default node 6061/8. Type `bench start [node] [prefix]` within 10 s
+*** CSP bench server: node 6061/8 (default). Type `bench start [node] [prefix]` within 10 s
 to start (on another node), or wait for the defaults. ***
 ```
 
@@ -63,7 +63,7 @@ already started on node 6062/8; reset the board to change it
 
 ```text
 uart:~$ bench info
-node 6061/8 (started), libparam server port 10: parameter 200 (u32)
+node 6061/8 (default, started), libparam server port 10: parameter 200 (u32)
 parameter 201 led_d4 (u8) = 0: LED D4 off; parameter list served on port 12
 ```
 

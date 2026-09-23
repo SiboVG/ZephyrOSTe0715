@@ -108,3 +108,23 @@ Common preconditions for all test cases: the workspace built as in
 | **Procedure** | `app/scripts/csh_check.py` with `app/scripts/csh_tc10.csh`: `ping 6061`, `node 6061`, `list download`, `list`, get and set of both parameters by name (with restore), `list forget 6061`, the manual `list add -a 1 -m c` commands, get and set again |
 | **Pass criteria** | Ping replied; `list download` receives `bench_integer` (200) and `led_d4` (201); values read as 305419896 and 0; each `set` read back; the board logs the LED switching on and off for each `set led_d4`; the manually added parameters give the same results |
 | **Evidence** | `tc10-transcript.log` (csh and board console), `tc10-commands.csh`, `environment.txt` |
+
+## TC-11 Node from te0715.txt
+
+| | |
+|---|---|
+| **Verifies** | `TE-BOOT-002` |
+| **Preconditions** | TC-08 set-up; the FlatSat image and the current `boot.scr` on the SD card |
+| **Procedure** | Run by `collect_results.sh`: 1. `sd_install.py config --node 6062`; `fprime_e2e.py --sd-boot --node 6062 --source te0715.txt`. 2. Load the image over JTAG (TC-06), which runs right after step 1 without clearing RAM. 3. `sd_install.py config --defaults`; `fprime_e2e.py --sd-boot --source te0715.txt` (TC-08) |
+| **Pass criteria** | 1. The banner reads `node 6062/8 (te0715.txt)` and every TC-06/TC-07 check passes against node 6062, also after `kernel reboot cold`. 2. The banner reads `node 6061/8 (default)`. 3. Node 6061 with a settings-free file. A refused file is covered by the unit tests |
+| **Evidence** | `sd-config-*.txt`, `fprime-e2e-sd-config*.txt`, `fprime-e2e-jtag*.txt`, `fprime-e2e-sd-boot*.txt` |
+
+## TC-12 No node acknowledges
+
+| | |
+|---|---|
+| **Verifies** | `TE-CAN-005` |
+| **Preconditions** | Kvaser interface down (`sudo ip link set can0 down`), so nothing on the bus acknowledges |
+| **Procedure** | 1. `can_noack_test.py --elf build/noack-before/zephyr/zephyr.elf` (`apps/csp_node` without the libcsp patch) and the same with `build/noack-after` (with the patch): watch its once-a-second pings for 20 s. 2. `can_noack_test.py --fprime --elf <FlatSat image>`: `csp ping`, `param get`, `bench info` and `can show` on the shell |
+| **Pass criteria** | 1. Without the patch the pings stop (the sender hangs): this reproduces the defect. With the patch they continue with "no reply". 2. Each `csp ping` reports no reply and `param get` fails, within their timeouts; the shell keeps answering; the controller is error-passive, not bus-off |
+| **Evidence** | Console transcripts from `can_noack_test.py --log` |

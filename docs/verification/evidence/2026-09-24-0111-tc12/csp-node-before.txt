@@ -1,0 +1,2 @@
+FAIL  0 ping attempts in 20 s (a blocked sender makes none)
+0/1 checks passed

@@ -1,0 +1,3 @@
+echo: 1000/1000 ok, 0 lost, 0 wrong payload in 6.0 s
+heartbeat: 6 received, period 1.000 s, last counter 9, error-active, tx errors 0, rx errors 0
+PASS

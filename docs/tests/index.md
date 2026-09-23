@@ -54,7 +54,7 @@ GitHub Actions runs these on every push and pull request (`.github/workflows/`):
 | Job | What it checks | Run locally |
 |---|---|---|
 | Host scripts (pytest) | `app/tests/scripts/`: the `boot.scr` image passes U-Boot's checks; `sd_install.py` backs up PetaLinux's `boot.scr` once, never overwrites the backup, and writes nothing if the script image is bad; console, logger and csh transcript helpers | `.venv/bin/python -m pytest app/tests/scripts` |
-| Firmware unit tests (ztest) | `app/tests/bench_value/` on `native_sim`: the shell's number and value parsing. What `param set` sends to another node must be exactly the typed value: out-of-range values (`u8 300`, `i8 -129`, `float 1e39`), negative unsigned values and non-numbers are refused, not truncated | `zephyr/scripts/twister -T app/tests -p native_sim/native/64` |
+| Firmware unit tests (ztest) | `app/tests/bench/` on `native_sim`: the shell's number and value parsing, and the `te0715.txt` board configuration. What `param set` sends to another node must be exactly the typed value: out-of-range values (`u8 300`, `i8 -129`, `float 1e39`), negative unsigned values and non-numbers are refused, not truncated | `zephyr/scripts/twister -T app/tests -p native_sim/native/64` |
 | Build for the TE0715 | The LED demo, `can_bringup` and `csp_node` build for `te0715` with the Zephyr SDK, and so do the unit tests | `west build -b te0715 ...` as in [Building and running](../getting-started/build-and-run.md) |
 | Docs | `mkdocs build --strict`; on `main` the site is published to GitHub Pages | `.venv-docs/bin/mkdocs build --strict` |
 

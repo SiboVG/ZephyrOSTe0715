@@ -1,0 +1,5 @@
+    PING 100: no reply, err -1 ms (0/4 replies)
+    PING 100: no reply, err -1 ms (0/5 replies)
+    PING 100: no reply, err -1 ms (0/6 replies)
+PASS  6 ping attempts in 20 s (a blocked sender makes none)
+1/1 checks passed

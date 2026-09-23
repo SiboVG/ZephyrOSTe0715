@@ -1,0 +1,296 @@
+=== TE0715 console
+
+
+U-Boot 2022.01 (Apr 04 2022 - 07:53:54 +0000)
+
+CPU:   Zynq 7z030
+Silicon: v3.1
+DRAM:  ECC disabled 1 GiB
+Flash: 0 Bytes
+NAND:  0 MiB
+MMC:   mmc@e0100000: 0
+Loading Environment from FAT... *** Error - No Valid Environment Area found
+*** Warning - bad env area, using default environment
+
+In:    serial@e0000000
+Out:   serial@e0000000
+Err:   serial@e0000000
+Net:   
+ZYNQ GEM: e000b000, mdio bus e000b000, phyaddr 0, interface rgmii-id
+zynq_gem ethernet@e000b000: Failed to read eth PHY id, err: -2
+eth0: ethernet@e000b000
+Hit any key to stop autoboot:  2 *** Booting Zephyr OS build v4.4.2-6-g70b56a29cd74 ***
+
+*** CSP bench server: node 6061/8 (default). Type `bench start [node] [prefix]` within 10 s to start (on another node), or wait. ***
+
+
+uart:~$ bench start 6061 8
+starting on node 6061/8
+[Os::Console] EVENT: (268513280) (0:946652400,75500) DIAGNOSTIC: (CspBenchZephyr.cmdDisp) OpCodeRegistered : Opcode 0x10013000 registered to port 0 slot 0
+[Os::Console] EVENT: (268513280) (0:946652400,84300) DIAGNOSTIC: (CspBenchZephyr.cmdDisp) OpCodeRegistered : Opcode 0x10013001 registered to port 0 slot 1
+[Os::Console] EVENT: (268513280) (0:946652400,97800) DIAGNOSTIC: (CspBenchZephyr.cmdDisp) OpCodeRegistered : Opcode 0x10013002 registered to port 0 slot 2
+[Os::Console] EVENT: (268513280) (0:946652400,111400) DIAGNOSTIC: (CspBenchZephyr.cmdDisp) OpCodeRegistered : Opcode 0x10013003 registered to port 0 slot 3
+[Os::Console] EVENT: (268513280) (0:946652400,125000) DIAGNOSTIC: (CspBenchZephyr.cmdDisp) OpCodeRegistered : Opcode 0x10002000 registered to port 1 slot 4
+[Os::Console] EVENT: (268513280) (0:946652400,138700) DIAGNOSTIC: (CspBenchZephyr.cmdDisp) OpCodeRegistered : Opcode 0x10002001 registered to port 1 slot 5
+[Os::Console] EVENT: (268443648) (0:946652400,165100) ACTIVITY_HI: (CspBenchZephyr.cspLibparam) StackReady : CSP stack ready: local 6061 peer 6061
+[CSP_BENCH_READY] role=server can=can1 node=6061 peer=6061 param=200 type=u32 index=0
+[Os::Console] Starting base rate group clock with period of 1000000 microseconds
+[Os::Console] CSP/libparam bench server: node 6061/8, parameters 200 bench_integer (u32), 201 led_d4 (u8)
+[Os::Console] EVENT: (268439552) (0:946652400,197300) DIAGNOSTIC: (CspBenchZephyr.rateGroup_1Hz) RateGroupStarted : Rate group started.
+uart:~$ bench info
+node 6061/8 (bench start, started), libparam server port 10: parameter 200 (u32)
+parameter 201 led_d4 (u8) = 0: LED D4 off; parameter list served on port 12
+uart:~$ kernel thread list
+Scheduler: 6 since last call
+Threads:
+ 0x658f8 CspBenchZephyr.rateGroup_1Hz
+	options: 0x2, priority: 56 timeout: 0
+	state: pending, entry: 0x3d28
+	stack size 16384, unused 14720, usage 1664 / 16384 (10 %)
+
+ 0x66e18 CspRouter 
+	options: 0x2, priority: 54 timeout: 98
+	state: pending, entry: 0x3d28
+	stack size 16384, unused 16000, usage 384 / 16384 (2 %)
+
+ 0x667d8 CspBenchZephyr.cspLibparam
+	options: 0x2, priority: 57 timeout: 0
+	state: pending, entry: 0x3d28
+	stack size 16384, unused 14520, usage 1864 / 16384 (11 %)
+
+ 0x68478 CspBenchZephyr.cmdDisp
+	options: 0x2, priority: 55 timeout: 0
+	state: pending, entry: 0x3d28
+	stack size 16384, unused 14720, usage 1664 / 16384 (10 %)
+
+ 0x2752b8           
+	options: 0x2, priority: -1 timeout: 3749
+	state: pending, entry: 0x200ac
+	stack size 4096, unused 3712, usage 384 / 4096 (9 %)
+
+ 0x64450 param_server
+	options: 0x2, priority: 10 timeout: 42949633044
+	state: pending, entry: 0x4314
+	stack size 4096, unused 3728, usage 368 / 4096 (8 %)
+
+*0x64560 shell_uart
+	options: 0x2, priority: 99 timeout: 0
+	state: queued, entry: 0xbd78
+	stack size 8192, unused 6724, usage 1468 / 8192 (17 %)
+
+ 0x64d10 sysworkq  
+	options: 0x3, priority: -1 timeout: 0
+	state: pending, entry: 0x22ff4
+	stack size 1024, unused 688, usage 336 / 1024 (32 %)
+
+ 0x649f0 idle      
+	options: 0x3, priority: 100 timeout: 0
+	state: , entry: 0x21df0
+	stack size 320, unused 20, usage 300 / 320 (93 %)
+
+ 0x64af0 main      
+	options: 0x3, priority: 0 timeout: -9223372036854775808
+	state: pending, entry: 0x215e0
+	stack size 16384, unused 14092, usage 2292 / 16384 (13 %)
+
+uart:~$ PARAM led_d4 = 1: LED D4 on
+PARAM led_d4 = 0: LED D4 off
+PARAM led_d4 = 1: LED D4 on
+PARAM led_d4 = 0: LED D4 off
+bench info
+node 6061/8 (bench start, started), libparam server port 10: parameter 200 (u32)
+parameter 201 led_d4 (u8) = 0: LED D4 off; parameter list served on port 12
+uart:~$ csp ping 102
+ping 102: reply in 3 ms (32 bytes)
+uart:~$ csp ping 102 32 1000 --nocrc
+ping 102: no reply within 1000 ms
+uart:~$ param get 102 200 u32
+value 305419896 (0x12345678)
+uart:~$ param set 102 200 u32 0xCAFEBABE
+writes change the remote node: repeat the command with --confirm
+uart:~$ param set 102 200 u32 0xCAFEBABE --confirm
+written and read back: 3405691582 (0xcafebabe)
+uart:~$ param set 102 200 u8 300 --confirm
+u8 value '300' out of range; nothing written
+uart:~$ param get 102 200 u32
+value 3405691582 (0xcafebabe)
+uart:~$ param set 102 200 u32 0x12345678 --confirm
+written and read back: 305419896 (0x12345678)
+uart:~$ csp ping 4242 32 500
+ping 4242: no reply within 500 ms
+uart:~$ can show can@e0009000
+core clock:      100000000 Hz
+max bitrate:     1000000 bps
+max std filters: 16
+max ext filters: 16
+capabilities:    normal loopback 
+mode:            normal 
+state:           error-active
+rx errors:       0
+tx errors:       0
+timing:          sjw 1..4, prop_seg 0..0, phase_seg1 1..16, phase_seg2 1..8, prescaler 1..256
+transceiver:     passive/none
+statistics:
+  bit errors:    0
+    bit0 errors: 0
+    bit1 errors: 0
+  stuff errors:  0
+  crc errors:    0
+  form errors:   0
+  ack errors:    0
+  rx overruns:   0
+uart:~$ 
+=== Linux CspBench client
+EVENT: (0) (2:1790204758,713841) ACTIVITY_LO: (CdhCore.version) FrameworkVersion : Framework Version: [v4.2.0-267-g35d4c0e88]
+EVENT: (1) (2:1790204758,713855) ACTIVITY_LO: (CdhCore.version) ProjectVersion : Project Version: [16dac57]
+EVENT: (2) (2:1790204758,713858) ACTIVITY_LO: (CdhCore.version) LibraryVersions : Library Versions: [fprime-csp-libparam@9c5f4fa]
+INIT CAN: device: [can0], bitrate: 0, promisc: 1
+EVENT: (16777216) (2:1790204758,713933) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1000000 registered to port 0 slot 0
+EVENT: (16777216) (2:1790204758,713937) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1000001 registered to port 0 slot 1
+EVENT: (16777216) (2:1790204758,713938) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1000002 registered to port 0 slot 2
+EVENT: (16777216) (2:1790204758,713938) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1000003 registered to port 0 slot 3
+EVENT: (16777216) (2:1790204758,713939) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1001000 registered to port 1 slot 4
+EVENT: (16777216) (2:1790204758,713940) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1001002 registered to port 1 slot 5
+EVENT: (16777216) (2:1790204758,713941) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1001003 registered to port 1 slot 6
+EVENT: (16777216) (2:1790204758,713942) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1002000 registered to port 2 slot 7
+EVENT: (16777216) (2:1790204758,713942) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1002001 registered to port 2 slot 8
+EVENT: (16777216) (2:1790204758,713943) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1002002 registered to port 2 slot 9
+EVENT: (16777216) (2:1790204758,713943) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1003000 registered to port 3 slot 10
+EVENT: (16777216) (2:1790204758,713944) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1003001 registered to port 3 slot 11
+EVENT: (16777216) (2:1790204758,713945) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x3000000 registered to port 4 slot 12
+EVENT: (16777216) (2:1790204758,713946) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x3000001 registered to port 4 slot 13
+EVENT: (16777216) (2:1790204758,713946) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x3000002 registered to port 4 slot 14
+EVENT: (16777216) (2:1790204758,713947) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x10002000 registered to port 5 slot 15
+EVENT: (16777216) (2:1790204758,713948) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x10002001 registered to port 5 slot 16
+
+[NOTE] Task Permissions:
+[NOTE]
+[NOTE] You have insufficient permissions to create a task with priority and/or cpu affinity.
+[NOTE] A task without priority and affinity will be created.
+[NOTE]
+[NOTE] There are three possible resolutions:
+[NOTE] 1. Use tasks without priority and affinity using parameterless start()
+[NOTE] 2. Run this executable as a user with task priority permission
+[NOTE] 3. Grant capability with "setcap 'cap_sys_nice=eip'" or equivalent
+
+EVENT: (268443648) (2:1790204758,714158) ACTIVITY_HI: (CspBench.cspLibparam) StackReady : CSP stack ready: local 100 peer 6061
+[CSP_BENCH_READY] role=client can=can0 node=100 peer=6061 param=200 type=u32 index=0
+EVENT: (268439552) (2:1790204758,714198) DIAGNOSTIC: (CspBench.rateGroup_1Hz) RateGroupStarted : Rate group started.
+[CSP_BENCH_PROGRESS] Attempt 1: CSP ping 100 -> 6061 received in 4 ms.
+[CSP_BENCH_PROGRESS] Attempt 1: libparam GET node 6061 parameter 200[0] (u32) returned 305419896.
+[CSP_BENCH_PROGRESS] Attempt 1: libparam SET node 6061 parameter 200[0] = 2779077210; GET read-back verified.
+[CSP_BENCH_PROGRESS] Attempt 1: libparam RESTORE node 6061 parameter 200[0] = 305419896; GET read-back verified.
+[CSP_BENCH_CYCLE] attempt=1 ping_ms=4 parameter_read=1 parameter_value=305419896 write_verified=1 original_restored=1 outcome=success
+EVENT: (268443650) (2:1790204759,728262) ACTIVITY_LO: (CspBench.cspLibparam) ProbeCycle : Probe 1: ping 4 ms, parameter 305419896
+[CSP_BENCH_PROGRESS] Attempt 2: CSP ping 100 -> 6061 received in 3 ms.
+[CSP_BENCH_PROGRESS] Attempt 2: libparam GET node 6061 parameter 200[0] (u32) returned 305419896.
+[CSP_BENCH_PROGRESS] Attempt 2: libparam SET node 6061 parameter 200[0] = 2779077210; GET read-back verified.
+[CSP_BENCH_PROGRESS] Attempt 2: libparam RESTORE node 6061 parameter 200[0] = 305419896; GET read-back verified.
+[CSP_BENCH_CYCLE] attempt=2 ping_ms=3 parameter_read=1 parameter_value=305419896 write_verified=1 original_restored=1 outcome=success
+EVENT: (268443650) (2:1790204760,727984) ACTIVITY_LO: (CspBench.cspLibparam) ProbeCycle : Probe 2: ping 3 ms, parameter 305419896
+[CSP_BENCH_PROGRESS] Attempt 3: CSP ping 100 -> 6061 received in 2 ms.
+[CSP_BENCH_PROGRESS] Attempt 3: libparam GET node 6061 parameter 200[0] (u32) returned 305419896.
+[CSP_BENCH_PROGRESS] Attempt 3: libparam SET node 6061 parameter 200[0] = 2779077210; GET read-back verified.
+[CSP_BENCH_PROGRESS] Attempt 3: libparam RESTORE node 6061 parameter 200[0] = 305419896; GET read-back verified.
+[CSP_BENCH_CYCLE] attempt=3 ping_ms=2 parameter_read=1 parameter_value=305419896 write_verified=1 original_restored=1 outcome=success
+EVENT: (268443650) (2:1790204761,727214) ACTIVITY_LO: (CspBench.cspLibparam) ProbeCycle : Probe 3: ping 2 ms, parameter 305419896
+[CSP_BENCH_PROGRESS] Attempt 4: CSP ping 100 -> 6061 received in 3 ms.
+[CSP_BENCH_PROGRESS] Attempt 4: libparam GET node 6061 parameter 200[0] (u32) returned 305419896.
+[CSP_BENCH_PROGRESS] Attempt 4: libparam SET node 6061 parameter 200[0] = 2779077210; GET read-back verified.
+[CSP_BENCH_PROGRESS] Attempt 4: libparam RESTORE node 6061 parameter 200[0] = 305419896; GET read-back verified.
+[CSP_BENCH_CYCLE] attempt=4 ping_ms=3 parameter_read=1 parameter_value=305419896 write_verified=1 original_restored=1 outcome=success
+EVENT: (268443650) (2:1790204762,727900) ACTIVITY_LO: (CspBench.cspLibparam) ProbeCycle : Probe 4: ping 3 ms, parameter 305419896
+[CSP_BENCH_PROGRESS] Attempt 5: CSP ping 100 -> 6061 received in 3 ms.
+[CSP_BENCH_PROGRESS] Attempt 5: libparam GET node 6061 parameter 200[0] (u32) returned 305419896.
+[CSP_BENCH_PROGRESS] Attempt 5: libparam SET node 6061 parameter 200[0] = 2779077210; GET read-back verified.
+[CSP_BENCH_PROGRESS] Attempt 5: libparam RESTORE node 6061 parameter 200[0] = 305419896; GET read-back verified.
+[CSP_BENCH_CYCLE] attempt=5 ping_ms=3 parameter_read=1 parameter_value=305419896 write_verified=1 original_restored=1 outcome=passed
+EVENT: (268443652) (2:1790204763,728037) ACTIVITY_HI: (CspBench.cspLibparam) ProbePassed : CSP/libparam probe passed after 5 successful cycles
+[CSP_BENCH_RESULT] PASS attempts=5 successes=5 failures=0
+
+=== Linux CspBench client, led_d4
+EVENT: (0) (2:1790204764,734193) ACTIVITY_LO: (CdhCore.version) FrameworkVersion : Framework Version: [v4.2.0-267-g35d4c0e88]
+EVENT: (1) (2:1790204764,734207) ACTIVITY_LO: (CdhCore.version) ProjectVersion : Project Version: [16dac57]
+EVENT: (2) (2:1790204764,734210) ACTIVITY_LO: (CdhCore.version) LibraryVersions : Library Versions: [fprime-csp-libparam@9c5f4fa]
+INIT CAN: device: [can0], bitrate: 0, promisc: 1
+EVENT: (16777216) (2:1790204764,734286) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1000000 registered to port 0 slot 0
+EVENT: (16777216) (2:1790204764,734289) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1000001 registered to port 0 slot 1
+EVENT: (16777216) (2:1790204764,734290) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1000002 registered to port 0 slot 2
+EVENT: (16777216) (2:1790204764,734290) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1000003 registered to port 0 slot 3
+EVENT: (16777216) (2:1790204764,734291) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1001000 registered to port 1 slot 4
+EVENT: (16777216) (2:1790204764,734293) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1001002 registered to port 1 slot 5
+EVENT: (16777216) (2:1790204764,734293) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1001003 registered to port 1 slot 6
+EVENT: (16777216) (2:1790204764,734295) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1002000 registered to port 2 slot 7
+EVENT: (16777216) (2:1790204764,734296) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1002001 registered to port 2 slot 8
+EVENT: (16777216) (2:1790204764,734296) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1002002 registered to port 2 slot 9
+EVENT: (16777216) (2:1790204764,734297) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1003000 registered to port 3 slot 10
+EVENT: (16777216) (2:1790204764,734298) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1003001 registered to port 3 slot 11
+EVENT: (16777216) (2:1790204764,734299) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x3000000 registered to port 4 slot 12
+EVENT: (16777216) (2:1790204764,734300) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x3000001 registered to port 4 slot 13
+EVENT: (16777216) (2:1790204764,734301) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x3000002 registered to port 4 slot 14
+EVENT: (16777216) (2:1790204764,734301) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x10002000 registered to port 5 slot 15
+EVENT: (16777216) (2:1790204764,734302) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x10002001 registered to port 5 slot 16
+
+[NOTE] Task Permissions:
+[NOTE]
+[NOTE] You have insufficient permissions to create a task with priority and/or cpu affinity.
+[NOTE] A task without priority and affinity will be created.
+[NOTE]
+[NOTE] There are three possible resolutions:
+[NOTE] 1. Use tasks without priority and affinity using parameterless start()
+[NOTE] 2. Run this executable as a user with task priority permission
+[NOTE] 3. Grant capability with "setcap 'cap_sys_nice=eip'" or equivalent
+
+EVENT: (268443648) (2:1790204764,734515) ACTIVITY_HI: (CspBench.cspLibparam) StackReady : CSP stack ready: local 100 peer 6061
+[CSP_BENCH_READY] role=client can=can0 node=100 peer=6061 param=201 type=u8 index=0
+EVENT: (268439552) (2:1790204764,734545) DIAGNOSTIC: (CspBench.rateGroup_1Hz) RateGroupStarted : Rate group started.
+[CSP_BENCH_PROGRESS] Attempt 1: CSP ping 100 -> 6061 received in 3 ms.
+[CSP_BENCH_PROGRESS] Attempt 1: libparam GET node 6061 parameter 201[0] (u8) returned 0.
+[CSP_BENCH_PROGRESS] Attempt 1: libparam SET node 6061 parameter 201[0] = 1; GET read-back verified.
+[CSP_BENCH_PROGRESS] Attempt 1: libparam RESTORE node 6061 parameter 201[0] = 0; GET read-back verified.
+[CSP_BENCH_CYCLE] attempt=1 ping_ms=3 parameter_read=1 parameter_value=0 write_verified=1 original_restored=1 outcome=success
+EVENT: (268443650) (2:1790204765,747379) ACTIVITY_LO: (CspBench.cspLibparam) ProbeCycle : Probe 1: ping 3 ms, parameter 0
+[CSP_BENCH_PROGRESS] Attempt 2: CSP ping 100 -> 6061 received in 3 ms.
+[CSP_BENCH_PROGRESS] Attempt 2: libparam GET node 6061 parameter 201[0] (u8) returned 0.
+[CSP_BENCH_PROGRESS] Attempt 2: libparam SET node 6061 parameter 201[0] = 1; GET read-back verified.
+[CSP_BENCH_PROGRESS] Attempt 2: libparam RESTORE node 6061 parameter 201[0] = 0; GET read-back verified.
+[CSP_BENCH_CYCLE] attempt=2 ping_ms=3 parameter_read=1 parameter_value=0 write_verified=1 original_restored=1 outcome=passed
+EVENT: (268443652) (2:1790204766,747589) ACTIVITY_HI: (CspBench.cspLibparam) ProbePassed : CSP/libparam probe passed after 2 successful cycles
+[CSP_BENCH_RESULT] PASS attempts=2 successes=2 failures=0
+
+=== Linux CspBench server (node 102)
+EVENT: (0) (2:1790204770,753910) ACTIVITY_LO: (CdhCore.version) FrameworkVersion : Framework Version: [v4.2.0-267-g35d4c0e88]
+EVENT: (1) (2:1790204770,753924) ACTIVITY_LO: (CdhCore.version) ProjectVersion : Project Version: [16dac57]
+EVENT: (2) (2:1790204770,753926) ACTIVITY_LO: (CdhCore.version) LibraryVersions : Library Versions: [fprime-csp-libparam@9c5f4fa]
+INIT CAN: device: [can0], bitrate: 0, promisc: 1
+EVENT: (16777216) (2:1790204770,753996) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1000000 registered to port 0 slot 0
+EVENT: (16777216) (2:1790204770,753998) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1000001 registered to port 0 slot 1
+EVENT: (16777216) (2:1790204770,753999) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1000002 registered to port 0 slot 2
+EVENT: (16777216) (2:1790204770,754000) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1000003 registered to port 0 slot 3
+EVENT: (16777216) (2:1790204770,754001) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1001000 registered to port 1 slot 4
+EVENT: (16777216) (2:1790204770,754002) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1001002 registered to port 1 slot 5
+EVENT: (16777216) (2:1790204770,754002) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1001003 registered to port 1 slot 6
+EVENT: (16777216) (2:1790204770,754003) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1002000 registered to port 2 slot 7
+EVENT: (16777216) (2:1790204770,754004) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1002001 registered to port 2 slot 8
+EVENT: (16777216) (2:1790204770,754004) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1002002 registered to port 2 slot 9
+EVENT: (16777216) (2:1790204770,754005) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1003000 registered to port 3 slot 10
+EVENT: (16777216) (2:1790204770,754006) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x1003001 registered to port 3 slot 11
+EVENT: (16777216) (2:1790204770,754006) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x3000000 registered to port 4 slot 12
+EVENT: (16777216) (2:1790204770,754007) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x3000001 registered to port 4 slot 13
+EVENT: (16777216) (2:1790204770,754008) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x3000002 registered to port 4 slot 14
+EVENT: (16777216) (2:1790204770,754008) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x10002000 registered to port 5 slot 15
+EVENT: (16777216) (2:1790204770,754009) DIAGNOSTIC: (CdhCore.cmdDisp) OpCodeRegistered : Opcode 0x10002001 registered to port 5 slot 16
+
+[NOTE] Task Permissions:
+[NOTE]
+[NOTE] You have insufficient permissions to create a task with priority and/or cpu affinity.
+[NOTE] A task without priority and affinity will be created.
+[NOTE]
+[NOTE] There are three possible resolutions:
+[NOTE] 1. Use tasks without priority and affinity using parameterless start()
+[NOTE] 2. Run this executable as a user with task priority permission
+[NOTE] 3. Grant capability with "setcap 'cap_sys_nice=eip'" or equivalent
+
+EVENT: (268443648) (2:1790204770,754249) ACTIVITY_HI: (CspBench.cspLibparam) StackReady : CSP stack ready: local 102 peer 101
+[CSP_BENCH_READY] role=server can=can0 node=102 peer=101 param=200 type=u32 index=0
+EVENT: (268439552) (2:1790204770,754282) DIAGNOSTIC: (CspBench.rateGroup_1Hz) RateGroupStarted : Rate group started.
