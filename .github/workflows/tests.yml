@@ -1,0 +1,71 @@
+# Unit tests and build checks that need no hardware. The hardware tests
+# (app/scripts/collect_results.sh) run on the bench; see docs/tests/.
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scripts:
+    name: Host scripts (pytest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pytest pyserial pexpect
+      - run: python -m pytest -v app/tests/scripts
+
+  ztest:
+    name: Firmware unit tests (ztest, native_sim)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: ./.github/actions/zephyr-workspace
+      - name: Run twister
+        run: |
+          zephyr/scripts/twister -T app/tests -p native_sim/native/64 \
+            --inline-logs -v -O twister-out
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: twister-native_sim
+          path: |
+            twister-out/twister.json
+            twister-out/**/handler.log
+            twister-out/**/build.log
+          if-no-files-found: ignore
+
+  build:
+    name: Build for the TE0715
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: ./.github/actions/zephyr-workspace
+        with:
+          projects: zephyr libcsp libparam
+          sdk: true
+      - name: Build the applications
+        run: |
+          west build -b te0715 app -d build/demo
+          west build -b te0715 app/apps/can_bringup -d build/can_bringup
+          west build -b te0715 app/apps/csp_node -d build/csp_node
+      - name: Build the unit tests for the board
+        run: zephyr/scripts/twister -T app/tests -p te0715 --build-only -v -O twister-te0715

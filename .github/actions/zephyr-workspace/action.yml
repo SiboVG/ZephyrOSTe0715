@@ -1,0 +1,44 @@
+# Set up the west workspace with only the projects a job needs (not F Prime),
+# the Zephyr Python requirements and, optionally, the Zephyr SDK ARM toolchain.
+name: Zephyr workspace
+description: west init -l app, a shallow west update, patches, requirements, SDK
+
+inputs:
+  projects:
+    description: West projects to fetch
+    default: zephyr
+  sdk:
+    description: Install the Zephyr SDK with the arm-zephyr-eabi toolchain
+    default: "false"
+
+runs:
+  using: composite
+  steps:
+    - name: Host packages
+      shell: bash
+      run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ninja-build gperf device-tree-compiler
+    - name: West workspace
+      shell: bash
+      run: |
+        pip install west
+        west init -l app
+        west update --narrow -o=--depth=1 ${{ inputs.projects }}
+        west patch apply
+        pip install -r zephyr/scripts/requirements-base.txt \
+          -r zephyr/scripts/requirements-build-test.txt \
+          -r zephyr/scripts/requirements-run-test.txt
+        echo "ZEPHYR_BASE=$PWD/zephyr" >> "$GITHUB_ENV"
+    - name: Cache the Zephyr SDK
+      if: inputs.sdk == 'true'
+      uses: actions/cache@v4
+      with:
+        path: ~/zephyr-sdk-*
+        key: zephyr-sdk-${{ hashFiles('zephyr/SDK_VERSION') }}-arm
+    - name: Zephyr SDK
+      if: inputs.sdk == 'true'
+      shell: bash
+      run: |
+        if ! ls -d ~/zephyr-sdk-*/gnu/arm-zephyr-eabi >/dev/null 2>&1; then
+          west sdk install -t arm-zephyr-eabi
+        fi
+        ~/zephyr-sdk-*/setup.sh -c
