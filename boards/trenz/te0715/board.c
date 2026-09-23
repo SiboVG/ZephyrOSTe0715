@@ -4,8 +4,11 @@
  */
 
 /*
- * TE0715 clock setup that the FSBL of the Trenz test_board reference design
- * does not do: that design leaves the CAN controllers disabled.
+ * TE0715 board code:
+ * - software reset for sys_reboot(), which Zephyr does not implement for the
+ *   Zynq-7000 (the default sys_arch_reboot() does nothing);
+ * - CAN clock setup that the FSBL of the Trenz test_board reference design
+ *   does not do: that design leaves the CAN controllers disabled.
  */
 
 #include <zephyr/device.h>
@@ -13,6 +16,19 @@
 #include <zephyr/drivers/syscon.h>
 #include <zephyr/init.h>
 #include <zephyr/sys/util.h>
+
+/* SLCR PSS_RST_CTRL (Zynq-7000 TRM, appendix B.28): SOFT_RST resets the whole PS */
+#define SLCR_PSS_RST_CTRL          0x200
+#define PSS_RST_CTRL_SOFT_RST      BIT(0)
+
+void sys_arch_reboot(int type)
+{
+	ARG_UNUSED(type);
+
+	/* The SLCR is unlocked by the SoC initialisation */
+	(void)syscon_write_reg(DEVICE_DT_GET(DT_NODELABEL(slcr)), SLCR_PSS_RST_CTRL,
+			       PSS_RST_CTRL_SOFT_RST);
+}
 
 #define CAN0_OKAY DT_NODE_HAS_STATUS_OKAY(DT_NODELABEL(can0))
 #define CAN1_OKAY DT_NODE_HAS_STATUS_OKAY(DT_NODELABEL(can1))

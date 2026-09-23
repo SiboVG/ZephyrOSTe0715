@@ -135,6 +135,16 @@ def main():
     check('can show: no bus errors', 'rx errors:       0' in can and 'tx errors:       0' in can)
     server.terminate()
     server_out = server.communicate()[0]
+
+    if args.sd_boot:
+        # Software reset: the board must come back through U-Boot and the SD card
+        mark = len(console.buf)
+        console.serial.write(b'kernel reboot cold\r')
+        start = time.time()
+        while b'CSP_BENCH_READY' not in console.buf[mark:] and time.time() - start < 40:
+            time.sleep(0.2)
+        check(f'kernel reboot cold: back to CSP ready ({time.time() - start:.1f} s)',
+              b'CSP_BENCH_READY' in console.buf[mark:])
     console.stop.set()
 
     with open(args.log, 'w') as f:

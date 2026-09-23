@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 #
-# Run every hardware test and store the logs in docs/results/<date>/.
+# Run every hardware test and store the logs in <workspace>/docs/verification/evidence/<date-time>/,
+# with a SHA256SUMS file. Do not edit the logs afterwards; assess them in an as-run record.
 #
 #   app/scripts/collect_results.sh /path/to/CspBench [can0]
 #
@@ -16,7 +17,7 @@ bench="${1:?usage: collect_results.sh /path/to/CspBench [can-interface]}"
 can="${2:-can0}"
 app="$(cd "$(dirname "$0")/.." && pwd)"
 ws="$(dirname "$app")"
-out="$app/docs/results/$(date +%Y-%m-%d)"
+out="$ws/docs/verification/evidence/$(date +%Y-%m-%d-%H%M)"
 mkdir -p "$out"
 py="$ws/.venv/bin/python"
 export PATH="$ws/.venv/bin:$PATH"
@@ -38,6 +39,13 @@ copy_console() {  # build-root, test-dir-prefix, destination-prefix
 {
     echo "date: $(date -Is)"
     echo "app: $(git -C "$app" rev-parse --short HEAD)$(git -C "$app" diff --quiet || echo -dirty)"
+    echo "fprime-csp-libparam: $(git -C "$ws/../fprime-csp-libparam" rev-parse --short HEAD 2>/dev/null)"
+    echo "CspLibparamFprimeTest: $(git -C "$ws/../CspLibparamFprimeTest" rev-parse --short HEAD 2>/dev/null)"
+    echo "fprime: $(git -C "$ws/modules/fprime/fprime" describe --tags --always 2>/dev/null)"
+    echo "fprime-zephyr: $(git -C "$ws/modules/fprime/fprime-zephyr" rev-parse --short HEAD 2>/dev/null)"
+    echo "libcsp: $(git -C "$ws/modules/lib/libcsp" describe --tags --always 2>/dev/null)"
+    echo "libparam: $(git -C "$ws/modules/lib/libparam" describe --tags --always 2>/dev/null)"
+    echo "zephyr.bin sha256: $(sha256sum "$app/apps/fprime_csp_bench/build-fprime-automatic-zephyr/zephyr/zephyr.bin" | cut -d' ' -f1)"
     echo "zephyr: $(git -C "$ws/zephyr" describe --tags --always)"
     echo "zephyr (upstream CAN branch): $(git -C "$ws/zephyr-can-main" describe --tags --always 2>/dev/null)"
     echo "sdk: $(cat "$ws/zephyr/SDK_VERSION")"
@@ -73,5 +81,6 @@ run fprime-e2e-jtag "$py" "$app/scripts/fprime_e2e.py" --bench "$bench" --can "$
 run fprime-e2e-sd-boot "$py" "$app/scripts/fprime_e2e.py" --bench "$bench" --can "$can" \
     --sd-boot --log "$out/fprime-e2e-sd-boot-transcript.log"
 
+(cd "$out" && sha256sum -- * > SHA256SUMS)
 echo "results in $out (status $status)"
 exit $status
