@@ -63,7 +63,8 @@ jobs:
           python-version: "3.12"
       - uses: ./.github/actions/zephyr-workspace
         with:
-          projects: zephyr cmsis cmsis_6 libcsp libparam
+          # everything but F Prime (about 700 MB), which is not built here
+          project-filter: "-fprime.*"
           sdk: true
       - name: Build the applications
         run: |
