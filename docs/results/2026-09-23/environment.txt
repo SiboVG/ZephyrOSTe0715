@@ -1,8 +1,0 @@
-date: 2026-09-23T19:05:53+02:00
-app: 9418772-dirty
-zephyr: v4.4.2-6-g70b56a29cd7
-zephyr (upstream CAN branch): v4.4.0-16569-gd836c4e2166
-sdk: 1.0.1
-4: can0: <NOARP,UP,LOWER_UP,ECHO> mtu 16 qdisc pfifo_fast state UP mode DEFAULT group default qlen 10
-    can state ERROR-ACTIVE restart-ms 0 
-	  bitrate 1000000 sample-point 0.750

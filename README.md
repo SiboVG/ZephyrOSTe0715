@@ -6,8 +6,10 @@ libparam (`csh/2.10`) as Zephyr modules, and the CubeSpec F Prime CSP/libparam
 bench server running on Zephyr. Includes the hardware test tools and the FlatSat
 procedure.
 
-**Full documentation: `docs/` (MkDocs), see below to build it.** Start with
-`docs/index.md` for the status and `docs/getting-started.md` for the setup.
+**Documentation: `../docs/` in the workspace root (MkDocs), built from
+`../mkdocs.yml`.** It covers setup, the user guide (serial shell commands), the
+architecture, the test procedures including the FlatSat test, and the verification
+records with the raw test logs.
 
 ## Quick start
 
@@ -36,26 +38,25 @@ cd app/apps/fprime_csp_bench && fprime-util generate && fprime-util build
 | `zephyr/` | Module glue: libparam build (`CONFIG_LIBPARAM`), `patches.yml` + patches |
 | `boot/` | U-Boot script for booting Zephyr from the SD card |
 | `scripts/` | Hardware tests, SD card installer, FlatSat console |
-| `docs/` | MkDocs documentation, including test procedures and raw results |
 
 ## Tests
 
 ```sh
-app/scripts/collect_results.sh path/to/CspBench can0   # all hardware tests, logs to docs/results/
+app/scripts/collect_results.sh path/to/CspBench can0   # all hardware tests, logs to ../docs/verification/evidence/
 ```
 
 Individual tools: `hw_test.py` (ztest suites and apps), `can_echo_test.py` (CAN echo
 over SocketCAN), `fprime_e2e.py` (F Prime server and shell against the Linux
 CspBench), `sd_install.py` (SD card boot), `flatsat_console.py` (logging console for
-macOS/Linux). See `docs/tests/`.
+macOS/Linux). See `../docs/tests/`.
 
 ## Documentation
 
+From the workspace root (`..`):
+
 ```sh
-python3 -m venv .venv-docs
-.venv-docs/bin/pip install -r requirements-docs.txt
+python3 -m venv .venv-docs && .venv-docs/bin/pip install -r requirements-docs.txt
 .venv-docs/bin/mkdocs serve            # http://127.0.0.1:8000
-.venv-docs/bin/mkdocs build --strict   # run before committing documentation changes
 ```
 
 ## Related repositories

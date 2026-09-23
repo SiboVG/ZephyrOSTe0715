@@ -1,9 +1,0 @@
-    SUITE PASS - 100.00% [can_classic]: pass = 48, fail = 0, skip = 4, total = 52 duration = 0.531 seconds
-    SUITE SKIP -   0.00% [can_powermgmt]: pass = 0, fail = 0, skip = 3, total = 3 duration = 0.000 seconds
-    SUITE PASS - 100.00% [can_stats]: pass = 1, fail = 0, skip = 0, total = 1 duration = 0.001 seconds
-    SUITE SKIP -   0.00% [can_transceiver]: pass = 0, fail = 0, skip = 1, total = 1 duration = 0.000 seconds
-    SUITE PASS - 100.00% [can_utilities]: pass = 3, fail = 0, skip = 0, total = 3 duration = 0.003 seconds
-    SUITE SKIP -   0.00% [canfd]: pass = 0, fail = 0, skip = 15, total = 15 duration = 0.000 seconds
-SUCCESSFUL   tests/drivers/can/api
-    SUITE PASS - 100.00% [can_timing]: pass = 1, fail = 0, skip = 1, total = 2 duration = 0.093 seconds
-SUCCESSFUL   tests/drivers/can/timing

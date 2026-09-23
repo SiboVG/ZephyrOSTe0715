@@ -1,8 +1,0 @@
-*** Booting Zephyr OS build v4.4.2-6-g70b56a29cd74 ***
-CAN bring-up on can@e0009000 at 1000000 bit/s: echo 0x100 -> 0x101, heartbeat 0x7f0
-HEARTBEAT 0: error-active, tx errors 0, rx errors 0, echoed 0, sent 0, failed 0, ack errors 0 (send 0)
-HEARTBEAT 1: error-active, tx errors 0, rx errors 0, echoed 0, sent 1, failed 0, ack errors 0 (send 0)
-HEARTBEAT 2: error-active, tx errors 0, rx errors 0, echoed 0, sent 2, failed 0, ack errors 0 (send 0)
-HEARTBEAT 3: error-active, tx errors 0, rx errors 0, echoed 0, sent 3, failed 0, ack errors 0 (send 0)
-
---- DONE
