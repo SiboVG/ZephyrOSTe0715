@@ -37,6 +37,9 @@ jobs:
           python-version: "3.12"
       - uses: ./.github/actions/zephyr-workspace
       - name: Run twister
+        env:
+          # native_sim builds with the host's gcc; no Zephyr SDK needed
+          ZEPHYR_TOOLCHAIN_VARIANT: host
         run: |
           zephyr/scripts/twister -T app/tests -p native_sim/native/64 \
             --inline-logs -v -O twister-out
@@ -60,7 +63,7 @@ jobs:
           python-version: "3.12"
       - uses: ./.github/actions/zephyr-workspace
         with:
-          projects: zephyr libcsp libparam
+          projects: zephyr cmsis cmsis_6 libcsp libparam
           sdk: true
       - name: Build the applications
         run: |
