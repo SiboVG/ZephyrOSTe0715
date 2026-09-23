@@ -20,4 +20,23 @@ config APP_START_WINDOW_S
 	int "Seconds to wait for `bench start` before using the defaults"
 	default 10
 
+config APP_CSP_ROUTER_PRIORITY
+	int "F Prime priority of the CspRouter task"
+	range 0 99
+	default 45
+	help
+	  On F Prime's scale (higher is more important; Zephyr priority is
+	  99 minus this value). The router runs every CSP callback, including
+	  the libparam server, so it sits above the F Prime tasks: cmdDisp 44,
+	  rateGroup_1Hz 43, cspLibparam 42.
+
+config APP_BOOT_CONFIG_ADDR
+	hex "Physical address where U-Boot leaves te0715.txt"
+	default 0x0f000000
+	help
+	  boot/boot.cmd loads te0715.txt from the SD card to this address plus
+	  0x100, and writes a magic word and the file length in front of it.
+	  Must lie in RAM that neither U-Boot nor Zephyr uses; must match
+	  boot.cmd.
+
 source "Kconfig.zephyr"

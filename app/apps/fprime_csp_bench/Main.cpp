@@ -27,6 +27,7 @@ int main() {
     state.config.parameterId = 200;
     state.config.parameterType = CubeSpec::CspTest::IntegerParameterType::UINT32;
     state.config.serverValue = 0x12345678;
+    state.config.routerPriority = CONFIG_APP_CSP_ROUTER_PRIORITY;
 
     CspBenchZephyr::setup(state);
     if (!state.startupOk) {
