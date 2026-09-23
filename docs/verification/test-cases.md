@@ -64,7 +64,7 @@ Common preconditions for all test cases: the workspace built as in
 | | |
 |---|---|
 | **Verifies** | `TE-CSP-001`, `TE-PAR-001` |
-| **Preconditions** | TC-05 passed; Linux CspBench built (branch `zephyr-transport`); `apps/fprime_csp_bench` loaded, started on node 6061/8 |
+| **Preconditions** | TC-05 passed; Linux CspBench built (CspLibparamFprimeTest `main`); `apps/fprime_csp_bench` loaded, started on node 6061/8 |
 | **Procedure** | 1. `CspBench --role client --can can0 --node 100 --peer 6061 --write-test --write-value 0xA5A55A5A`. 2. `CspBench --role client --can can0 --node 100 --peer 6061 --param-id 201 --param-type u8 --write-test --write-value 1 --successes 2 --attempts 3` |
 | **Pass criteria** | 1. `[CSP_BENCH_RESULT] PASS attempts=5 successes=5`. 2. `PASS` with 2 successes, and the board logs `led_d4 = 1: LED D4 on` and `led_d4 = 0: LED D4 off` for each cycle |
 | **Evidence** | `fprime-e2e-jtag.txt`, `fprime-e2e-jtag-transcript.log` |

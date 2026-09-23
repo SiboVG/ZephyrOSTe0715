@@ -64,8 +64,8 @@ python3 -m venv .venv-docs && .venv-docs/bin/pip install -r requirements-docs.tx
 
 - [SiboVG/zephyr](https://github.com/SiboVG/zephyr): branches `te0715-can-v4.4.2`
   (pinned), `xuartps-fixes` (UART PR #119996), `xlnx-can` (CAN driver on upstream
-  `main`)
+  `main`, PR #120163)
 - [SiboVG/fprime-csp-libparam](https://github.com/SiboVG/fprime-csp-libparam):
-  branch `zephyr-can-transport`
+  `main`
 - [SiboVG/CspLibparamFprimeTest](https://github.com/SiboVG/CspLibparamFprimeTest):
-  branch `zephyr-transport` (the Linux CspBench used as the test peer)
+  `main` (the Linux CspBench used as the test peer)

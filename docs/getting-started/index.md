@@ -52,8 +52,8 @@ checked out on the branches that add Zephyr support (see below).
 | [SiboVG/ZephyrOSTe0715](https://github.com/SiboVG/ZephyrOSTe0715) (private) | `main` | This repository: `app/` and the documentation. The workspace root is the repository; west's projects next to `app/` are ignored |
 | [SiboVG/zephyr](https://github.com/SiboVG/zephyr) | `te0715-can-v4.4.2` | Zephyr v4.4.2 with the UART fixes and the CAN driver; pinned in `west.yml` |
 | | `xuartps-fixes` | The UART fixes on upstream `main`; [PR #119996](https://github.com/zephyrproject-rtos/zephyr/pull/119996) |
-| | `xlnx-can` | The CAN driver on upstream `main`, independent of the UART fixes; for a future PR |
-| [SiboVG/fprime-csp-libparam](https://github.com/SiboVG/fprime-csp-libparam) | `zephyr-can-transport` | Adds `ZephyrCanTransport` |
-| [SiboVG/CspLibparamFprimeTest](https://github.com/SiboVG/CspLibparamFprimeTest) | `zephyr-transport` | Lets the `CspLibparam` component use the Zephyr transport |
+| | `xlnx-can` | The CAN driver on upstream `main`, independent of the UART fixes; [PR #120163](https://github.com/zephyrproject-rtos/zephyr/pull/120163) |
+| [SiboVG/fprime-csp-libparam](https://github.com/SiboVG/fprime-csp-libparam) | `main` | Adds `ZephyrCanTransport` |
+| [SiboVG/CspLibparamFprimeTest](https://github.com/SiboVG/CspLibparamFprimeTest) | `main` | Lets the `CspLibparam` component use the Zephyr transport |
 
 Next: [Installing the tools](install.md).

@@ -73,7 +73,7 @@ them up; see [Board support](board.md#can-clock).
 
 | Branch (SiboVG/zephyr) | Base | Status |
 |---|---|---|
-| `xlnx-can` | upstream `main` | Ready for a pull request after the author's sign-off; independent of the UART fixes. Uses `main`'s new multi-callback state-change API |
+| `xlnx-can` | upstream `main` | [PR #120163](https://github.com/zephyrproject-rtos/zephyr/pull/120163), in review; independent of the UART fixes. Uses `main`'s new multi-callback state-change API |
 | `te0715-can-v4.4.2` | v4.4.2 + UART fixes | Used by this workspace |
 
 On both branches the driver passes Zephyr's `tests/drivers/can/api` and

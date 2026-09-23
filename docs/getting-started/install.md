@@ -85,8 +85,7 @@ The CAN tests use the Linux acceptance bench as the other node on the bus. Build
 as described in its own documentation:
 
 ```bash
-cd ../CspLibparamFprimeTest
-git switch zephyr-transport
+cd ../CspLibparamFprimeTest     # main includes the Zephyr transport (PR #2)
 ./scripts/bootstrap_dependencies.sh
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 PATH="$PWD/.venv/bin:$PATH" .venv/bin/fprime-util generate -DPYTHON="$PWD/.venv/bin/python"

@@ -16,8 +16,7 @@ for everything in it lives in `docs/` and is built with MkDocs.
 | `.venv/` | Python environment with west, the Zephyr tools and the F Prime tools |
 
 The F Prime application also uses two checkouts next to this workspace:
-`../fprime-csp-libparam` (branch `zephyr-can-transport`) and
-`../CspLibparamFprimeTest` (branch `zephyr-transport`).
+`../fprime-csp-libparam` and `../CspLibparamFprimeTest`, both on `main`.
 
 ## Read the documentation
 
