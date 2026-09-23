@@ -18,13 +18,14 @@ manifest:
       url-base: https://github.com/fprime-community
 
   projects:
-    # Zephyr v4.4.2 plus the uart_xlnx_ps driver fixes from
-    # https://github.com/zephyrproject-rtos/zephyr/pull/119996
-    # (branch xuartps-fixes-v4.4.2 in the SiboVG fork). Switch back to
-    # remote zephyrproject-rtos and a release tag once those fixes are released.
+    # Zephyr v4.4.2 plus (branch te0715-can-v4.4.2 in the SiboVG fork):
+    # - the uart_xlnx_ps fixes of zephyrproject-rtos/zephyr#119996
+    # - the Zynq-7000 PS CAN driver (upstream branch: xlnx-can, based on main)
+    # Switch back to remote zephyrproject-rtos and a release tag once both
+    # are released.
     - name: zephyr
       remote: sibovg
-      revision: 8ad6ae61020402ce08b1db028bafd596615203cf
+      revision: 70b56a29cd748ee70924defea39f60f9f2ecbf70
       import:
         name-allowlist:
           - cmsis
