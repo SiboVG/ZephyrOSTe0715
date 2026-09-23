@@ -21,6 +21,8 @@ The F Prime application also uses two checkouts next to this workspace:
 
 ## Read the documentation
 
+Published at <https://sibovg.github.io/ZephyrOSTe0715/> (GitHub Pages, rebuilt on every push to `main`; the site is public even though the repository is private). To build it locally:
+
 ```bash
 python3 -m venv .venv-docs
 .venv-docs/bin/pip install -r requirements-docs.txt

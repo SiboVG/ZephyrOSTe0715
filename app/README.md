@@ -6,8 +6,8 @@ libparam (`csh/2.10`) as Zephyr modules, and the CubeSpec F Prime CSP/libparam
 bench server running on Zephyr. Includes the hardware test tools and the FlatSat
 procedure.
 
-**Documentation: `../docs/` at the repository root (MkDocs), built from
-`../mkdocs.yml`.** It covers setup, the user guide (serial shell commands), the
+**Documentation: <https://sibovg.github.io/ZephyrOSTe0715/>, built from `../docs/`
+at the repository root (MkDocs, `../mkdocs.yml`).** It covers setup, the user guide (serial shell commands), the
 architecture, the test procedures including the FlatSat test, and the verification
 records with the raw test logs.
 

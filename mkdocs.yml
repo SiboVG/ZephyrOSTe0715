@@ -2,6 +2,10 @@
 
 site_name: TE0715 Zephyr Bring-up
 site_description: Zephyr board support, Zynq CAN driver, libcsp/libparam and F Prime on the Trenz TE0715, with test procedures and results
+site_url: https://sibovg.github.io/ZephyrOSTe0715/
+repo_url: https://github.com/SiboVG/ZephyrOSTe0715
+repo_name: SiboVG/ZephyrOSTe0715
+edit_uri: edit/main/docs/
 docs_dir: docs
 site_dir: site
 strict: true

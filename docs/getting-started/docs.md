@@ -4,6 +4,13 @@ The documentation is written in Markdown and built with
 [MkDocs](https://www.mkdocs.org/) and the Material theme, like the documentation of
 CspLibparamFprimeTest and fprime-csp-libparam.
 
+The published copy is at <https://sibovg.github.io/ZephyrOSTe0715/>. The `Docs`
+workflow (`.github/workflows/docs.yml`) builds it with `--strict` on every push and
+pull request, and deploys it to GitHub Pages from `main`. The site is public even
+though the repository is private, so keep anything confidential out of `docs/`.
+
+To work on the docs locally:
+
 ```bash
 cd ZephyrOSTe0715
 python3 -m venv .venv-docs
