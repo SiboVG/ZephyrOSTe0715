@@ -140,6 +140,15 @@ written and read back: 3405691582 (0xcafebabe)
 
 If the read-back value differs, the command prints `READ-BACK MISMATCH` and fails.
 
+The value is sent exactly as typed, or not at all. A value that does not fit the type,
+a negative value for an unsigned type, `inf`, `nan` and anything that is not a number
+are refused before anything is sent:
+
+```text
+uart:~$ param set 102 200 u8 300 --confirm
+u8 value '300' out of range; nothing written
+```
+
 !!! warning "Writes on the FlatSat"
     Only write parameters for which the write and the value are approved. Read the
     original value first and restore it afterwards; see the

@@ -1,0 +1,385 @@
+
+
+U-Boot 2022.01 (Apr 04 2022 - 07:53:54 +0000)
+
+CPU:   Zynq 7z030
+Silicon: v3.1
+DRAM:  ECC disabled 1 GiB
+Flash: 0 Bytes
+NAND:  0 MiB
+MMC:   mmc@e0100000: 0
+Loading Environment from FAT... *** Error - No Valid Environment Area found
+*** Warning - bad env area, using default environment
+
+In:    serial@e0000000
+Out:   serial@e0000000
+Err:   serial@e0000000
+Net:   
+ZYNQ GEM: e000b000, mdio bus e000b000, phyaddr 0, interface rgmii-id
+zynq_gem ethernet@e000b000: Failed to read eth PHY id, err: -2
+eth0: ethernet@e000b000
+Hit any key to stop autoboot:  2 ***** delaying boot 500ms (per build configuration) *****
+*** Booting Zephyr OS build v4.4.2-6-g70b56a29cd74 (delayed boot 500ms) ***
+Running TESTSUITE atomic
+===================================================================
+START - test_atomic
+ PASS - test_atomic in 0.001 seconds
+===================================================================
+START - test_atomic_overflow
+ PASS - test_atomic_overflow in 0.001 seconds
+===================================================================
+START - test_threads_access_atomic
+ PASS - test_threads_access_atomic in 0.041 seconds
+===================================================================
+TESTSUITE atomic succeeded
+Running TESTSUITE bitarray
+===================================================================
+START - test_bitarray_alloc_free
+Testing bit array alloc and free with predefined patterns using 128 bit array
+Testing bit array alloc and free with predefined patterns using 32 bit array
+Testing bit array alloc and free with divisor 1
+Testing bit array alloc and free with divisor 2
+Testing bit array alloc and free with divisor 4
+Testing bit array alloc and free with divisor 8
+Testing bit array alloc and free with divisor 16
+Testing bit array alloc and free with divisor 32
+Testing bit array alloc and free with divisor 64
+Testing bit array interval alloc and free
+ PASS - test_bitarray_alloc_free in 0.069 seconds
+===================================================================
+START - test_bitarray_declare
+ PASS - test_bitarray_declare in 0.001 seconds
+===================================================================
+START - test_bitarray_find_nth_set
+Testing bit array nth bit set finding spanning single bundle
+Testing bit array nth bit set finding spanning multiple bundles
+Testing error cases
+ PASS - test_bitarray_find_nth_set in 0.013 seconds
+===================================================================
+START - test_bitarray_popcount_region
+Testing bit array region popcount spanning single bundle
+Testing bit array region popcount spanning multiple bundles
+Testing edge/error cases
+ PASS - test_bitarray_popcount_region in 0.013 seconds
+===================================================================
+START - test_bitarray_region_set_clear
+Testing bit array region bit tests
+Testing bit array region bit manipulations
+ PASS - test_bitarray_region_set_clear in 0.008 seconds
+===================================================================
+START - test_bitarray_set_clear
+ PASS - test_bitarray_set_clear in 0.012 seconds
+===================================================================
+START - test_bitarray_xor
+Testing bit array region xor spanning single bundle
+Testing bit array region xor spanning multiple bundles
+Testing error cases
+ PASS - test_bitarray_xor in 0.012 seconds
+===================================================================
+START - test_ffs
+ PASS - test_ffs in 0.001 seconds
+===================================================================
+TESTSUITE bitarray succeeded
+Running TESTSUITE boot_delay
+===================================================================
+START - test_bootdelay
+ PASS - test_bootdelay in 0.001 seconds
+===================================================================
+TESTSUITE boot_delay succeeded
+Running TESTSUITE byteorder
+===================================================================
+START - test_byteorder_mem_swap
+ PASS - test_byteorder_mem_swap in 0.001 seconds
+===================================================================
+START - test_byteorder_memcpy_swap
+ PASS - test_byteorder_memcpy_swap in 0.001 seconds
+===================================================================
+START - test_sys_be_to_cpu
+ PASS - test_sys_be_to_cpu in 0.001 seconds
+===================================================================
+START - test_sys_cpu_to_be
+ PASS - test_sys_cpu_to_be in 0.001 seconds
+===================================================================
+START - test_sys_cpu_to_le
+ PASS - test_sys_cpu_to_le in 0.001 seconds
+===================================================================
+START - test_sys_get_be16
+ PASS - test_sys_get_be16 in 0.001 seconds
+===================================================================
+START - test_sys_get_be24
+ PASS - test_sys_get_be24 in 0.001 seconds
+===================================================================
+START - test_sys_get_be32
+ PASS - test_sys_get_be32 in 0.001 seconds
+===================================================================
+START - test_sys_get_be40
+ PASS - test_sys_get_be40 in 0.001 seconds
+===================================================================
+START - test_sys_get_be48
+ PASS - test_sys_get_be48 in 0.001 seconds
+===================================================================
+START - test_sys_get_be64
+ PASS - test_sys_get_be64 in 0.001 seconds
+===================================================================
+START - test_sys_get_be
+ PASS - test_sys_get_be in 0.001 seconds
+===================================================================
+START - test_sys_get_le16
+ PASS - test_sys_get_le16 in 0.001 seconds
+===================================================================
+START - test_sys_get_le24
+ PASS - test_sys_get_le24 in 0.001 seconds
+===================================================================
+START - test_sys_get_le32
+ PASS - test_sys_get_le32 in 0.001 seconds
+===================================================================
+START - test_sys_get_le40
+ PASS - test_sys_get_le40 in 0.001 seconds
+===================================================================
+START - test_sys_get_le48
+ PASS - test_sys_get_le48 in 0.001 seconds
+===================================================================
+START - test_sys_get_le64
+ PASS - test_sys_get_le64 in 0.001 seconds
+===================================================================
+START - test_sys_get_le
+ PASS - test_sys_get_le in 0.001 seconds
+===================================================================
+START - test_sys_le_to_cpu
+ PASS - test_sys_le_to_cpu in 0.001 seconds
+===================================================================
+START - test_sys_put_be16
+ PASS - test_sys_put_be16 in 0.001 seconds
+===================================================================
+START - test_sys_put_be24
+ PASS - test_sys_put_be24 in 0.001 seconds
+===================================================================
+START - test_sys_put_be32
+ PASS - test_sys_put_be32 in 0.001 seconds
+===================================================================
+START - test_sys_put_be40
+ PASS - test_sys_put_be40 in 0.001 seconds
+===================================================================
+START - test_sys_put_be48
+ PASS - test_sys_put_be48 in 0.001 seconds
+===================================================================
+START - test_sys_put_be64
+ PASS - test_sys_put_be64 in 0.001 seconds
+===================================================================
+START - test_sys_put_be
+ PASS - test_sys_put_be in 0.001 seconds
+===================================================================
+START - test_sys_put_le16
+ PASS - test_sys_put_le16 in 0.001 seconds
+===================================================================
+START - test_sys_put_le24
+ PASS - test_sys_put_le24 in 0.001 seconds
+===================================================================
+START - test_sys_put_le32
+ PASS - test_sys_put_le32 in 0.001 seconds
+===================================================================
+START - test_sys_put_le40
+ PASS - test_sys_put_le40 in 0.001 seconds
+===================================================================
+START - test_sys_put_le48
+ PASS - test_sys_put_le48 in 0.001 seconds
+===================================================================
+START - test_sys_put_le64
+ PASS - test_sys_put_le64 in 0.001 seconds
+===================================================================
+START - test_sys_put_le
+ PASS - test_sys_put_le in 0.001 seconds
+===================================================================
+START - test_sys_uint16_to_array
+ PASS - test_sys_uint16_to_array in 0.001 seconds
+===================================================================
+START - test_sys_uint32_to_array
+ PASS - test_sys_uint32_to_array in 0.001 seconds
+===================================================================
+START - test_sys_uint64_to_array
+ PASS - test_sys_uint64_to_array in 0.001 seconds
+===================================================================
+TESTSUITE byteorder succeeded
+Running TESTSUITE clock
+===================================================================
+START - test_clock_cycle_32
+ PASS - test_clock_cycle_32 in 0.003 seconds
+===================================================================
+START - test_clock_cycle_64
+ PASS - test_clock_cycle_64 in 0.002 seconds
+===================================================================
+START - test_clock_uptime
+ PASS - test_clock_uptime in 0.012 seconds
+===================================================================
+START - test_ms_time_duration
+ PASS - test_ms_time_duration in 0.172 seconds
+===================================================================
+TESTSUITE clock succeeded
+Running TESTSUITE common
+===================================================================
+START - test_bounds_check_mitigation
+ PASS - test_bounds_check_mitigation in 0.001 seconds
+===================================================================
+START - test_version
+ PASS - test_version in 0.001 seconds
+===================================================================
+TESTSUITE common succeeded
+Running TESTSUITE common_1cpu
+===================================================================
+START - test_nested_irq_offload
+ SKIP - test_nested_irq_offload in 0.001 seconds
+===================================================================
+START - test_timeout_order
+ PASS - test_timeout_order in 0.126 seconds
+===================================================================
+TESTSUITE common_1cpu succeeded
+Running TESTSUITE common_errno
+===================================================================
+START - test_errno
+ PASS - test_errno in 0.001 seconds
+===================================================================
+START - test_thread_context
+ PASS - test_thread_context in 0.031 seconds
+===================================================================
+TESTSUITE common_errno succeeded
+Running TESTSUITE irq_offload
+===================================================================
+START - test_irq_offload
+ PASS - test_irq_offload in 0.001 seconds
+===================================================================
+TESTSUITE irq_offload succeeded
+Running TESTSUITE multilib
+===================================================================
+START - test_multilib
+ PASS - test_multilib in 0.001 seconds
+===================================================================
+TESTSUITE multilib succeeded
+Running TESTSUITE pow2
+===================================================================
+START - test_pow2_ceil
+ PASS - test_pow2_ceil in 0.001 seconds
+===================================================================
+TESTSUITE pow2 succeeded
+Running TESTSUITE printk
+===================================================================
+START - test_printk
+22 113 10000 32768 40000 22
+p 112 -10000 -32768 -40000 -22
+0x1 0x01 0x0001 0x00000001 0x0000000000000001
+0x1 0x 1 0x   1 0x       1
+42 42 0042 00000042
+-42 -42 -042 -0000042
+42 42   42       42
+42 42 0042 00000042
+255     42    abcdef        42
+68719476735 -1 18446744073709551615 ffffffffffffffff
+0xcafebabe 0xbeef 0x2a
+expected '22 113 10000 32768 40000 22
+p 112 -10000 -32768 -40000 -22
+0x1 0x01 0x0001 0x00000001 0x0000000000000001
+0x1 0x 1 0x   1 0x       1
+42 42 0042 00000042
+-42 -42 -042 -0000042
+42 42   42       42
+42 42 0042 00000042
+255     42    abcdef        42
+68719476735 -1 18446744073709551615 ffffffffffffffff
+0xcafebabe 0xbeef 0x2a
+'
+ PASS - test_printk in 0.061 seconds
+===================================================================
+TESTSUITE printk succeeded
+
+------ TESTSUITE SUMMARY START ------
+
+SUITE PASS - 100.00% [atomic]: pass = 3, fail = 0, skip = 0, total = 3 duration = 0.043 seconds
+ - PASS - [atomic.test_atomic] duration = 0.001 seconds
+ - PASS - [atomic.test_atomic_overflow] duration = 0.001 seconds
+ - PASS - [atomic.test_threads_access_atomic] duration = 0.041 seconds
+
+SUITE PASS - 100.00% [bitarray]: pass = 8, fail = 0, skip = 0, total = 8 duration = 0.129 seconds
+ - PASS - [bitarray.test_bitarray_alloc_free] duration = 0.069 seconds
+ - PASS - [bitarray.test_bitarray_declare] duration = 0.001 seconds
+ - PASS - [bitarray.test_bitarray_find_nth_set] duration = 0.013 seconds
+ - PASS - [bitarray.test_bitarray_popcount_region] duration = 0.013 seconds
+ - PASS - [bitarray.test_bitarray_region_set_clear] duration = 0.008 seconds
+ - PASS - [bitarray.test_bitarray_set_clear] duration = 0.012 seconds
+ - PASS - [bitarray.test_bitarray_xor] duration = 0.012 seconds
+ - PASS - [bitarray.test_ffs] duration = 0.001 seconds
+
+SUITE PASS - 100.00% [boot_delay]: pass = 1, fail = 0, skip = 0, total = 1 duration = 0.001 seconds
+ - PASS - [boot_delay.test_bootdelay] duration = 0.001 seconds
+
+SUITE PASS - 100.00% [byteorder]: pass = 37, fail = 0, skip = 0, total = 37 duration = 0.037 seconds
+ - PASS - [byteorder.test_byteorder_mem_swap] duration = 0.001 seconds
+ - PASS - [byteorder.test_byteorder_memcpy_swap] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_be_to_cpu] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_cpu_to_be] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_cpu_to_le] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_get_be16] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_get_be24] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_get_be32] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_get_be40] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_get_be48] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_get_be64] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_get_be] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_get_le16] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_get_le24] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_get_le32] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_get_le40] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_get_le48] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_get_le64] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_get_le] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_le_to_cpu] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_put_be16] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_put_be24] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_put_be32] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_put_be40] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_put_be48] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_put_be64] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_put_be] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_put_le16] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_put_le24] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_put_le32] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_put_le40] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_put_le48] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_put_le64] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_put_le] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_uint16_to_array] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_uint32_to_array] duration = 0.001 seconds
+ - PASS - [byteorder.test_sys_uint64_to_array] duration = 0.001 seconds
+
+SUITE PASS - 100.00% [clock]: pass = 4, fail = 0, skip = 0, total = 4 duration = 0.189 seconds
+ - PASS - [clock.test_clock_cycle_32] duration = 0.003 seconds
+ - PASS - [clock.test_clock_cycle_64] duration = 0.002 seconds
+ - PASS - [clock.test_clock_uptime] duration = 0.012 seconds
+ - PASS - [clock.test_ms_time_duration] duration = 0.172 seconds
+
+SUITE PASS - 100.00% [common]: pass = 2, fail = 0, skip = 0, total = 2 duration = 0.002 seconds
+ - PASS - [common.test_bounds_check_mitigation] duration = 0.001 seconds
+ - PASS - [common.test_version] duration = 0.001 seconds
+
+SUITE PASS - 100.00% [common_1cpu]: pass = 1, fail = 0, skip = 1, total = 2 duration = 0.127 seconds
+ - SKIP - [common_1cpu.test_nested_irq_offload] duration = 0.001 seconds
+ - PASS - [common_1cpu.test_timeout_order] duration = 0.126 seconds
+
+SUITE PASS - 100.00% [common_errno]: pass = 2, fail = 0, skip = 0, total = 2 duration = 0.032 seconds
+ - PASS - [common_errno.test_errno] duration = 0.001 seconds
+ - PASS - [common_errno.test_thread_context] duration = 0.031 seconds
+
+SUITE PASS - 100.00% [irq_offload]: pass = 1, fail = 0, skip = 0, total = 1 duration = 0.001 seconds
+ - PASS - [irq_offload.test_irq_offload] duration = 0.001 seconds
+
+SUITE PASS - 100.00% [multilib]: pass = 1, fail = 0, skip = 0, total = 1 duration = 0.001 seconds
+ - PASS - [multilib.test_multilib] duration = 0.001 seconds
+
+SUITE PASS - 100.00% [pow2]: pass = 1, fail = 0, skip = 0, total = 1 duration = 0.001 seconds
+ - PASS - [pow2.test_pow2_ceil] duration = 0.001 seconds
+
+SUITE PASS - 100.00% [printk]: pass = 1, fail = 0, skip = 0, total = 1 duration = 0.061 seconds
+ - PASS - [printk.test_printk] duration = 0.061 seconds
+
+------ TESTSUITE SUMMARY END ------
+
+===================================================================
+PROJECT EXECUTION SUCCESSFUL

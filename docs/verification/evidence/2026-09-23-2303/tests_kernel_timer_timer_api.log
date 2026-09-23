@@ -1,0 +1,93 @@
+
+
+U-Boot 2022.01 (Apr 04 2022 - 07:53:54 +0000)
+
+CPU:   Zynq 7z030
+Silicon: v3.1
+DRAM:  ECC disabled 1 GiB
+Flash: 0 Bytes
+NAND:  0 MiB
+MMC:   mmc@e0100000: 0
+Loading Environment from FAT... *** Error - No Valid Environment Area found
+*** Warning - bad env area, using default environment
+
+In:    serial@e0000000
+Out:   serial@e0000000
+Err:   serial@e0000000
+Net:   
+ZYNQ GEM: e000b000, mdio bus e000b000, phyaddr 0, interface rgmii-id
+zynq_gem ethernet@e000b000: Failed to read eth PHY id, err: -2
+eth0: ethernet@e000b000
+Hit any key to stop autoboot:  2 *** Booting Zephyr OS build v4.4.2-6-g70b56a29cd74 ***
+Running TESTSUITE timer_api
+===================================================================
+START - test_sleep_abs
+ PASS - test_sleep_abs in 0.011 seconds
+===================================================================
+START - test_time_conversions
+ PASS - test_time_conversions in 0.139 seconds
+===================================================================
+START - test_timeout_abs
+ PASS - test_timeout_abs in 0.002 seconds
+===================================================================
+START - test_timer_duration_period
+ PASS - test_timer_duration_period in 0.326 seconds
+===================================================================
+START - test_timer_expirefn_null
+ PASS - test_timer_expirefn_null in 0.326 seconds
+===================================================================
+START - test_timer_k_define
+ PASS - test_timer_k_define in 0.700 seconds
+===================================================================
+START - test_timer_period_0
+ PASS - test_timer_period_0 in 0.202 seconds
+===================================================================
+START - test_timer_period_k_forever
+ PASS - test_timer_period_k_forever in 0.202 seconds
+===================================================================
+START - test_timer_periodicity
+ PASS - test_timer_periodicity in 0.251 seconds
+===================================================================
+START - test_timer_remaining
+ PASS - test_timer_remaining in 0.051 seconds
+===================================================================
+START - test_timer_restart
+ PASS - test_timer_restart in 0.276 seconds
+===================================================================
+START - test_timer_status_get
+ PASS - test_timer_status_get in 0.001 seconds
+===================================================================
+START - test_timer_status_get_anytime
+ PASS - test_timer_status_get_anytime in 0.326 seconds
+===================================================================
+START - test_timer_status_sync
+ PASS - test_timer_status_sync in 0.351 seconds
+===================================================================
+START - test_timer_user_data
+ PASS - test_timer_user_data in 0.301 seconds
+===================================================================
+TESTSUITE timer_api succeeded
+
+------ TESTSUITE SUMMARY START ------
+
+SUITE PASS - 100.00% [timer_api]: pass = 15, fail = 0, skip = 0, total = 15 duration = 3.465 seconds
+ - PASS - [timer_api.test_sleep_abs] duration = 0.011 seconds
+ - PASS - [timer_api.test_time_conversions] duration = 0.139 seconds
+ - PASS - [timer_api.test_timeout_abs] duration = 0.002 seconds
+ - PASS - [timer_api.test_timer_duration_period] duration = 0.326 seconds
+ - PASS - [timer_api.test_timer_expirefn_null] duration = 0.326 seconds
+ - PASS - [timer_api.test_timer_k_define] duration = 0.700 seconds
+ - PASS - [timer_api.test_timer_period_0] duration = 0.202 seconds
+ - PASS - [timer_api.test_timer_period_k_forever] duration = 0.202 seconds
+ - PASS - [timer_api.test_timer_periodicity] duration = 0.251 seconds
+ - PASS - [timer_api.test_timer_remaining] duration = 0.051 seconds
+ - PASS - [timer_api.test_timer_restart] duration = 0.276 seconds
+ - PASS - [timer_api.test_timer_status_get] duration = 0.001 seconds
+ - PASS - [timer_api.test_timer_status_get_anytime] duration = 0.326 seconds
+ - PASS - [timer_api.test_timer_status_sync] duration = 0.351 seconds
+ - PASS - [timer_api.test_timer_user_data] duration = 0.301 seconds
+
+------ TESTSUITE SUMMARY END ------
+
+===================================================================
+PROJECT EXECUTION SUCCESSFUL
