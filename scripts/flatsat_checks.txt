@@ -1,0 +1,25 @@
+# Flatsat checks for scripts/flatsat_console.py --run. Replace the <...> values with
+# the approved nodes and parameters of the current FlatSat configuration before use.
+# Reads only, except the clearly marked section at the end, which is commented out.
+
+bench info
+can show can@e0009000
+
+# CSP reachability (CRC32, like csh)
+csp ping <OBC_NODE>
+csp ping <OBC_NODE>
+csp ping <OBC_NODE>
+csp ping <OTHER_NODE>
+
+# Read-only libparam (types: u8 i8 u16 i16 u32 i32 u64 i64 float double)
+param get <OBC_NODE> <PARAM_ID> <TYPE>
+param get <OBC_NODE> <PARAM_ID> <TYPE> <INDEX>
+
+# Bus state after the traffic above
+can show can@e0009000
+kernel thread list
+
+# --- WRITES: only with explicit approval for this parameter and value ---
+# param get <NODE> <PARAM_ID> <TYPE>
+# param set <NODE> <PARAM_ID> <TYPE> <NEW_VALUE> --confirm
+# param set <NODE> <PARAM_ID> <TYPE> <ORIGINAL_VALUE> --confirm
