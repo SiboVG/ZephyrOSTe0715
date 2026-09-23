@@ -1,14 +1,13 @@
-
-
 identifier: te0715
 name: TE0715-05-71I33-L
-type: som
+type: mcu
 arch: arm
 toolchain:
   - zephyr
   - gnuarmemb
-ram: 1073741824
+# KiB: 1 GiB DDR3
+ram: 1048576
 supported:
   - gpio
+  - uart
 vendor: trenz
-
