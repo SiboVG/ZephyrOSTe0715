@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: Apache-2.0
+
+mainmenu "CSP/libparam bench server on the TE0715"
+
+config APP_CSP_NODE
+	int "Default CSP node address"
+	range 1 16381
+	default 6061
+	help
+	  Used unless another node is given with `bench start` on the serial
+	  console during the start window. 6061 lies in the lab51 EGSE CAN
+	  subnet 6016/8, next to the Ubuntu test host 6060.
+
+config APP_CSP_NETMASK
+	int "Default CSP network prefix length"
+	range 0 13
+	default 8
+
+config APP_START_WINDOW_S
+	int "Seconds to wait for `bench start` before using the defaults"
+	default 10
+
+source "Kconfig.zephyr"

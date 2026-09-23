@@ -42,6 +42,7 @@ register_fprime_zephyr_deployment(
     CspBenchZephyr
     SOURCES
         "${CMAKE_CURRENT_LIST_DIR}/Main.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/shell_cmds.c"
     DEPENDS
         Top
 )
