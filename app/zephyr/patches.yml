@@ -9,6 +9,21 @@ patches:
     comments: |
       Zephyr 4.x removed <zephyr/posix/time.h>; the POSIX clock functions
       are declared by the C library's <time.h>.
+  - path: libcsp/0002-zephyr-can-do-not-block-forever-on-unacknowledged-frames.patch
+    sha256sum: 1bdbdb9deca9044c6312801cafd832a191ca721b68e1bc6fe6d7777cdc8291b1
+    module: libcsp
+    author: Sibo Van Gool
+    email: sibo.vangool@hotmail.com
+    date: 2026-09-24
+    upstreamable: true
+    comments: |
+      can_zephyr.c called can_send() without a callback, which makes Zephyr
+      wait with K_FOREVER until the frame is sent. With no node acknowledging
+      (bus disconnected, or all other nodes off) the controller retransmits
+      forever and every CSP sender blocks. Pass a completion callback, so a
+      send waits at most CSP_CAN_TX_TIME_OUT (100 ms) for a free TX buffer and
+      otherwise fails with -EAGAIN; CSP then drops the packet. Also present
+      on upstream develop (e14f5ec3, 2026-09-09).
   - path: libparam/0001-vmem-client-do-not-shadow-abort.patch
     sha256sum: c31f0e48e587a22d0fdc36a74dd9471ab0492b92a1091a6b0dd9578711166f01
     module: modules/lib/libparam
