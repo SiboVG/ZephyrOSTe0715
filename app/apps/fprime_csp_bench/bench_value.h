@@ -3,7 +3,7 @@
  *
  * Parsing of the numbers and parameter values typed in the serial shell.
  * Kept free of Zephyr and libparam, so it can be unit tested on its own
- * (app/tests/bench_value).
+ * (app/tests/bench).
  */
 
 #ifndef BENCH_VALUE_H_

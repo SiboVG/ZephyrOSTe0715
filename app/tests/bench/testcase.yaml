@@ -3,7 +3,7 @@ common:
   integration_platforms:
     - native_sim/native/64
 tests:
-  te0715.bench_value:
+  te0715.bench:
     platform_allow:
       - native_sim
       - native_sim/native/64

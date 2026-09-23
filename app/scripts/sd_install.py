@@ -13,7 +13,13 @@ address 0 and jumps there. The card does not have to be removed:
 4. verify the script image with `iminfo`, and write both files with `fatwrite`.
 
   app/scripts/sd_install.py install path/to/zephyr.bin
+  app/scripts/sd_install.py config --node 6062 [--prefix 8]   # write te0715.txt
+  app/scripts/sd_install.py config --defaults                 # back to the image's defaults
   app/scripts/sd_install.py restore        # boot PetaLinux again
+
+te0715.txt holds board settings that boot.scr hands to Zephyr (see
+apps/fprime_csp_bench/bench_config.h). It is a plain text file, so it can also be
+edited with the card in any computer.
 
 Needs the Digilent JTAG/UART cable and AMD xsdb (see hw_test.py).
 """
@@ -37,6 +43,9 @@ BOOT_CMD = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'boot'
 BIN_ADDR = 0x02000000
 SCR_ADDR = 0x03000000
 BACKUP = 'boot_petalinux.scr'
+CONFIG_FILE = 'te0715.txt'
+NODE_MAX = 16381  # CSP v2 unicast nodes (bench_config.h)
+PREFIX_MAX = 13
 
 
 class UBoot:
@@ -110,6 +119,33 @@ def install(ub, zephyr_bin):
     os.unlink(scr_path)
 
 
+def config_text(node=None, prefix=None):
+    """Contents of te0715.txt; without settings, a file that keeps the defaults."""
+    lines = ['# TE0715 board settings, read by boot.scr at every boot (sd_install.py config)']
+    if node is not None:
+        if not 1 <= node <= NODE_MAX:
+            raise ValueError(f'CSP node must be 1..{NODE_MAX}')
+        lines.append(f'csp_node={node}')
+    if prefix is not None:
+        if not 0 <= prefix <= PREFIX_MAX:
+            raise ValueError(f'CSP prefix must be 0..{PREFIX_MAX}')
+        lines.append(f'csp_prefix={prefix}')
+    if node is None and prefix is None:
+        lines.append('# no settings: the image defaults (node 6061/8) apply')
+    return ('\n'.join(lines) + '\n').encode()
+
+
+def write_config(ub, text):
+    with tempfile.NamedTemporaryFile(suffix='.txt', delete=False) as f:
+        f.write(text)
+        path = f.name
+    ub.load(path, SCR_ADDR)
+    ub.run(f'fatwrite mmc 0 {SCR_ADDR:#x} {CONFIG_FILE} {len(text):#x}')
+    ub.run(f'fatload mmc 0 {SCR_ADDR:#x} {CONFIG_FILE}')
+    ub.run(f'md.b {SCR_ADDR:#x} {len(text):#x}')
+    os.unlink(path)
+
+
 def restore(ub):
     if BACKUP not in ub.files():
         sys.exit(f'no {BACKUP} on the card, nothing to restore')
@@ -120,18 +156,31 @@ def restore(ub):
 def main():
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('action', choices=['install', 'restore'])
+    parser.add_argument('action', choices=['install', 'config', 'restore'])
     parser.add_argument('zephyr_bin', nargs='?', help='install: the zephyr.bin to boot')
+    parser.add_argument('--node', type=int, help='config: CSP node stored in te0715.txt')
+    parser.add_argument('--prefix', type=int, help='config: CSP network prefix length')
+    parser.add_argument('--defaults', action='store_true',
+                        help='config: store no settings (the image defaults apply)')
     parser.add_argument('--port', help='UART device (default: Digilent cable interface 1)')
     parser.add_argument('--xsdb', help='path to xsdb (default: PATH, then /tools/Xilinx)')
     args = parser.parse_args()
     if args.action == 'install' and not args.zephyr_bin:
         parser.error('install needs the path to zephyr.bin')
+    if args.action == 'config':
+        if args.defaults == (args.node is not None or args.prefix is not None):
+            parser.error('config needs --node/--prefix, or --defaults')
+        try:
+            text = config_text(args.node, args.prefix)
+        except ValueError as e:
+            parser.error(str(e))
 
     ub = UBoot(find_port(args.port), find_xsdb(args.xsdb))
     ub.reset()
     if args.action == 'install':
         install(ub, args.zephyr_bin)
+    elif args.action == 'config':
+        write_config(ub, text)
     else:
         restore(ub)
     print('done: power-cycle or reset the board to boot from the SD card')

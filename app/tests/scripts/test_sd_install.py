@@ -87,3 +87,55 @@ def test_restore_refuses_without_a_backup():
     with pytest.raises(SystemExit):
         restore(ub)
     assert ub.writes() == []
+
+
+def test_config_text_is_what_the_board_parses():
+    assert sd_install.config_text(6062, 8) == (
+        b'# TE0715 board settings, read by boot.scr at every boot (sd_install.py config)\n'
+        b'csp_node=6062\ncsp_prefix=8\n')
+    assert b'csp_' not in sd_install.config_text().replace(b'# no settings', b'')
+    for line in sd_install.config_text().decode().splitlines():
+        assert line.startswith('#'), 'a defaults file holds comments only'
+
+
+@pytest.mark.parametrize('node, prefix', [(0, None), (16382, None), (6061, 14), (6061, -1)])
+def test_config_text_refuses_what_the_board_would_refuse(node, prefix):
+    with pytest.raises(ValueError):
+        sd_install.config_text(node, prefix)
+
+
+def test_config_is_written_and_read_back():
+    ub = FakeUBoot(['boot.scr', BACKUP])
+    text = sd_install.config_text(6062)
+    sd_install.write_config(ub, text)
+    assert ub.writes() == ['te0715.txt']
+    write = next(c for c in ub.commands if c.startswith('fatwrite'))
+    assert write.split()[-1] == hex(len(text))
+    assert any(c.startswith('fatload') and c.endswith('te0715.txt') for c in ub.commands)
+
+
+def test_boot_script_hands_the_config_to_zephyr():
+    from sd_install import BOOT_CMD
+    script = open(BOOT_CMD).read()
+    # Cleared before loading, so a removed file leaves no stale settings
+    clear = script.index('mw.l 0x0f000000 0')
+    load = script.index('fatload mmc 0 0x0f000100 te0715.txt')
+    stamp = script.index('mw.l 0x0f000000 0x37304554')
+    assert clear < load < stamp < script.index('go 0x0')
+    assert script.index('dcache flush') < script.index('go 0x0')
+
+
+def test_boot_script_matches_the_firmware():
+    import os
+    import re
+    from sd_install import BOOT_CMD
+    bench = os.path.join(os.path.dirname(BOOT_CMD), '..', 'apps', 'fprime_csp_bench')
+    script = open(BOOT_CMD).read()
+    header = open(os.path.join(bench, 'bench_config.h')).read()
+    kconfig = open(os.path.join(bench, 'Kconfig')).read()
+    magic = re.search(r'#define BENCH_CONFIG_MAGIC\s+(0x[0-9A-Fa-f]+)', header).group(1)
+    offset = int(re.search(r'#define BENCH_CONFIG_TEXT_OFFSET\s+(0x[0-9A-Fa-f]+)', header).group(1), 16)
+    addr = int(re.search(r'config APP_BOOT_CONFIG_ADDR.*?default (0x[0-9a-f]+)', kconfig, re.S).group(1), 16)
+    assert f'mw.l {addr:#010x} {magic.lower()}' in script
+    assert f'fatload mmc 0 {addr + offset:#010x} te0715.txt' in script
+    assert f'mw.l {addr + 4:#010x} ${{filesize}}' in script

@@ -44,6 +44,7 @@ register_fprime_zephyr_deployment(
         "${CMAKE_CURRENT_LIST_DIR}/Main.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/shell_cmds.c"
         "${CMAKE_CURRENT_LIST_DIR}/bench_value.c"
+        "${CMAKE_CURRENT_LIST_DIR}/bench_config.c"
     DEPENDS
         Top
 )

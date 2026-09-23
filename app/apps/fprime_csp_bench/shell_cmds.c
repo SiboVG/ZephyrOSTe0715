@@ -9,6 +9,9 @@
  * <type> is one of u8 i8 u16 i16 u32 i32 u64 i64 float double. Remote
  * parameters are accessed with libparam protocol version 2 on port 10.
  *
+ * At boot the node and prefix come from te0715.txt on the SD card, if
+ * boot/boot.cmd found one (see bench_config.h), else from Kconfig.
+ *
  * It also serves, next to the F Prime component's bench_integer (200):
  * - led_d4 (201, u8): the green user LED D4 on MIO7, 1 on / 0 off;
  * - libparam's list service (port 12, via vmem_server_loop), so csh can
@@ -26,7 +29,9 @@
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/kernel.h>
 #include <zephyr/shell/shell.h>
+#include <zephyr/sys/device_mmio.h>
 
+#include "bench_config.h"
 #include "bench_start.h"
 #include "bench_value.h"
 
@@ -37,6 +42,7 @@
 static K_SEM_DEFINE(start_sem, 0, 1);
 static uint16_t start_node = CONFIG_APP_CSP_NODE;
 static uint8_t start_prefix = CONFIG_APP_CSP_NETMASK;
+static const char *start_source = "default";
 static bool started;
 
 /* led_d4: the green user LED D4, as a libparam parameter */
@@ -102,11 +108,52 @@ int bench_start_services(void)
 	return 0;
 }
 
+/*
+ * Apply te0715.txt, which boot.cmd left in RAM, and clear the header: RAM
+ * keeps its contents over a reset, and a later JTAG load (which does not run
+ * boot.cmd) must not pick up an old file.
+ */
+static void load_boot_config(void)
+{
+	mm_reg_t area;
+	struct bench_config cfg;
+	int bad_line;
+	int err;
+
+	device_map(&area, CONFIG_APP_BOOT_CONFIG_ADDR, BENCH_CONFIG_AREA_SIZE, K_MEM_CACHE_NONE);
+	err = bench_config_from_area((const uint8_t *)area, BENCH_CONFIG_AREA_SIZE, &cfg,
+				     &bad_line);
+	sys_write32(0, area);
+	k_mem_unmap_phys_bare((uint8_t *)area, BENCH_CONFIG_AREA_SIZE);
+
+	if (err == -ENOENT) {
+		return;
+	}
+	if (err != 0) {
+		if (bad_line > 0) {
+			printk("*** te0715.txt: line %d not understood; using the defaults ***\n",
+			       bad_line);
+		} else {
+			printk("*** te0715.txt: bad header; using the defaults ***\n");
+		}
+		start_source = "default; te0715.txt refused";
+		return;
+	}
+	if (cfg.has_node) {
+		start_node = cfg.node;
+	}
+	if (cfg.has_prefix) {
+		start_prefix = cfg.prefix;
+	}
+	start_source = "te0715.txt";
+}
+
 void bench_wait_for_start(uint16_t *node, uint8_t *prefix)
 {
-	printk("\n*** CSP bench server: default node %u/%u. Type `bench start [node] [prefix]` "
-	       "within %d s to start (on another node), or wait for the defaults. ***\n\n",
-	       start_node, start_prefix, CONFIG_APP_START_WINDOW_S);
+	load_boot_config();
+	printk("\n*** CSP bench server: node %u/%u (%s). Type `bench start [node] [prefix]` "
+	       "within %d s to start (on another node), or wait. ***\n\n",
+	       start_node, start_prefix, start_source, CONFIG_APP_START_WINDOW_S);
 	(void)k_sem_take(&start_sem, K_SECONDS(CONFIG_APP_START_WINDOW_S));
 	started = true;
 	*node = start_node;
@@ -145,6 +192,9 @@ static int cmd_bench_start(const struct shell *sh, size_t argc, char **argv)
 		}
 		start_prefix = v;
 	}
+	if (argc > 1) {
+		start_source = "bench start";
+	}
 	shell_print(sh, "starting on node %u/%u", start_node, start_prefix);
 	k_sem_give(&start_sem);
 	return 0;
@@ -155,8 +205,9 @@ static int cmd_bench_info(const struct shell *sh, size_t argc, char **argv)
 	ARG_UNUSED(argc);
 	ARG_UNUSED(argv);
 
-	shell_print(sh, "node %u/%u (%s), libparam server port 10: parameter 200 (u32)",
-		    start_node, start_prefix, started ? "started" : "waiting for start");
+	shell_print(sh, "node %u/%u (%s, %s), libparam server port 10: parameter 200 (u32)",
+		    start_node, start_prefix, start_source,
+		    started ? "started" : "waiting for start");
 	shell_print(sh, "parameter %d led_d4 (u8) = %u: LED D4 %s; parameter list served on port 12",
 		    LED_PARAM_ID, led_value, led_value ? "on" : "off");
 	return 0;
