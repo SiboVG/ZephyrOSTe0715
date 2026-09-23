@@ -70,6 +70,9 @@ def main():
     boot.add_argument('--sd-boot', action='store_true', help='reset and boot from the SD card')
     parser.add_argument('--can', default='can0', help='host SocketCAN interface')
     parser.add_argument('--node', type=int, default=6061, help='board CSP node')
+    parser.add_argument('--source', default='default',
+                        help='where the boot banner must say the node comes from '
+                             '(default, te0715.txt)')
     parser.add_argument('--log', required=True, help='transcript file')
     parser.add_argument('--port', help='UART device')
     parser.add_argument('--xsdb', help='path to xsdb')
@@ -93,6 +96,8 @@ def main():
 
     window = console.wait_for('within 10 s', 40)
     check('start window announced', window)
+    banner = f'node {args.node}/8 ({args.source})'
+    check(f'boot banner: {banner}', banner in console.text())
     if args.elf:
         console.command(f'bench start {args.node} 8', 1)
     ready = console.wait_for('CSP_BENCH_READY', 30)
@@ -102,7 +107,7 @@ def main():
         return 1
 
     info = console.command('bench info')
-    check('bench info', f'node {args.node}/8 (started)' in info)
+    check('bench info', f'node {args.node}/8 (' in info and 'started)' in info)
     console.command('kernel thread list', 3)
 
     client = subprocess.run(['timeout', '60', args.bench, '--role', 'client', '--can', args.can,

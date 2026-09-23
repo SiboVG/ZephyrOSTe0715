@@ -74,12 +74,19 @@ fi
 run can-bringup "$py" "$app/scripts/hw_test.py" run "$app/apps/can_bringup" --seconds 4
 run can-echo "$py" "$app/scripts/can_echo_test.py" "$can" --count 1000
 
-# F Prime bench server, loaded over JTAG, then booted standalone from the SD card
+# F Prime bench server. First booted from the SD card with te0715.txt setting
+# node 6062 (TC-11); then loaded over JTAG, which must ignore the settings left
+# in RAM by that boot (TC-06/07); then booted from the card again with the
+# defaults (TC-08), which leaves the board running the FlatSat image.
 elf="$app/apps/fprime_csp_bench/build-fprime-automatic-zephyr/zephyr/zephyr.elf"
+run sd-config-6062 "$py" "$app/scripts/sd_install.py" config --node 6062
+run fprime-e2e-sd-config "$py" "$app/scripts/fprime_e2e.py" --bench "$bench" --can "$can" \
+    --sd-boot --node 6062 --source te0715.txt --log "$out/fprime-e2e-sd-config-transcript.log"
 run fprime-e2e-jtag "$py" "$app/scripts/fprime_e2e.py" --bench "$bench" --can "$can" \
     --elf "$elf" --log "$out/fprime-e2e-jtag-transcript.log"
+run sd-config-defaults "$py" "$app/scripts/sd_install.py" config --defaults
 run fprime-e2e-sd-boot "$py" "$app/scripts/fprime_e2e.py" --bench "$bench" --can "$can" \
-    --sd-boot --log "$out/fprime-e2e-sd-boot-transcript.log"
+    --sd-boot --source te0715.txt --log "$out/fprime-e2e-sd-boot-transcript.log"
 
 (cd "$out" && sha256sum -- * > SHA256SUMS)
 echo "results in $out (status $status)"
