@@ -36,7 +36,8 @@ one of the test scripts, which need the port themselves.
     python3 app/scripts/flatsat_console.py
     ```
 
-    It finds the port by itself; use `--port` to name it. Type a command and press
+    It finds the port by itself, and waits for it if the board is still off (the
+    cable's serial chip is powered by the board); use `--port` to name it. Type a command and press
     Enter; Ctrl-C quits. The log is `flatsat-<date>-<time>.log` in the current
     directory, or the file given with `--log`.
 

@@ -14,6 +14,10 @@ starting with # are skipped), waits `--delay` seconds after each, and exits. A l
   python3 flatsat_console.py --run flatsat_checks.txt
   python3 flatsat_console.py --port /dev/cu.usbserial-25163300AA8CB
 
+The cable's serial chip is powered by the board, so the port only appears once the
+board is on. If it is not there yet, the console waits for it (Ctrl-C gives up), so it
+can be started before powering the board and catch the boot.
+
 The log goes to flatsat-<date>-<time>.log in the current directory unless --log is
 given. Only one program can use the serial port at a time.
 """
@@ -21,6 +25,7 @@ given. Only one program can use the serial port at a time.
 import argparse
 import datetime
 import glob
+import os
 import re
 import sys
 import threading
@@ -41,7 +46,30 @@ def find_port():
         ports = sorted(glob.glob(pattern))
         if ports:
             return ports[0]
-    sys.exit('no Digilent UART found; pass --port (macOS: ls /dev/cu.usbserial-*; Linux: ls /dev/serial/by-id/)')
+    return None
+
+
+def wait_and_open(port_arg):
+    """Open the port, waiting for it to appear while the board is powered off."""
+    waiting = False
+    last_error = None
+    while True:
+        port = port_arg or find_port()
+        if port and os.path.exists(port):
+            try:
+                return port, serial.Serial(port, 115200, timeout=0.05)
+            except serial.SerialException as e:
+                # Normal for a moment after the port appears; if it persists (for
+                # example no permission on Linux), the message says why
+                if str(e) != last_error:
+                    print(f'[console] {e}', file=sys.stderr)
+                    last_error = str(e)
+        if not waiting:
+            name = port_arg or 'the Digilent UART'
+            print(f'[console] waiting for {name}; power on the board (Ctrl-C quits)',
+                  file=sys.stderr)
+            waiting = True
+        time.sleep(0.1)
 
 
 class Logger:
@@ -76,10 +104,13 @@ def main():
                         help='seconds to wait after each scripted command (default 3)')
     args = parser.parse_args()
 
-    port = args.port or find_port()
+    try:
+        port, ser = wait_and_open(args.port)
+    except KeyboardInterrupt:
+        sys.exit('\n[console] no port found; pass --port '
+                 '(macOS: ls /dev/cu.usbserial-*; Linux: ls /dev/serial/by-id/)')
     log_path = args.log or datetime.datetime.now().strftime('flatsat-%Y%m%d-%H%M%S.log')
     log = Logger(log_path)
-    ser = serial.Serial(port, 115200, timeout=0.05)
     print(f'[console] {port} at 115200 8N1, logging to {log_path}', file=sys.stderr)
     log.note(f'console opened on {port}')
 

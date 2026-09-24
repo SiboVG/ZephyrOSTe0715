@@ -77,8 +77,26 @@ With the TE0701 powered off:
 
 ### 2. Open the console
 
-The laptop shows the cable as two serial ports (see
-[Connecting to the board](../guide/connect.md)); the console is the second one:
+Start the logging console **before** powering the board, so the log includes the
+boot:
+
+```bash
+python3 flatsat_console.py
+```
+
+The cable's serial chip is powered by the board, so its port does not exist yet. The
+console says so and waits:
+
+```text
+[console] waiting for the Digilent UART; power on the board (Ctrl-C quits)
+```
+
+As soon as the board is powered on (step 3), the port appears and the console opens
+it by itself and logs to `flatsat-<date>-<time>.log`. Keep it open for the whole test.
+
+The cable shows up as two serial ports (see
+[Connecting to the board](../guide/connect.md)), and the console uses the second one.
+To check them by hand, or to pass one with `--port`, list them once the board is on:
 
 === "macOS"
 
@@ -100,24 +118,15 @@ The laptop shows the cable as two serial ports (see
     # usb-Digilent_Digilent_USB_Device_25163300AA8C-if01-port0   console
     ```
 
-If nothing is listed, the laptop does not see the cable at all: check that it is a
-data cable (not charge-only), that it is in the JTAG/UART connector and not J12, and
-try without a USB hub. `ioreg -p IOUSB` (macOS) or `lsusb` (Linux) should show a
-Digilent device.
-
-Start the logging console **before** powering the board, so the log includes the
-boot:
-
-```bash
-python3 flatsat_console.py
-```
-
-It finds the port by itself (or use `--port` with the console port from above) and logs to
-`flatsat-<date>-<time>.log`. Keep it open for the whole test.
-
 ### 3. Power on and choose the node
 
-Power on the TE0701. After a few seconds:
+Power on the TE0701. The console prints `[console] ... at 115200 8N1` when it opens
+the port. If it keeps waiting, the laptop does not see the cable at all: check that it
+is a data cable (not charge-only), that it is in the JTAG/UART connector and not J12,
+and try without a USB hub. `ioreg -p IOUSB` (macOS) or `lsusb` (Linux) should then
+show a Digilent device.
+
+After a few seconds:
 
 ```text
 *** Booting Zephyr OS build v4.4.2-6-g70b56a29cd74 ***
@@ -309,6 +318,7 @@ Stop and power off the TE0715 if:
 
 | Symptom | Check |
 |---|---|
+| The console keeps waiting after power-on | Board powered; data cable (not charge-only) in the JTAG/UART connector, not J12; no USB hub; on Linux, the printed error (e.g. no permission: `dialout`) |
 | No console output | The console port (**B** on macOS, **if01** on Linux); on Linux, membership of `dialout`; only one program may use the port; 115200 8N1 |
 | The board boots PetaLinux | `boot.scr` on the SD card was restored; see [Booting](../guide/boot.md) |
 | csh `ping 6061` gets no reply | Node chosen in step 3; the FlatSat's routing to the 6016/8 subnet; `can show` on the TE0715 |
