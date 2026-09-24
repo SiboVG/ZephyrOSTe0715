@@ -91,9 +91,11 @@ class Logger:
 
     def write(self, text, prefix=''):
         with self.lock:
-            self.partial += ANSI.sub('', text).replace('\r', '')
+            # Colour codes are removed per complete line: one can arrive split over two reads
+            self.partial += text
             *lines, self.partial = self.partial.split('\n')
             for line in lines:
+                line = ANSI.sub('', line).replace('\r', '')
                 stamp = datetime.datetime.now().isoformat(timespec='milliseconds')
                 self.file.write(f'{stamp} {prefix}{line}\n')
             self.file.flush()

@@ -73,7 +73,11 @@ With the TE0701 powered off:
 1. Connect the EVM's CANH, CANL and GND (header J7 or the DSUB9 J9) to the FlatSat
    bus. Keep a common ground.
 2. Set EVM jumper J6 as agreed (removed if the bus is already terminated).
-3. Connect the TE0701's JTAG/UART micro-USB (not J12) to the laptop.
+3. Check that the EVM's 3.3 V supply is connected (Pmod J1 pin 6 to EVM J3 pin 1, see
+   [Hardware setup](hardware-setup.md#1-connect-the-transceiver-to-pmod-j1)). Without
+   it, the CAN controller counts millions of form errors on its undriven input, and
+   `can show` keeps them until the next boot.
+4. Connect the TE0701's JTAG/UART micro-USB (not J12) to the laptop.
 
 ### 2. Open the console
 
@@ -325,7 +329,7 @@ Stop and power off the TE0715 if:
 | csh `ping 6061` gets no reply | Node chosen in step 3; the FlatSat's routing to the 6016/8 subnet; `can show` on the TE0715 |
 | `csp ping` from the TE0715 gets no reply, no CAN errors | The node may not accept CRC32: try `--nocrc`; or it is not routed |
 | `ack errors` rising | TE0715 not connected to the bus, other nodes off, or wrong bitrate |
-| Bit, stuff, CRC or form errors | Termination (J6), CANH/CANL swapped, grounding |
+| Bit, stuff, CRC or form errors | EVM powered (the statistics count from boot, so power-cycle the TE0715 after powering the EVM); termination (J6), CANH/CANL swapped, grounding |
 | `list download` fails | Use the `list add` commands in step 4 |
 | `get led_d4` in csh says the parameter is unknown | Load the list first (step 4); check `node` is 6061 |
 | `list`, `get` or `set` print nothing after `list add` | The `-a 1 -m c` options are missing: `list forget 6061` and add them again |

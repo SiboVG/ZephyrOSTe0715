@@ -20,6 +20,6 @@ can show can@e0009000
 kernel thread list
 
 # --- WRITES: only with explicit approval for this parameter and value ---
-# param get 6028 120 u08
-# param set 6028 120 u08 1 --confirm
-# param set 6028 120 u08 0 --confirm
+# param get 6028 120 u8
+# param set 6028 120 u8 1 --confirm
+# param set 6028 120 u8 0 --confirm
