@@ -92,7 +92,8 @@ console says so and waits:
 ```
 
 As soon as the board is powered on (step 3), the port appears and the console opens
-it by itself and logs to `flatsat-<date>-<time>.log`. Keep it open for the whole test.
+it by itself and logs to `flatsat-<date>-<time>.log`. Keep it open for the whole
+test. Up and Down recall earlier commands.
 
 The cable shows up as two serial ports (see
 [Connecting to the board](../guide/connect.md)), and the console uses the second one.

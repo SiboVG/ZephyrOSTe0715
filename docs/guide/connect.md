@@ -37,8 +37,11 @@ one of the test scripts, which need the port themselves.
     ```
 
     It finds the port by itself, and waits for it if the board is still off (the
-    cable's serial chip is powered by the board); use `--port` to name it. Type a command and press
-    Enter; Ctrl-C quits. The log is `flatsat-<date>-<time>.log` in the current
+    cable's serial chip is powered by the board); use `--port` to name it. Type a
+    command and press Enter; Ctrl-C or Ctrl-D quits. On macOS and Linux, Up and Down
+    recall earlier commands (also from previous sessions), Left and Right edit the
+    line, and Ctrl-R searches the history; the board's output is printed above the
+    line being typed. The log is `flatsat-<date>-<time>.log` in the current
     directory, or the file given with `--log`.
 
 === "tio"

@@ -3,7 +3,10 @@
 """Serial console for the TE0715 with a timestamped log (macOS, Linux, Windows).
 
 Interactive: type shell commands (e.g. `csp ping 6016`) and press Enter; everything
-the board prints is shown and written to the log. Ctrl-C quits.
+the board prints is shown and written to the log. Ctrl-C (or Ctrl-D) quits. On macOS
+and Linux the input line has a history: Up/Down recall earlier commands (also from
+previous sessions, kept in ~/.flatsat_console_history), Left/Right edit the line, and
+Ctrl-R searches. The board's output is printed above the line being typed.
 
 Scripted: `--run commands.txt` sends each line of the file (blank lines and lines
 starting with # are skipped), waits `--delay` seconds after each, and exits. A line
@@ -33,7 +36,15 @@ import time
 
 import serial
 
+try:
+    import readline
+except ImportError:     # Windows: plain line input without history
+    readline = None
+
 ANSI = re.compile(r'\x1b\[[0-9;?]*[A-Za-z]')
+PROMPT = 'uart:~$ '
+BOARD_PROMPT = re.compile(r'uart:~\$ ?')
+HISTORY = os.path.expanduser('~/.flatsat_console_history')
 # The cable's FT2232H: interface A is JTAG, interface B (Linux: if01) is the UART
 PORT_PATTERNS = [
     '/dev/cu.usbserial-*B',                            # macOS
@@ -94,6 +105,64 @@ class Logger:
             self.file.flush()
 
 
+class Screen:
+    """Board output above a local input line with history (readline).
+
+    Only complete lines of board output are printed, each time followed by the input
+    line again. The board's prompt at the end of its output is not printed, since
+    the input line shows it; the board then echoes the command after its prompt, so
+    the typed line is removed once it is sent to avoid showing it twice. A partial
+    line that is not the prompt is printed after a short pause.
+    """
+
+    def __init__(self):
+        self.lock = threading.Lock()
+        self.tail = ''
+        self.tail_time = 0.0
+        self.reading = False
+
+    def _show(self, text):
+        line = PROMPT + readline.get_line_buffer() if self.reading else ''
+        sys.stdout.write('\r\x1b[K' + text + line)
+        sys.stdout.flush()
+
+    def output(self, text):
+        with self.lock:
+            head, newline, self.tail = (self.tail + text).rpartition('\n')
+            self.tail_time = time.monotonic()
+            if newline:
+                self._show(head + newline)
+
+    def idle(self):
+        """Called when no data arrived: print a partial line that has stalled."""
+        with self.lock:
+            if (self.tail and time.monotonic() - self.tail_time > 0.2
+                    and not BOARD_PROMPT.fullmatch(ANSI.sub('', self.tail).strip('\r'))):
+                self._show(self.tail + '\n')
+                self.tail = ''
+
+    def input(self):
+        with self.lock:
+            self.reading = True
+        try:
+            line = input(PROMPT)
+        finally:
+            with self.lock:
+                self.reading = False
+        with self.lock:
+            sys.stdout.write('\x1b[1A\r\x1b[K')     # the board echoes the line
+            sys.stdout.flush()
+        return line
+
+
+def load_history():
+    try:
+        readline.read_history_file(HISTORY)
+    except OSError:
+        pass
+    readline.set_history_length(1000)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -115,15 +184,22 @@ def main():
     log.note(f'console opened on {port}')
 
     stop = threading.Event()
+    screen = (Screen() if readline and not args.run and sys.stdin.isatty()
+              and sys.stdout.isatty() else None)
 
     def reader():
         while not stop.is_set():
             data = ser.read(4096)
             if data:
                 text = data.decode(errors='replace')
-                sys.stdout.write(text)
-                sys.stdout.flush()
+                if screen:
+                    screen.output(text)
+                else:
+                    sys.stdout.write(text)
+                    sys.stdout.flush()
                 log.write(text)
+            elif screen:
+                screen.idle()
 
     threading.Thread(target=reader, daemon=True).start()
 
@@ -143,14 +219,23 @@ def main():
                     continue
                 send(line)
                 time.sleep(args.delay)
+        elif screen:
+            load_history()
+            while True:
+                send(screen.input())
         else:
             for line in sys.stdin:
                 send(line.rstrip('\n'))
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, EOFError):
         pass
     finally:
         stop.set()
         time.sleep(0.2)
+        if screen:
+            try:
+                readline.write_history_file(HISTORY)
+            except OSError:
+                pass
         log.note('console closed')
         print(f'\n[console] log saved to {log_path}', file=sys.stderr)
 
