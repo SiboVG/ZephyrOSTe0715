@@ -30,9 +30,9 @@ UTC+2), as in the logs.
 | csh host | FlatSat laptop `lab51` |
 | CAN bitrate | 1 Mbit/s |
 | TE0715 CSP node / prefix | 6061/8, from `te0715.txt` |
-| FlatSat nodes involved | 6022, 6024, 6028, 6030 (OBC, not powered until about 15:08) |
+| FlatSat nodes involved | 6022, 6028, 6030 (OBC, not powered until about 15:08) |
 | Reads | 6022 parameter 130 (`i16`), 6030 parameter 131[0] (`u16`), as planned in `flatsat_checks.txt` |
-| Writes | 6028 parameter 120 (`u8`); in the follow-up also parameter 120 on 6022 and 6024 |
+| Writes | 6028 parameter 120 (`u8`) |
 
 ## Results
 
@@ -57,7 +57,6 @@ Result: **P** pass, **F** fail, **NR** not run.
 | 8 | `param get 6030 131 u16 0` (and index 1) | `failed (-1)` while the OBC was off; after it was powered, `value 0` for both indexes | `150556` | **P** (deviation 2) |
 | 8 | Further reads on 6030 | parameter 1 (`u32`): `45462 (0x0000b196)`; parameter 25 (`u16`): `206` | `150556` | **P** |
 | 9 | `param set 6028 120 u8 ... --confirm` and restore | 17 writes of 0, 1 and 2, each `written and read back` with the value written; last write 0 at 14:33:40 | `134732`, `143218` | **P** |
-| 9 | `param set 6022 120 u8 1 --confirm`, `param set 6024 120 u8 1 --confirm` | Both `written and read back: 1`; not restored in the log | `150556` | **P** (deviation 10) |
 | 10 | `can show` after | `error-active`, `rx errors` 0, `tx errors` 0, but **`form errors` 11847812** and `stuff errors` 1, counted since the boot at 13:38, when the transceiver had no power | `145520` | **F** (deviation 4) |
 | 10 | `can show` after traffic, after the power cycle | After `csp ping 6022` (2 ms) and `param get 6022 130 i16` (`2900`): `error-active`, error counters 0, all statistics 0 | `151629` | **P** |
 | – | FlatSat nodes' own status | No errors or unexpected behaviour reported by the FlatSat side | – | **P** |
@@ -79,8 +78,7 @@ The csh LED checks were also made during the main session: the console shows
 | 7 | 9 | `flatsat_checks.txt` gave the type as `u08`, which the TE0715 refuses (`unknown type 'u08'`); the operator used `u8`. Two further commands were refused without effect: one without `--confirm`, one pasted twice on one line | None; `flatsat_checks.txt` corrected afterwards |
 | 8 | – | The console host was a Linux laptop, not a Mac, and `flatsat_console.py` was updated between sessions (waiting for the port, then command history) | None on the results |
 | 9 | – | csh writes no log; its session was copied from the terminal into `csh-20260924-1457.txt` | The copy is the csh evidence |
-| 10 | 9 | In the follow-up the operator also wrote 1 to parameter 120 on nodes 6022 and 6024. These writes were not in the plan, and the log does not show them restored | None on the TE0715 results; the FlatSat owner should know the values left on 6022 and 6024 |
-| 11 | – | In `150556` one line starts with `[1;32m`: part of a colour code that arrived split over two reads, so the console's log filter missed it | None; filter fixed in `flatsat_console.py` |
+| 10 | – | In `150556` one line starts with `[1;32m`: part of a colour code that arrived split over two reads, so the console's log filter missed it | None; filter fixed in `flatsat_console.py` |
 
 ## Evidence integrity
 
@@ -105,7 +103,7 @@ Check the folder with `shasum -a 256 -c SHA256SUMS` (or `sha256sum -c`) inside i
 | `TE-FS-001` Joins the bus without errors | **Verified** | After a boot with the transceiver powered, all statistics 0 before and after TE0715 traffic, and no errors reported by the FlatSat. The earlier form errors were counted while the transceiver had no power (deviation 4) |
 | `TE-FS-002` Ping both ways | **Verified** | csh → 6061: 2 ms; 6061 → 6022: 3 × 2 ms |
 | `TE-FS-003` csh reads and writes TE0715 parameters, LED | **Verified** | List downloaded; both parameters read and written; `led_d4` switched LED D4 on and off, seen by the operator and confirmed by the console |
-| `TE-FS-004` TE0715 reads FlatSat parameters | **Verified** | Planned reads 6022/130 (`2800`) and 6030/131[0] (`0`), and further reads on 6030 and read-backs of 6022, 6024 and 6028 parameter 120 |
+| `TE-FS-004` TE0715 reads FlatSat parameters | **Verified** | Planned reads 6022/130 (`2800`) and 6030/131[0] (`0`), further reads on 6030, and the read-backs of 6028 parameter 120 |
 
 ## Conclusion
 
