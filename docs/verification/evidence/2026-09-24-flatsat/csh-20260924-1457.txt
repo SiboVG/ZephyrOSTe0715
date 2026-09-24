@@ -1,0 +1,30 @@
+# csh session on the FlatSat laptop (lab51), 2026-09-24 14:57, copied from the
+# terminal by the operator (csh writes no log file). Times are csh's own stamps.
+ lab51  node 6061 @ 14:57:00 d. 24/09/26
+ lab51  6061  ping @ 14:57:02 d. 24/09/26
+Ping node 6061 size 0 timeout 3000: Reply in 2 [ms]
+ lab51  6061  list download @ 14:57:05 d. 24/09/26
+Got param: led_d4:6061[1]
+Got param: bench_integer:6061[1]
+Received 2 parameters, of which 0 remote parameters were skipped
+ lab51  6061  list @ 14:57:07 d. 24/09/26
+ 200:6061  bench_integer        = - raw
+ 201:6061  led_d4               = -
+ lab51  6061  get bench_integer @ 14:57:21 d. 24/09/26
+ 200:6061  bench_integer        = 305419896 raw
+ lab51  6061  get led_d4 @ 14:57:24 d. 24/09/26
+ 201:6061  led_d4               = 0
+ lab51  6061  set led_d4 1 @ 14:57:29 d. 24/09/26
+ 201:6061  led_d4               = 1                    u08     Rc
+ lab51  6061  get led_d4 @ 14:57:38 d. 24/09/26
+ 201:6061  led_d4               = 1
+ lab51  6061  set led_d4 0 @ 14:57:39 d. 24/09/26
+ 201:6061  led_d4               = 0                    u08     Rc
+ lab51  6061  get led_d4 @ 14:57:42 d. 24/09/26
+ 201:6061  led_d4               = 0
+ lab51  6061  set bench_integer 42 @ 14:57:47 d. 24/09/26
+ 200:6061  bench_integer        = 42 raw               u32     Rc
+ lab51  6061  get bench_integer @ 14:57:50 d. 24/09/26
+ 200:6061  bench_integer        = 42 raw
+ lab51  6061  set bench_integer 305419896 @ 14:57:52 d. 24/09/26
+ 200:6061  bench_integer        = 305419896 raw        u32     Rc

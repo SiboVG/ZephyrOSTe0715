@@ -1,0 +1,17 @@
+2026-09-24T13:34:16.981 >>> console opened on /dev/serial/by-id/usb-Digilent_Digilent_USB_Device_25163300AA8C-if01-port0
+2026-09-24T13:34:26.259 [Os::Console] EVENT: (268513280) (0:946652410,11600) DIAGNOSTIC: (CspBenchZephyr.cmdDisp) OpCodeRegistered : Opcode 0x10013000 registered to port 0 slot 0
+2026-09-24T13:34:26.310 [Os::Console] EVENT: (268513280) (0:946652410,19500) DIAGNOSTIC: (CspBenchZephyr.cmdDisp) OpCodeRegistered : Opcode 0x10013001 registered to port 0 slot 1
+2026-09-24T13:34:26.310 [Os::Console] EVENT: (268513280) (0:946652410,33100) DIAGNOSTIC: (CspBenchZephyr.cmdDisp) OpCodeRegistered : Opcode 0x10013002 registered to port 0 slot 2
+2026-09-24T13:34:26.310 [Os::Console] EVENT: (268513280) (0:946652410,46600) DIAGNOSTIC: (CspBenchZephyr.cmdDisp) OpCodeRegistered : Opcode 0x10013003 registered to port 0 slot 3
+2026-09-24T13:34:26.360 [Os::Console] EVENT: (268513280) (0:946652410,60200) DIAGNOSTIC: (CspBenchZephyr.cmdDisp) OpCodeRegistered : Opcode 0x10002000 registered to port 1 slot 4
+2026-09-24T13:34:26.360 [Os::Console] EVENT: (268513280) (0:946652410,73700) DIAGNOSTIC: (CspBenchZephyr.cmdDisp) OpCodeRegistered : Opcode 0x10002001 registered to port 1 slot 5
+2026-09-24T13:34:26.360 [Os::Console] EVENT: (268443648) (0:946652410,87700) ACTIVITY_HI: (CspBenchZephyr.cspLibparam) StackReady : CSP stack ready: local 6061 peer 6061
+2026-09-24T13:34:26.360 [CSP_BENCH_READY] role=server can=can1 node=6061 peer=6061 param=200 type=u32 index=0
+2026-09-24T13:34:26.360 [Os::Console] Starting base rate group clock with period of 1000000 microseconds
+2026-09-24T13:34:26.410 [Os::Console] CSP/libparam bench server: node 6061/8, parameters 200 bench_integer (u32), 201 led_d4 (u8)
+2026-09-24T13:34:26.410 [Os::Console] EVENT: (268439552) (0:946652410,124000) DIAGNOSTIC: (CspBenchZephyr.rateGroup_1Hz) RateGroupStarted : Rate group started.
+2026-09-24T13:36:28.555 >>> sent: bench info
+2026-09-24T13:36:28.575 bench info
+2026-09-24T13:36:28.625 node 6061/8 (te0715.txt, started), libparam server port 10: parameter 200 (u32)
+2026-09-24T13:36:28.625 parameter 201 led_d4 (u8) = 0: LED D4 off; parameter list served on port 12
+2026-09-24T13:38:30.717 >>> console closed

@@ -1,0 +1,26 @@
+2026-09-24T14:55:20.555 >>> console opened on /dev/serial/by-id/usb-Digilent_Digilent_USB_Device_25163300AA8C-if01-port0
+2026-09-24T14:57:29.190 PARAM led_d4 = 1: LED D4 on
+2026-09-24T14:57:39.420 PARAM led_d4 = 0: LED D4 off
+2026-09-24T14:58:17.936 >>> sent: can show can@e0009000
+2026-09-24T14:58:17.984 can show can@e0009000
+2026-09-24T14:58:17.984 core clock:      100000000 Hz
+2026-09-24T14:58:17.984 max bitrate:     1000000 bps
+2026-09-24T14:58:17.984 max std filters: 16
+2026-09-24T14:58:17.984 max ext filters: 16
+2026-09-24T14:58:17.984 capabilities:    normal loopback 
+2026-09-24T14:58:17.984 mode:            normal 
+2026-09-24T14:58:17.984 state:           error-active
+2026-09-24T14:58:17.984 rx errors:       0
+2026-09-24T14:58:17.984 tx errors:       0
+2026-09-24T14:58:17.984 timing:          sjw 1..4, prop_seg 0..0, phase_seg1 1..16, phase_seg2 1..8, prescaler 1..256
+2026-09-24T14:58:17.984 transceiver:     passive/none
+2026-09-24T14:58:17.984 statistics:
+2026-09-24T14:58:17.984   bit errors:    0
+2026-09-24T14:58:18.035     bit0 errors: 0
+2026-09-24T14:58:18.035     bit1 errors: 0
+2026-09-24T14:58:18.035   stuff errors:  1
+2026-09-24T14:58:18.035   crc errors:    0
+2026-09-24T14:58:18.035   form errors:   11847812
+2026-09-24T14:58:18.035   ack errors:    0
+2026-09-24T14:58:18.035   rx overruns:   0
+2026-09-24T15:01:16.971 >>> console closed

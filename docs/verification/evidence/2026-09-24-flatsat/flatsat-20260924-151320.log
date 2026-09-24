@@ -1,0 +1,72 @@
+2026-09-24T15:13:20.796 >>> console opened on /dev/serial/by-id/usb-Digilent_Digilent_USB_Device_25163300AA8C-if01-port0
+2026-09-24T15:13:21.598 
+2026-09-24T15:13:21.598 
+2026-09-24T15:13:21.598 U-Boot 2022.01 (Apr 04 2022 - 07:53:54 +0000)
+2026-09-24T15:13:21.598 
+2026-09-24T15:13:21.598 CPU:   Zynq 7z030
+2026-09-24T15:13:21.598 Silicon: v3.1
+2026-09-24T15:13:21.648 DRAM:  ECC disabled 1 GiB
+2026-09-24T15:13:21.699 Flash: 0 Bytes
+2026-09-24T15:13:21.699 NAND:  0 MiB
+2026-09-24T15:13:21.699 MMC:   mmc@e0100000: 0
+2026-09-24T15:13:21.749 Loading Environment from FAT... *** Error - No Valid Environment Area found
+2026-09-24T15:13:21.749 *** Warning - bad env area, using default environment
+2026-09-24T15:13:21.749 
+2026-09-24T15:13:21.749 In:    serial@e0000000
+2026-09-24T15:13:21.749 Out:   serial@e0000000
+2026-09-24T15:13:21.749 Err:   serial@e0000000
+2026-09-24T15:13:21.749 Net:   
+2026-09-24T15:13:21.749 ZYNQ GEM: e000b000, mdio bus e000b000, phyaddr 0, interface rgmii-id
+2026-09-24T15:13:21.799 zynq_gem ethernet@e000b000: Failed to read eth PHY id, err: -2
+2026-09-24T15:13:21.799 eth0: ethernet@e000b000
+2026-09-24T15:13:23.755 Hit any key to stop autoboot:  2  1  0 
+2026-09-24T15:13:23.805 switch to partitions #0, OK
+2026-09-24T15:13:23.805 mmc0 is current device
+2026-09-24T15:13:23.805 Scanning mmc 0:1...
+2026-09-24T15:13:23.855 Found U-Boot script /boot.scr
+2026-09-24T15:13:23.855 1114 bytes read in 13 ms (83 KiB/s)
+2026-09-24T15:13:23.855 ## Executing script at 03000000
+2026-09-24T15:13:23.906 === TE0715: booting Zephyr from zephyr.bin (restore PetaLinux: see docs/guide/boot.md) ===
+2026-09-24T15:13:23.906 133 bytes read in 10 ms (12.7 KiB/s)
+2026-09-24T15:13:23.906 === te0715.txt loaded (85 bytes) ===
+2026-09-24T15:13:23.956 316312 bytes read in 34 ms (8.9 MiB/s)
+2026-09-24T15:13:23.956 ## Starting application at 0x00000000 ...
+2026-09-24T15:13:24.256 *** Booting Zephyr OS build v4.4.2-6-g70b56a29cd74 ***
+2026-09-24T15:13:24.257 
+2026-09-24T15:13:24.257 *** CSP bench server: node 6061/8 (te0715.txt). Type `bench start [node] [prefix]` within 10 s to start (on another node), or wait. ***
+2026-09-24T15:13:24.257 
+2026-09-24T15:13:24.257 
+2026-09-24T15:13:34.237 uart:~$ [Os::Console] EVENT: (268513280) (0:946652410,11600) DIAGNOSTIC: (CspBenchZephyr.cmdDisp) OpCodeRegistered : Opcode 0x10013000 registered to port 0 slot 0
+2026-09-24T15:13:34.287 [Os::Console] EVENT: (268513280) (0:946652410,19500) DIAGNOSTIC: (CspBenchZephyr.cmdDisp) OpCodeRegistered : Opcode 0x10013001 registered to port 0 slot 1
+2026-09-24T15:13:34.287 [Os::Console] EVENT: (268513280) (0:946652410,33100) DIAGNOSTIC: (CspBenchZephyr.cmdDisp) OpCodeRegistered : Opcode 0x10013002 registered to port 0 slot 2
+2026-09-24T15:13:34.287 [Os::Console] EVENT: (268513280) (0:946652410,46600) DIAGNOSTIC: (CspBenchZephyr.cmdDisp) OpCodeRegistered : Opcode 0x10013003 registered to port 0 slot 3
+2026-09-24T15:13:34.338 [Os::Console] EVENT: (268513280) (0:946652410,60100) DIAGNOSTIC: (CspBenchZephyr.cmdDisp) OpCodeRegistered : Opcode 0x10002000 registered to port 1 slot 4
+2026-09-24T15:13:34.338 [Os::Console] EVENT: (268513280) (0:946652410,73700) DIAGNOSTIC: (CspBenchZephyr.cmdDisp) OpCodeRegistered : Opcode 0x10002001 registered to port 1 slot 5
+2026-09-24T15:13:34.338 [Os::Console] EVENT: (268443648) (0:946652410,87700) ACTIVITY_HI: (CspBenchZephyr.cspLibparam) StackReady : CSP stack ready: local 6061 peer 6061
+2026-09-24T15:13:34.338 [CSP_BENCH_READY] role=server can=can1 node=6061 peer=6061 param=200 type=u32 index=0
+2026-09-24T15:13:34.338 [Os::Console] Starting base rate group clock with period of 1000000 microseconds
+2026-09-24T15:13:34.388 [Os::Console] CSP/libparam bench server: node 6061/8, parameters 200 bench_integer (u32), 201 led_d4 (u8)
+2026-09-24T15:13:34.388 [Os::Console] EVENT: (268439552) (0:946652410,124000) DIAGNOSTIC: (CspBenchZephyr.rateGroup_1Hz) RateGroupStarted : Rate group started.
+2026-09-24T15:14:04.377 >>> sent: can show can@e0009000
+2026-09-24T15:14:04.431 can show can@e0009000
+2026-09-24T15:14:04.431 core clock:      100000000 Hz
+2026-09-24T15:14:04.431 max bitrate:     1000000 bps
+2026-09-24T15:14:04.431 max std filters: 16
+2026-09-24T15:14:04.431 max ext filters: 16
+2026-09-24T15:14:04.431 capabilities:    normal loopback 
+2026-09-24T15:14:04.431 mode:            normal 
+2026-09-24T15:14:04.431 state:           error-active
+2026-09-24T15:14:04.431 rx errors:       0
+2026-09-24T15:14:04.431 tx errors:       0
+2026-09-24T15:14:04.431 timing:          sjw 1..4, prop_seg 0..0, phase_seg1 1..16, phase_seg2 1..8, prescaler 1..256
+2026-09-24T15:14:04.431 transceiver:     passive/none
+2026-09-24T15:14:04.431 statistics:
+2026-09-24T15:14:04.431   bit errors:    0
+2026-09-24T15:14:04.431     bit0 errors: 0
+2026-09-24T15:14:04.431     bit1 errors: 0
+2026-09-24T15:14:04.431   stuff errors:  0
+2026-09-24T15:14:04.431   crc errors:    0
+2026-09-24T15:14:04.431   form errors:   0
+2026-09-24T15:14:04.431   ack errors:    0
+2026-09-24T15:14:04.481   rx overruns:   0
+2026-09-24T15:14:07.855 >>> console closed

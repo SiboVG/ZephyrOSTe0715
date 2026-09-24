@@ -1,0 +1,41 @@
+2026-09-24T15:05:56.422 >>> console opened on /dev/serial/by-id/usb-Digilent_Digilent_USB_Device_25163300AA8C-if01-port0
+2026-09-24T15:06:24.820 >>> sent: param get 6022 130 i16
+2026-09-24T15:06:24.858 param get 6022 130 i16
+2026-09-24T15:06:24.858 value 2800
+2026-09-24T15:06:29.743 >>> sent: param get 6030 131 u16 0
+2026-09-24T15:06:29.774 uart:~$ param get 6030 131 u16 0
+2026-09-24T15:06:30.777 param get 6030:131[0] failed (-1)
+2026-09-24T15:06:36.581 >>> sent: param get 6030 131 u16 1
+2026-09-24T15:06:36.646 uart:~$ param get 6030 131 u16 1
+2026-09-24T15:06:37.599 param get 6030:131[1] failed (-1)
+2026-09-24T15:07:27.576 >>> sent: param set 6022 120 u8 1
+2026-09-24T15:07:27.607 uart:~$ param set 6022 120 u8 1
+2026-09-24T15:07:27.607 writes change the remote node: repeat the command with --confirm
+2026-09-24T15:07:31.113 >>> sent: param set 6022 120 u8 1 --confirm
+2026-09-24T15:07:31.168 uart:~$ param set 6022 120 u8 1 --confirm
+2026-09-24T15:07:31.168 written and read back: 1
+2026-09-24T15:07:38.541 >>> sent: param set 6024 120 u8 1 --confirm
+2026-09-24T15:07:38.591 uart:~$ param set 6024 120 u8 1 --confirm
+2026-09-24T15:07:38.591 written and read back: 1
+2026-09-24T15:07:43.357 >>> sent: param get 6030 131 u16 1
+2026-09-24T15:07:43.406 uart:~$ param get 6030 131 u16 1
+2026-09-24T15:07:44.409 param get 6030:131[1] failed (-1)
+2026-09-24T15:07:49.662 >>> sent: csp ping 6030
+2026-09-24T15:07:49.675 uart:~$ csp ping 6030
+2026-09-24T15:07:50.678 ping 6030: no reply within 1000 ms
+2026-09-24T15:09:02.024 >>> sent: param get 6030 131 u16 0
+2026-09-24T15:09:02.055 uart:~$ param get 6030 131 u16 0
+2026-09-24T15:09:02.055 value 0
+2026-09-24T15:09:05.776 >>> sent: param get 6030 131 u16 1
+2026-09-24T15:09:05.819 uart:~$ param get 6030 131 u16 1
+2026-09-24T15:09:05.819 value 0
+2026-09-24T15:09:54.099 >>> sent: csp ping 6030
+2026-09-24T15:09:54.124 uart:~$ csp ping 6030
+2026-09-24T15:09:54.124 ping 6030: reply in 1 ms (32 bytes)
+2026-09-24T15:10:32.983 >>> sent: param get 6030 1 u32
+2026-09-24T15:10:32.995 uart:~$ param get 6030 1 u32
+2026-09-24T15:10:32.995 value 45462 (0x0000b196)
+2026-09-24T15:10:45.965 >>> sent: param get 6030 25 u16
+2026-09-24T15:10:45.986 [1;32muart:~$ param get 6030 25 u16
+2026-09-24T15:10:45.986 value 206
+2026-09-24T15:12:27.063 >>> console closed

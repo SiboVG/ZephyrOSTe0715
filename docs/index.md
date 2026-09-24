@@ -42,7 +42,7 @@ flowchart LR
 | F Prime CSP/libparam server interoperating with the Linux bench | Verified on hardware |
 | LED D4 switched remotely through the libparam parameter `led_d4` | Verified on hardware |
 | CSP keeps working when nobody acknowledges on the bus; node stored on the SD card | Verified on hardware |
-| Operation on the FlatSat bus | Pending hardware execution |
+| Operation on the FlatSat bus | Verified on hardware, see the [FlatSat record](verification/as-run-flatsat-2026-09-24.md) |
 
 The detailed traceability is in [Requirements and verification](verification/requirements.md),
 and the results of the latest full test run in the

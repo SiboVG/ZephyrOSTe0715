@@ -1,0 +1,68 @@
+2026-09-24T13:47:32.271 >>> console opened on /dev/serial/by-id/usb-Digilent_Digilent_USB_Device_25163300AA8C-if01-port0
+2026-09-24T13:47:37.525 >>> sent: bench info
+2026-09-24T13:47:37.536 bench info
+2026-09-24T13:47:37.536 node 6061/8 (te0715.txt, started), libparam server port 10: parameter 200 (u32)
+2026-09-24T13:47:37.586 parameter 201 led_d4 (u8) = 0: LED D4 off; parameter list served on port 12
+2026-09-24T13:47:42.541 >>> sent: csp ping 6022
+2026-09-24T13:47:42.602 uart:~$ csp ping 6022
+2026-09-24T13:47:42.602 ping 6022: reply in 2 ms (32 bytes)
+2026-09-24T13:48:53.222 >>> sent: param set 6028 120 u08 1 --confirm
+2026-09-24T13:48:53.254 uart:~$ param set 6028 120 u08 1 --confirm
+2026-09-24T13:48:53.254 unknown type 'u08' (u8 i8 u16 i16 u32 i32 u64 i64 float double)
+2026-09-24T13:49:12.302 >>> sent: param set 6028 120 u8 1 --confirm
+2026-09-24T13:49:12.360 uart:~$ param set 6028 120 u8 1 --confirm
+2026-09-24T13:49:12.360 written and read back: 1
+2026-09-24T13:49:20.758 >>> sent: param set 6028 120 u8 0 --confirm
+2026-09-24T13:49:20.787 uart:~$ param set 6028 120 u8 0 --confirm
+2026-09-24T13:49:20.787 written and read back: 0
+2026-09-24T13:54:55.127 uart:~$ PARAM led_d4 = 1: LED D4 on
+2026-09-24T13:55:02.498 PARAM led_d4 = 0: LED D4 off
+2026-09-24T13:57:18.806 >>> sent: csp ping 6030
+2026-09-24T13:57:18.853 csp ping 6030
+2026-09-24T13:57:19.855 ping 6030: no reply within 1000 ms
+2026-09-24T13:57:30.206 >>> sent: csp ping 6022
+2026-09-24T13:57:30.236 uart:~$ csp ping 6022
+2026-09-24T13:57:30.236 ping 6022: reply in 2 ms (32 bytes)
+2026-09-24T13:58:15.519 >>> sent: param set 6028 120 u8 1 --confirm
+2026-09-24T13:58:15.565 uart:~$ param set 6028 120 u8 1 --confirm
+2026-09-24T13:58:15.565 written and read back: 1
+2026-09-24T13:58:32.303 >>> sent: param set 6028 120 u8 0 --confirm
+2026-09-24T13:58:32.314 uart:~$ param set 6028 120 u8 0 --confirm
+2026-09-24T13:58:32.314 written and read back: 0
+2026-09-24T14:07:32.351 >>> sent: param set 6028 120 u8 0
+2026-09-24T14:07:32.406 uart:~$ param set 6028 120 u8 0
+2026-09-24T14:07:32.406 writes change the remote node: repeat the command with --confirm
+2026-09-24T14:07:40.103 >>> sent: param set 6028 120 u8 0 --confirm
+2026-09-24T14:07:40.128 uart:~$ param set 6028 120 u8 0 --confirm
+2026-09-24T14:07:40.128 written and read back: 0
+2026-09-24T14:07:47.871 >>> sent: param set 6028 120 u8 1 --confirm
+2026-09-24T14:07:47.899 uart:~$ param set 6028 120 u8 1 --confirm
+2026-09-24T14:07:47.899 written and read back: 1
+2026-09-24T14:07:51.319 >>> sent: param set 6028 120 u8 0 --confirm
+2026-09-24T14:07:51.360 uart:~$ param set 6028 120 u8 0 --confirm
+2026-09-24T14:07:51.360 written and read back: 0
+2026-09-24T14:25:09.700 uart:~$ PARAM led_d4 = 1: LED D4 on
+2026-09-24T14:25:33.815 >>> sent: csp ping 6022
+2026-09-24T14:25:33.871 csp ping 6022
+2026-09-24T14:25:33.871 ping 6022: reply in 2 ms (32 bytes)
+2026-09-24T14:26:01.183 >>> sent: param set 6028 120 u8 1 --confirm 
+2026-09-24T14:26:01.200 uart:~$ param set 6028 120 u8 1 --confirm 
+2026-09-24T14:26:01.250 written and read back: 1
+2026-09-24T14:26:18.776 >>> sent: param set 6028 120 u8 2 --confirm
+2026-09-24T14:26:18.803 uart:~$ param set 6028 120 u8 2 --confirm
+2026-09-24T14:26:18.803 written and read back: 2
+2026-09-24T14:26:39.496 >>> sent: param set 6028 120 u8 0 --confirm
+2026-09-24T14:26:39.511 uart:~$ param set 6028 120 u8 0 --confirm
+2026-09-24T14:26:39.511 written and read back: 0
+2026-09-24T14:26:46.552 >>> sent: param set 6028 120 u8 2 --confirm 
+2026-09-24T14:26:46.581 uart:~$ param set 6028 120 u8 2 --confirm 
+2026-09-24T14:26:46.581 written and read back: 2
+2026-09-24T14:28:06.281 >>> sent: param set 6028 120 u8 0 --confirmparam set 6028 120 u8 0 --confirm
+2026-09-24T14:28:06.322 uart:~$ param set 6028 120 u8 0 --confirmparam set 6028 120 u8 0 --confirm
+2026-09-24T14:28:06.322 set: wrong parameter count
+2026-09-24T14:28:06.322 set - set <node> <id> <type> <value> [index] --confirm
+2026-09-24T14:28:16.409 >>> sent: param set 6028 120 u8 0 --confirm
+2026-09-24T14:28:16.452 uart:~$ param set 6028 120 u8 0 --confirm
+2026-09-24T14:28:16.452 written and read back: 0
+2026-09-24T14:32:08.444 uart:~$ PARAM led_d4 = 0: LED D4 off
+2026-09-24T14:32:16.324 >>> console closed

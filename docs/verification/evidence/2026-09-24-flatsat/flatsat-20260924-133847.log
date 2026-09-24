@@ -1,0 +1,58 @@
+2026-09-24T13:38:47.969 >>> console opened on /dev/serial/by-id/usb-Digilent_Digilent_USB_Device_25163300AA8C-if01-port0
+2026-09-24T13:38:48.721 
+2026-09-24T13:38:48.721 
+2026-09-24T13:38:48.721 U-Boot 2022.01 (Apr 04 2022 - 07:53:54 +0000)
+2026-09-24T13:38:48.721 
+2026-09-24T13:38:48.721 CPU:   Zynq 7z030
+2026-09-24T13:38:48.721 Silicon: v3.1
+2026-09-24T13:38:48.771 DRAM:  ECC disabled 1 GiB
+2026-09-24T13:38:48.821 Flash: 0 Bytes
+2026-09-24T13:38:48.821 NAND:  0 MiB
+2026-09-24T13:38:48.821 MMC:   mmc@e0100000: 0
+2026-09-24T13:38:48.871 Loading Environment from FAT... *** Error - No Valid Environment Area found
+2026-09-24T13:38:48.871 *** Warning - bad env area, using default environment
+2026-09-24T13:38:48.871 
+2026-09-24T13:38:48.871 In:    serial@e0000000
+2026-09-24T13:38:48.871 Out:   serial@e0000000
+2026-09-24T13:38:48.871 Err:   serial@e0000000
+2026-09-24T13:38:48.871 Net:   
+2026-09-24T13:38:48.871 ZYNQ GEM: e000b000, mdio bus e000b000, phyaddr 0, interface rgmii-id
+2026-09-24T13:38:48.871 zynq_gem ethernet@e000b000: Failed to read eth PHY id, err: -2
+2026-09-24T13:38:48.922 eth0: ethernet@e000b000
+2026-09-24T13:38:50.927 Hit any key to stop autoboot:  2  1  0 
+2026-09-24T13:38:50.927 switch to partitions #0, OK
+2026-09-24T13:38:50.927 mmc0 is current device
+2026-09-24T13:38:50.927 Scanning mmc 0:1...
+2026-09-24T13:38:50.978 Found U-Boot script /boot.scr
+2026-09-24T13:38:50.978 1114 bytes read in 13 ms (83 KiB/s)
+2026-09-24T13:38:50.978 ## Executing script at 03000000
+2026-09-24T13:38:50.978 === TE0715: booting Zephyr from zephyr.bin (restore PetaLinux: see docs/guide/boot.md) ===
+2026-09-24T13:38:51.028 133 bytes read in 10 ms (12.7 KiB/s)
+2026-09-24T13:38:51.028 === te0715.txt loaded (85 bytes) ===
+2026-09-24T13:38:51.078 316312 bytes read in 34 ms (8.9 MiB/s)
+2026-09-24T13:38:51.078 ## Starting application at 0x00000000 ...
+2026-09-24T13:38:51.329 *** Booting Zephyr OS build v4.4.2-6-g70b56a29cd74 ***
+2026-09-24T13:38:51.329 
+2026-09-24T13:38:51.379 *** CSP bench server: node 6061/8 (te0715.txt). Type `bench start [node] [prefix]` within 10 s to start (on another node), or wait. ***
+2026-09-24T13:38:51.379 
+2026-09-24T13:38:51.379 
+2026-09-24T13:39:01.409 uart:~$ [Os::Console] EVENT: (268513280) (0:946652410,11600) DIAGNOSTIC: (CspBenchZephyr.cmdDisp) OpCodeRegistered : Opcode 0x10013000 registered to port 0 slot 0
+2026-09-24T13:39:01.409 [Os::Console] EVENT: (268513280) (0:946652410,19500) DIAGNOSTIC: (CspBenchZephyr.cmdDisp) OpCodeRegistered : Opcode 0x10013001 registered to port 0 slot 1
+2026-09-24T13:39:01.409 [Os::Console] EVENT: (268513280) (0:946652410,33100) DIAGNOSTIC: (CspBenchZephyr.cmdDisp) OpCodeRegistered : Opcode 0x10013002 registered to port 0 slot 2
+2026-09-24T13:39:01.409 [Os::Console] EVENT: (268513280) (0:946652410,46600) DIAGNOSTIC: (CspBenchZephyr.cmdDisp) OpCodeRegistered : Opcode 0x10013003 registered to port 0 slot 3
+2026-09-24T13:39:01.409 [Os::Console] EVENT: (268513280) (0:946652410,60200) DIAGNOSTIC: (CspBenchZephyr.cmdDisp) OpCodeRegistered : Opcode 0x10002000 registered to port 1 slot 4
+2026-09-24T13:39:01.459 [Os::Console] EVENT: (268513280) (0:946652410,73700) DIAGNOSTIC: (CspBenchZephyr.cmdDisp) OpCodeRegistered : Opcode 0x10002001 registered to port 1 slot 5
+2026-09-24T13:39:01.459 [Os::Console] EVENT: (268443648) (0:946652410,87700) ACTIVITY_HI: (CspBenchZephyr.cspLibparam) StackReady : CSP stack ready: local 6061 peer 6061
+2026-09-24T13:39:01.459 [CSP_BENCH_READY] role=server can=can1 node=6061 peer=6061 param=200 type=u32 index=0
+2026-09-24T13:39:01.459 [Os::Console] Starting base rate group clock with period of 1000000 microseconds
+2026-09-24T13:39:01.459 [Os::Console] CSP/libparam bench server: node 6061/8, parameters 200 bench_integer (u32), 201 led_d4 (u8)
+2026-09-24T13:39:01.509 [Os::Console] EVENT: (268439552) (0:946652410,124000) DIAGNOSTIC: (CspBenchZephyr.rateGroup_1Hz) RateGroupStarted : Rate group started.
+2026-09-24T13:39:21.000 >>> sent: bench info
+2026-09-24T13:39:21.016 bench info
+2026-09-24T13:39:21.066 node 6061/8 (te0715.txt, started), libparam server port 10: parameter 200 (u32)
+2026-09-24T13:39:21.066 parameter 201 led_d4 (u8) = 0: LED D4 off; parameter list served on port 12
+2026-09-24T13:44:26.067 uart:~$ PARAM led_d4 = 1: LED D4 on
+2026-09-24T13:44:28.825 PARAM led_d4 = 0: LED D4 off
+2026-09-24T13:47:19.025 csp ping 6030
+2026-09-24T13:47:20.028 ping 6030: no reply within 1000 ms
+2026-09-24T13:47:27.598 >>> console closed

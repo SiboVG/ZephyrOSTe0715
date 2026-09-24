@@ -50,7 +50,7 @@ SN65HVD233 transceiver on a TCAN-SOIC8-EVM, Kvaser USBcan Light 2xHS (see
 
 | ID | Requirement | Verification | Status |
 |---|---|---|---|
-| `TE-FS-001` | The TE0715 shall join the FlatSat CAN bus without causing bus errors. | [TC-09](test-cases.md#tc-09-flatsat) steps 5, 10 | **Pending hardware execution** |
-| `TE-FS-002` | FlatSat nodes and the TE0715 shall reach each other with CSP ping. | TC-09 steps 6, 8 | **Pending hardware execution** |
-| `TE-FS-003` | csh on the FlatSat shall read and write the TE0715's parameters, including switching LED D4. | TC-09 steps 4, 6, 7 | **Pending hardware execution** |
-| `TE-FS-004` | The TE0715 shall read approved FlatSat parameters. | TC-09 step 8 | **Pending hardware execution** |
+| `TE-FS-001` | The TE0715 shall join the FlatSat CAN bus without causing bus errors. | [TC-09](test-cases.md#tc-09-flatsat) steps 5, 10 | Verified on hardware ([FlatSat run](as-run-flatsat-2026-09-24.md), after a power cycle) |
+| `TE-FS-002` | FlatSat nodes and the TE0715 shall reach each other with CSP ping. | TC-09 steps 6, 8 | Verified on hardware ([FlatSat run](as-run-flatsat-2026-09-24.md)) |
+| `TE-FS-003` | csh on the FlatSat shall read and write the TE0715's parameters, including switching LED D4. | TC-09 steps 4, 6, 7 | Verified on hardware ([FlatSat run](as-run-flatsat-2026-09-24.md)) |
+| `TE-FS-004` | The TE0715 shall read approved FlatSat parameters. | TC-09 steps 8, 9 | Verified on hardware ([FlatSat run](as-run-flatsat-2026-09-24.md)) |

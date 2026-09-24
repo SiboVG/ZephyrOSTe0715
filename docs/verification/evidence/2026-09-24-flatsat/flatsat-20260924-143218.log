@@ -1,0 +1,17 @@
+2026-09-24T14:32:18.089 >>> console opened on /dev/serial/by-id/usb-Digilent_Digilent_USB_Device_25163300AA8C-if01-port0
+2026-09-24T14:32:34.709 >>> sent: param set 6028 120 u8 1 --confirm
+2026-09-24T14:32:34.739 param set 6028 120 u8 1 --confirm
+2026-09-24T14:32:34.739 written and read back: 1
+2026-09-24T14:32:47.941 >>> sent: param set 6028 120 u8 0 --confirm
+2026-09-24T14:32:47.979 uart:~$ param set 6028 120 u8 0 --confirm
+2026-09-24T14:32:47.979 written and read back: 0
+2026-09-24T14:33:24.622 >>> sent: param set 6028 120 u8 1 --confirm
+2026-09-24T14:33:24.650 uart:~$ param set 6028 120 u8 1 --confirm
+2026-09-24T14:33:24.650 written and read back: 1
+2026-09-24T14:33:29.101 >>> sent: param set 6028 120 u8 1 --confirm
+2026-09-24T14:33:29.114 uart:~$ param set 6028 120 u8 1 --confirm
+2026-09-24T14:33:29.164 written and read back: 1
+2026-09-24T14:33:40.318 >>> sent: param set 6028 120 u8 0 --confirm
+2026-09-24T14:33:40.350 uart:~$ param set 6028 120 u8 0 --confirm
+2026-09-24T14:33:40.350 written and read back: 0
+2026-09-24T14:55:09.521 >>> console closed

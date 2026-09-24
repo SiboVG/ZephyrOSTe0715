@@ -1,0 +1,30 @@
+2026-09-24T15:16:29.946 >>> console opened on /dev/serial/by-id/usb-Digilent_Digilent_USB_Device_25163300AA8C-if01-port0
+2026-09-24T15:16:36.029 >>> sent: csp ping 6022
+2026-09-24T15:16:36.068 csp ping 6022
+2026-09-24T15:16:36.068 ping 6022: reply in 2 ms (32 bytes)
+2026-09-24T15:16:41.412 >>> sent: param get 6022 130 i16
+2026-09-24T15:16:41.435 uart:~$ param get 6022 130 i16
+2026-09-24T15:16:41.435 value 2900
+2026-09-24T15:17:15.125 >>> sent: can show can@e0009000
+2026-09-24T15:17:15.143 uart:~$ can show can@e0009000
+2026-09-24T15:17:15.194 core clock:      100000000 Hz
+2026-09-24T15:17:15.194 max bitrate:     1000000 bps
+2026-09-24T15:17:15.194 max std filters: 16
+2026-09-24T15:17:15.194 max ext filters: 16
+2026-09-24T15:17:15.194 capabilities:    normal loopback 
+2026-09-24T15:17:15.194 mode:            normal 
+2026-09-24T15:17:15.194 state:           error-active
+2026-09-24T15:17:15.194 rx errors:       0
+2026-09-24T15:17:15.194 tx errors:       0
+2026-09-24T15:17:15.194 timing:          sjw 1..4, prop_seg 0..0, phase_seg1 1..16, phase_seg2 1..8, prescaler 1..256
+2026-09-24T15:17:15.194 transceiver:     passive/none
+2026-09-24T15:17:15.194 statistics:
+2026-09-24T15:17:15.194   bit errors:    0
+2026-09-24T15:17:15.194     bit0 errors: 0
+2026-09-24T15:17:15.194     bit1 errors: 0
+2026-09-24T15:17:15.194   stuff errors:  0
+2026-09-24T15:17:15.194   crc errors:    0
+2026-09-24T15:17:15.194   form errors:   0
+2026-09-24T15:17:15.194   ack errors:    0
+2026-09-24T15:17:15.194   rx overruns:   0
+2026-09-24T15:17:59.689 >>> console closed
