@@ -8,3 +8,7 @@
 !/app/
 !/docs/
 !/.github/
+
+# Python venv
+**/.venv
+**/venv
