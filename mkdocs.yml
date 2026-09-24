@@ -93,7 +93,7 @@ nav:
       - Zephyr test suites: tests/zephyr-suites.md
       - CAN bus: tests/can-bus.md
       - CSP and libparam with the Linux bench: tests/csp-libparam.md
-      - FlatSat test from macOS: tests/flatsat.md
+      - FlatSat test: tests/flatsat.md
   - Verification:
       - Requirements and verification: verification/requirements.md
       - Test case specifications: verification/test-cases.md

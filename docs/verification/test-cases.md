@@ -95,7 +95,7 @@ Common preconditions for all test cases: the workspace built as in
 |---|---|
 | **Verifies** | `TE-FS-001` to `TE-FS-004` |
 | **Preconditions** | Configuration agreed with the FlatSat owner; FlatSat image on the SD card; Mac with `flatsat_console.py` |
-| **Procedure** | [FlatSat test from macOS](../tests/flatsat.md), steps 1 to 10 |
+| **Procedure** | [FlatSat test](../tests/flatsat.md), steps 1 to 10 |
 | **Pass criteria** | No bus errors caused (steps 5, 10); pings answered both ways; csh lists, reads and writes the TE0715 parameters and the LED follows `led_d4`; approved FlatSat parameters read; any approved write read back and restored |
 | **Evidence** | Console log from `flatsat_console.py`, csh session log, the completed [FlatSat as-run record](flatsat-record-template.md) |
 

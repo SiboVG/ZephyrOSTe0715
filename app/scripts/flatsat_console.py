@@ -41,7 +41,7 @@ def find_port():
         ports = sorted(glob.glob(pattern))
         if ports:
             return ports[0]
-    sys.exit('no Digilent UART found; pass --port (macOS: ls /dev/cu.usbserial-*)')
+    sys.exit('no Digilent UART found; pass --port (macOS: ls /dev/cu.usbserial-*; Linux: ls /dev/serial/by-id/)')
 
 
 class Logger:

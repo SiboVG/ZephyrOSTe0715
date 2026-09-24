@@ -18,7 +18,7 @@ flowchart TB
 | [Zephyr test suites](zephyr-suites.md) | board on the JTAG/UART cable | TC-01 to TC-03 |
 | [CAN bus](can-bus.md) | + transceiver, Kvaser | TC-04, TC-05 |
 | [CSP and libparam with the Linux bench](csp-libparam.md) | + Linux CspBench | TC-06 to TC-08, TC-10 |
-| [FlatSat test from macOS](flatsat.md) | FlatSat bus, a Mac | TC-09 |
+| [FlatSat test](flatsat.md) | FlatSat bus, a Mac or Linux laptop | TC-09 |
 
 The formal test case specifications, with pass criteria, are in
 [Test case specifications](../verification/test-cases.md).

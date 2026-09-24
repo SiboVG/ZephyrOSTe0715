@@ -56,5 +56,5 @@ and the results of the latest full test run in the
 | talk to the board and use its commands | [User guide](guide/connect.md) |
 | understand how the pieces fit together | [Architecture](architecture/index.md) |
 | repeat a test | [Test guides](tests/index.md) |
-| run the FlatSat test | [FlatSat test from macOS](tests/flatsat.md) |
+| run the FlatSat test | [FlatSat test](tests/flatsat.md) |
 | cite results | [Verification](verification/requirements.md) |

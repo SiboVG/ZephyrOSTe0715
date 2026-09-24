@@ -1,4 +1,4 @@
-# FlatSat test from macOS
+# FlatSat test
 
 This procedure connects the TE0715 to the FlatSat CAN bus and checks, in this order,
 that it can be seen on the bus, that FlatSat nodes and the TE0715 can ping each other,
@@ -6,14 +6,15 @@ that csh on the FlatSat can read and write the TE0715's parameters (including
 switching its LED), and that the TE0715 can read (and, where approved, write) FlatSat
 parameters. It is test case [TC-09](../verification/test-cases.md#tc-09-flatsat).
 
-No Linux PC or JTAG is involved: the TE0715 boots its image from the SD card, and a
-Mac is only used as the serial console.
+No JTAG is involved: the TE0715 boots its image from the SD card, and a laptop (macOS
+or Linux) is only used as the serial console. Where the commands differ, the steps
+below give both.
 
 ## Roles
 
 | Role | Uses | Does |
 |---|---|---|
-| **TE0715 operator** | a Mac on the TE0701's micro-USB, `flatsat_console.py` | powers the TE0715, chooses its node, runs the TE0715-side commands, keeps the console log |
+| **TE0715 operator** | a Mac or Linux laptop on the TE0701's micro-USB, `flatsat_console.py` | powers the TE0715, chooses its node, runs the TE0715-side commands, keeps the console log |
 | **FlatSat operator** | csh connected to the FlatSat | runs the csh commands |
 
 One person can do both.
@@ -31,16 +32,25 @@ One person can do both.
 | FlatSat parameters it may read | ID, type, array index for each | 8 |
 | FlatSat parameters it may write | only with explicit approval of parameter and value | 9 |
 
-### Prepare the Mac
+### Prepare the laptop
 
-1. Copy two files from the workspace to the Mac (USB stick, `scp` or e-mail):
+1. Copy two files from the workspace to the laptop (USB stick, `scp` or e-mail):
    `app/scripts/flatsat_console.py` and `app/scripts/flatsat_checks.txt`. A static copy
    of these docs is useful too: run `mkdocs build` and copy the `site/` folder.
-2. Install the one dependency:
+2. Install the one dependency, pyserial:
 
-    ```bash
-    python3 -m pip install --user pyserial
-    ```
+    === "macOS"
+
+        ```bash
+        python3 -m pip install --user pyserial
+        ```
+
+    === "Linux"
+
+        ```bash
+        sudo apt install python3-serial     # Debian/Ubuntu; or: python3 -m pip install --user pyserial
+        sudo usermod -aG dialout "$USER"    # once, to use serial ports without sudo; log out and in again
+        ```
 
 3. Fill in `flatsat_checks.txt`: replace every `<...>` with the agreed nodes and
    parameters.
@@ -63,17 +73,37 @@ With the TE0701 powered off:
 1. Connect the EVM's CANH, CANL and GND (header J7 or the DSUB9 J9) to the FlatSat
    bus. Keep a common ground.
 2. Set EVM jumper J6 as agreed (removed if the bus is already terminated).
-3. Connect the TE0701's JTAG/UART micro-USB (not J12) to the Mac.
+3. Connect the TE0701's JTAG/UART micro-USB (not J12) to the laptop.
 
 ### 2. Open the console
 
-The Mac shows the cable as two serial ports; the console is the one ending in **B**:
+The laptop shows the cable as two serial ports (see
+[Connecting to the board](../guide/connect.md)); the console is the second one:
 
-```bash
-ls /dev/cu.usbserial-*
-# /dev/cu.usbserial-25163300AA8CA   JTAG (not used)
-# /dev/cu.usbserial-25163300AA8CB   console
-```
+=== "macOS"
+
+    The console is the port ending in **B**:
+
+    ```bash
+    ls /dev/cu.usbserial-*
+    # /dev/cu.usbserial-25163300AA8CA   JTAG (not used)
+    # /dev/cu.usbserial-25163300AA8CB   console
+    ```
+
+=== "Linux"
+
+    The console is the port ending in **if01-port0**:
+
+    ```bash
+    ls /dev/serial/by-id/
+    # usb-Digilent_Digilent_USB_Device_25163300AA8C-if00-port0   JTAG (not used)
+    # usb-Digilent_Digilent_USB_Device_25163300AA8C-if01-port0   console
+    ```
+
+If nothing is listed, the laptop does not see the cable at all: check that it is a
+data cable (not charge-only), that it is in the JTAG/UART connector and not J12, and
+try without a USB hub. `ioreg -p IOUSB` (macOS) or `lsusb` (Linux) should show a
+Digilent device.
 
 Start the logging console **before** powering the board, so the log includes the
 boot:
@@ -82,7 +112,7 @@ boot:
 python3 flatsat_console.py
 ```
 
-It finds the port by itself (or use `--port /dev/cu.usbserial-...B`) and logs to
+It finds the port by itself (or use `--port` with the console port from above) and logs to
 `flatsat-<date>-<time>.log`. Keep it open for the whole test.
 
 ### 3. Power on and choose the node
@@ -279,7 +309,7 @@ Stop and power off the TE0715 if:
 
 | Symptom | Check |
 |---|---|
-| No console output | The port ending in **B**; only one program may use the port; 115200 8N1 |
+| No console output | The console port (**B** on macOS, **if01** on Linux); on Linux, membership of `dialout`; only one program may use the port; 115200 8N1 |
 | The board boots PetaLinux | `boot.scr` on the SD card was restored; see [Booting](../guide/boot.md) |
 | csh `ping 6061` gets no reply | Node chosen in step 3; the FlatSat's routing to the 6016/8 subnet; `can show` on the TE0715 |
 | `csp ping` from the TE0715 gets no reply, no CAN errors | The node may not accept CRC32: try `--nocrc`; or it is not routed |
