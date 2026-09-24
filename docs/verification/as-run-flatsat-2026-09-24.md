@@ -36,7 +36,7 @@ UTC+2), as in the logs.
 
 ## Results
 
-Result: **P** pass, **F** fail, **NR** not run.
+Result: **P** pass, **F** fail, **NR** not run, **Void** invalid because of a set-up error and repeated.
 
 | Step | Check | Observed | Log | Result |
 |---|---|---|---|---|
@@ -57,7 +57,7 @@ Result: **P** pass, **F** fail, **NR** not run.
 | 8 | `param get 6030 131 u16 0` (and index 1) | `failed (-1)` while the OBC was off; after it was powered, `value 0` for both indexes | `150556` | **P** (deviation 2) |
 | 8 | Further reads on 6030 | parameter 1 (`u32`): `45462 (0x0000b196)`; parameter 25 (`u16`): `206` | `150556` | **P** |
 | 9 | `param set 6028 120 u8 ... --confirm` and restore | 17 writes of 0, 1 and 2, each `written and read back` with the value written; last write 0 at 14:33:40 | `134732`, `143218` | **P** |
-| 10 | `can show` after | `error-active`, `rx errors` 0, `tx errors` 0, but **`form errors` 11847812** and `stuff errors` 1, counted since the boot at 13:38, when the transceiver had no power | `145520` | **F** (deviation 4) |
+| 10 | `can show` after (main session) | `error-active`, `rx errors` 0, `tx errors` 0, but `form errors` 11847812 and `stuff errors` 1, counted since the boot at 13:38, when the transceiver had no power | `145520` | Void (deviation 4) |
 | 10 | `can show` after traffic, after the power cycle | After `csp ping 6022` (2 ms) and `param get 6022 130 i16` (`2900`): `error-active`, error counters 0, all statistics 0 | `151629` | **P** |
 | – | FlatSat nodes' own status | No errors or unexpected behaviour reported by the FlatSat side | – | **P** |
 
@@ -72,7 +72,7 @@ The csh LED checks were also made during the main session: the console shows
 | 1 | 5 | `can show` was not run before the traffic of the main session. It was run after the power cycle of deviation 4 | The reading at 15:14 stands for step 5 |
 | 2 | 8 | Node 6030 (OBC) was not powered until about 15:08, so until then it did not answer pings or reads (`failed (-1)`) | None: after it was powered it answered both |
 | 3 | 8 | The planned reads were not run in the main session but in the follow-up at 15:06, by hand; `flatsat_console.py --run flatsat_checks.txt` was not used | None |
-| 4 | 3, 10 | The transceiver board's power supply was not connected when the TE0715 booted at 13:38; it was connected later, before the first csh traffic (the exact time is not recorded). Without power, the transceiver does not drive the controller's RX input, and the controller counted errors on whatever it saw there: 11847812 form errors and 1 stuff error, the order of what a controller can count at 1 Mbit/s in the few minutes before the supply was connected. These statistics count from boot and are never reset, while the error counters come back down with every correct frame, which is why they read 0 with the controller error-active at 14:58. An unpowered SN65HVD233 leaves the bus alone, and the FlatSat reported no errors. After a power cycle with the transceiver powered (15:13), all statistics read 0 The step 10 reading of the main session fails; steps 5 and 10 repeated after the power cycle pass (`151320`, `151629`) |
+| 4 | 3, 10 | The transceiver board's power supply was not connected when the TE0715 booted at 13:38; it was connected later, before the first csh traffic (the exact time is not recorded). Without power, the transceiver does not drive the controller's RX input, and the controller counted errors on whatever it saw there: 11847812 form errors and 1 stuff error, the order of what a controller can count at 1 Mbit/s in the few minutes before the supply was connected. These statistics count from boot and are never reset, while the error counters come back down with every correct frame, which is why they read 0 with the controller error-active at 14:58. An unpowered SN65HVD233 leaves the bus alone, and the FlatSat reported no errors. After a power cycle with the transceiver powered (15:13), all statistics read 0 | The main session's step 10 reading is void; steps 5 and 10 repeated after the power cycle pass (`151320`, `151629`) |
 | 5 | – | Several console sessions were opened and closed without output (`133156`, `133328`, `133332`, `133823`, `134705`); `133416` started on a board that had already booted | None; the boot is in `133847` |
 | 6 | – | At 13:47 a second console (`134712`) was opened while `133847` still had the port. Its `csp ping 6030` is answered in `133847` | None |
 | 7 | 9 | `flatsat_checks.txt` gave the type as `u08`, which the TE0715 refuses (`unknown type 'u08'`); the operator used `u8`. Two further commands were refused without effect: one without `--confirm`, one pasted twice on one line | None; `flatsat_checks.txt` corrected afterwards |
