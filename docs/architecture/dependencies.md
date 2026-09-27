@@ -28,6 +28,7 @@ and listed in `app/zephyr/patches.yml`; `west patch apply` applies them.
 | fprime-zephyr | `0001-lora-enum-command-handler-signature` | The LoRa driver did not compile with the pinned F Prime | already upstream (`b76db2b`) |
 | fprime-zephyr | `0002-os-task-default-stack-size` | A task started with the default stack size failed (the size was passed as `SIZE_MAX`); the CSP router could not start | could be offered |
 | fprime-zephyr | `0003-os-task-map-fprime-priorities` | All F Prime tasks ran at the same, lowest priority | could be offered; changes behaviour for existing users |
+| zephyr | `0001-spi-cdns-configure-cs-gpios` | The `cdns,spi` driver never configured the pins in `cs-gpios`, so a GPIO chip select stayed an input and the device was never selected | could be offered (other SPI drivers do this) |
 
 ## Other integration changes
 
@@ -36,3 +37,6 @@ and listed in `app/zephyr/patches.yml`; `west patch apply` applies them.
 | `app/zephyr/CMakeLists.txt` | Builds libparam (`CONFIG_LIBPARAM`) with the same sources and settings as the Linux build of fprime-csp-libparam; enables the C library's BSD functions (`strlcpy`); marks the headers as system headers |
 | fprime-csp-libparam `main` (merged from `zephyr-can-transport`, PR #1) | New `FprimeCsp_ZephyrCan` module; the host thread library is only linked on POSIX systems |
 | CspLibparamFprimeTest `main` (merged from `zephyr-transport`, PR #2) | Transport chosen at compile time; include paths relative to the component, so another project can build it |
+| `app/zephyr/module.yml` | `dts_root: .`, for the `xlnx,zynq-spi-r1p6` binding in `app/dts/bindings/` |
+| `app/fprime-bench/` | F Prime library of the sensor benches (command sender, telemetry printer, SPI settings) |
+| fprime-ina229, fprime-adxl355 | Checkouts next to the workspace, used unchanged by the sensor benches. Both are built and tested against the same F Prime revision as this workspace (`35d4c0e`) |

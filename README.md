@@ -16,7 +16,8 @@ for everything in it lives in `docs/` and is built with MkDocs.
 | `.venv/` | Python environment with west, the Zephyr tools and the F Prime tools |
 
 The F Prime application also uses two checkouts next to this workspace:
-`../fprime-csp-libparam` and `../CspLibparamFprimeTest`, both on `main`.
+`../fprime-csp-libparam` and `../CspLibparamFprimeTest`, both on `main`. The SPI sensor
+benches use `../fprime-ina229` and `../fprime-adxl355`.
 
 ## Read the documentation
 
@@ -36,6 +37,7 @@ Good starting points:
 - `docs/getting-started/` to set up the workspace and build the applications;
 - `docs/guide/` to connect to the board and use its serial shell;
 - `docs/tests/flatsat.md` for the FlatSat test procedure;
+- `docs/tests/spi-sensors.md` for the INA229 and ADXL355 sensor benches;
 - `docs/verification/` for the requirements, test cases and as-run records.
 
 ## Repository layout

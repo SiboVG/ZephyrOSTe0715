@@ -46,6 +46,36 @@ SN65HVD233 transceiver on a TCAN-SOIC8-EVM, Kvaser USBcan Light 2xHS (see
 | `TE-BOOT-002` | The CSP node and prefix shall be settable in a file on the SD card and apply at every boot. A file that is not exactly understood shall be refused as a whole, and a JTAG-loaded image shall not use settings left over from an earlier SD boot. | `te0715.txt`, `boot.cmd`, `bench_config.c` | [TC-11](test-cases.md#tc-11-node-from-te0715txt); unit tests `app/tests/bench`, `app/tests/scripts` | Verified on hardware |
 | `TE-CSP-005` | The CSP router task shall run above the F Prime tasks that use CSP. | `CONFIG_APP_CSP_ROUTER_PRIORITY`, fprime-csp-libparam `StackConfig::routerPriority` | `kernel thread list` in the TC-06 transcript: `CspRouter` priority 54, `cspLibparam` 57 | Verified on hardware |
 
+## SPI sensors
+
+These requirements use the sensor benches' own assets: an INA229 board (the one of
+fprime-ina229's FT232H bench) or an ADXL355 board wired to Pmod J1, with the reference
+instruments named in the as-run record. See [SPI sensor benches](../tests/spi-sensors.md).
+
+| ID | Requirement | Implementation | Verification | Status |
+|---|---|---|---|---|
+| `TE-SPI-001` | The PS SPI1 controller shall exchange data with a device on Pmod J1 without error at every SCLK from 558 kHz to 8.93 MHz, in the device's SPI mode. | `zynq7000-spi.dtsi`, `board.c` (SPI clocks, pin configuration), `te0701-spi1.overlay`, Zephyr's `cdns,spi` driver | [TC-13](test-cases.md#tc-13-spi1-link-to-the-ina229), [TC-17](test-cases.md#tc-17-spi1-link-to-the-adxl355) step 2 | Pending hardware execution |
+| `TE-SPI-002` | The chip select on MIO13 shall be asserted over each whole transfer and released between transfers. | `cs-gpios`; Zephyr patch `0001-spi-cdns-configure-cs-gpios` | TC-13, TC-17 steps 1, 3 | Pending hardware execution |
+| `TE-SPI-003` | SCLK shall idle and data shall change on the edges of the selected SPI mode. | `cdns,spi`; `TeBench::BenchSpi` | TC-13, TC-17 step 3 | Pending hardware execution |
+| `TE-INA-001` | fprime-ina229's manager shall initialize and read a real INA229 through the F Prime SPI port, with all seven channels valid in continuous mode and consistent current and power. | `apps/fprime_ina229_bench` | [TC-14](test-cases.md#tc-14-ina229-through-the-f-prime-manager) | Pending hardware execution |
+| `TE-INA-002` | The manager's commands shall work through the command dispatcher with the library's responses; a rejected argument shall not count as a device error, and the alert configuration shall leave MEMSTAT unchanged. | `ShellCommander`, library | TC-14 | Pending hardware execution |
+| `TE-INA-003` | INA229 readings shall agree with reference instruments within the data sheet's accuracy, the shunt tolerance and the instruments' uncertainty, for both current directions. | library | [TC-15](test-cases.md#tc-15-ina229-readings-against-reference-instruments) | Pending hardware execution |
+| `TE-INA-004` | With MISO disconnected or the INA229 unpowered, no reading shall be reported valid; readings shall recover when the fault is removed (after reinitialization for a supply loss). | library | [TC-16](test-cases.md#tc-16-ina229-faults) | Pending hardware execution |
+| `TE-ADXL-001` | fprime-adxl355's manager shall initialize a real ADXL355 on its internal clock and return fresh samples, a temperature and a self-test response within the data sheet's limits. | `apps/fprime_adxl355_bench` | [TC-18](test-cases.md#tc-18-adxl355-through-the-f-prime-manager) | Pending hardware execution |
+| `TE-ADXL-002` | The manager's and the application's commands shall work through the command dispatcher; invalid arguments shall be refused. | `ShellCommander`, library | TC-18 | Pending hardware execution |
+| `TE-ADXL-003` | The synchronized application, triggered from one timing thread, shall deliver complete frames when triggered no faster than the output data rate, mark samples that are not new as stale rather than valid, and finish one sensor's acquisition within the 250 µs period at 4 kHz. | library, timing thread in `bench_cmds.cpp` | [TC-19](test-cases.md#tc-19-adxl355-synchronized-application) | Pending hardware execution |
+| `TE-ADXL-004` | On the silicon, STATUS bits 7:5 shall read 0 and a STATUS read shall clear DATA_RDY; without its external clock, a synchronized configuration shall give no fresh sample. | library | TC-18 steps 5, 8 | Pending hardware execution |
+| `TE-ADXL-005` | Each axis shall read ±1 g along gravity with the data sheet's sensitivity and 0 g offset limits. | library (typical sensitivities) | [TC-20](test-cases.md#tc-20-adxl355-six-orientations) | Pending hardware execution |
+| `TE-ADXL-006` | With MISO or CS disconnected, no sample or frame shall be reported valid; samples and frames shall recover when the link is restored. | library | [TC-21](test-cases.md#tc-21-adxl355-faults) | Pending hardware execution |
+
+These cases also cover part of the libraries' open hardware items: fprime-ina229's
+INA-HIL-001 (waveforms and readback on a real INA229, here with the Zephyr driver),
+INA-HIL-002 (one operating point per run), INA-HIL-003 and INA-HIL-004 (continuous
+acquisition, accumulator reset, MEMSTAT on silicon), INA-HIL-005 (MISO and supply
+faults) and INA-HIL-006 (read duration); and fprime-adxl355's acceptance-plan steps 1,
+2, 6, 8 and 9 for one sensor on its internal clock. The libraries' records decide what
+each run closes.
+
 ## FlatSat
 
 | ID | Requirement | Verification | Status |

@@ -102,3 +102,49 @@ server on port 10 serves every parameter in its list, so no change to the compon
 was needed. To let csh load the list, `bench_start_services()` also starts libparam's
 `vmem_server_loop` in its own thread (`param_server`), which answers list requests on
 port 12 (and vmem requests on port 13, unused here).
+
+## The sensor benches
+
+`apps/fprime_ina229_bench` and `apps/fprime_adxl355_bench` run the fprime-ina229 and
+fprime-adxl355 components unchanged, over fprime-zephyr's `ZephyrSpiDriver` on SPI1
+(see [SPI sensor benches](../tests/spi-sensors.md)). Components they share are an F Prime
+library inside this repository, `app/fprime-bench/` (listed in each bench's
+`settings.ini`):
+
+| Component | What it does |
+|---|---|
+| `TeBench.ShellCommander` | Builds a command packet (packet type, opcode, arguments) from a shell command, sends it to `cmdDisp.seqCmdBuff` and waits for the response on `seqCmdStatus`: a shell command takes the same path as a ground command |
+| `TeBench.TlmPrinter` | Receives all telemetry (`telemetry connections`) and prints the channels the bench registers, decoded; others, such as a rate group's per-cycle `RgMaxTime`, are only counted |
+| `TeBench/Support` | SPI settings for SPI1 (`BenchSpi`), argument parsing for the shell, enum names |
+
+```mermaid
+flowchart LR
+    SH["shell"] --> CO["commander"] --> CD["cmdDisp"] -- "commands" --> M
+    SH --> CL["client"]
+    CL -- "configure, read" --> M["sensor<br/>Ina229.Manager"]
+    RG["rateGroup<br/>100 Hz"] -- "run" --> CL
+    M -- "SpiWriteRead" --> SPI["spi<br/>ZephyrSpiDriver"]
+    CL -. "raw SpiWriteRead" .-> SPI
+    M -. "telemetry" .-> TP["tlmPrinter"]
+    M -. "events" .-> TL["textLogger"]
+```
+
+The ADXL355 bench has no rate group. Its client drives the synchronized application's
+`acquireFrame` port from a Zephyr thread (`frame_timing`, Zephyr priority
+`CONFIG_APP_TIMING_THREAD_PRIORITY`, default 2) that waits on a kernel timer, in place
+of the FPGA's synchronization source, and receives the application's `frameReady`
+frames. The application reads the manager through `readSensor[0]`; the shell's direct
+reads use the manager's other port connection. `CONFIG_SYS_CLOCK_TICKS_PER_SEC=20000`
+makes every output data rate period a whole number of ticks.
+
+Two details of F Prime 4 on Zephyr:
+
+- Zephyr's `sys/util_macro.h` defines a macro `EMPTY`, which breaks F Prime's
+  `Os/Queue.hpp` (an enumerator of the same name) when a Zephyr header comes first.
+  The benches include F Prime headers before Zephyr headers, and headers that the
+  generated topology includes (`BenchSpi.hpp`, `ShellCommander.hpp`, the topology
+  definitions) include no Zephyr header at all.
+- Generated component base classes declare their opcodes and channel IDs `protected`.
+  The benches reach them through a small subclass with `using` declarations that is
+  never instantiated (`ManagerIds` in `bench_cmds.cpp`); the full ID is the instance's
+  `getIdBase()` plus that value.

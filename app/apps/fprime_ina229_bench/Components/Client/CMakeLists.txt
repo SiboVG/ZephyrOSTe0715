@@ -1,0 +1,13 @@
+register_fprime_module(
+    AUTOCODER_INPUTS
+        "${CMAKE_CURRENT_LIST_DIR}/Client.fpp"
+    SOURCES
+        "${CMAKE_CURRENT_LIST_DIR}/Client.cpp"
+    HEADERS
+        "${CMAKE_CURRENT_LIST_DIR}/Client.hpp"
+    DEPENDS
+        Ina229_Types
+        Drv_Ports
+        Svc_Sched
+        TeBench_Support
+)

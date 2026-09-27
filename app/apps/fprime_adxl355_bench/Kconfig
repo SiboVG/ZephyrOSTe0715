@@ -1,0 +1,30 @@
+# SPDX-License-Identifier: Apache-2.0
+
+mainmenu "ADXL355 bench on the TE0715"
+
+config APP_SPI_FREQUENCY
+	int "Requested SPI clock in Hz at boot"
+	range 558035 10000000
+	default 1200000
+	help
+	  The Zynq SPI controller divides SPI_REF_CLK (142.86 MHz) by 4 to 256;
+	  the driver picks the fastest division that does not exceed this
+	  request. 1.2 MHz selects 1.116 MHz. Change it at run time with
+	  `adxl spi`.
+
+config APP_SPI_MODE
+	int "SPI mode at boot"
+	range 0 3
+	default 0
+	help
+	  The ADXL355 uses CPOL 0, CPHA 0 (data sheet, SPI protocol).
+
+config APP_TIMING_THREAD_PRIORITY
+	int "Zephyr priority of the frame timing thread"
+	default 2
+	help
+	  The thread that triggers acquireFrame, standing in for the FPGA
+	  synchronization source. It must preempt the F Prime tasks and the
+	  shell.
+
+source "Kconfig.zephyr"

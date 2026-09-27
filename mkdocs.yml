@@ -94,6 +94,9 @@ nav:
       - CAN bus: tests/can-bus.md
       - CSP and libparam with the Linux bench: tests/csp-libparam.md
       - FlatSat test: tests/flatsat.md
+      - SPI sensor benches: tests/spi-sensors.md
+      - INA229 bench: tests/ina229.md
+      - ADXL355 bench: tests/adxl355.md
   - Verification:
       - Requirements and verification: verification/requirements.md
       - Test case specifications: verification/test-cases.md
@@ -101,4 +104,5 @@ nav:
       - As-run record 2026-09-24: verification/as-run-2026-09-24.md
       - FlatSat as-run record 2026-09-24: verification/as-run-flatsat-2026-09-24.md
       - FlatSat as-run record template: verification/flatsat-record-template.md
+      - Sensor bench as-run record template: verification/sensor-record-template.md
   - Known issues: known-issues.md

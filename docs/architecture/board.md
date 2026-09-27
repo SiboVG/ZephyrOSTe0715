@@ -16,6 +16,7 @@ to load software onto it. The `te0715` board lives outside Zephyr, in
 | Console | UART0 on MIO14 (RX) and MIO15 (TX), 3.3 V, 115200 8N1 | |
 | LED | D4 (green, on the module) on MIO7, alias `led0` | MIO7 is output-only |
 | CAN1 | MIO12 (TX), MIO13 (RX), 3.3 V | Enabled by the carrier overlay |
+| SPI1 | MIO10 (MOSI), MIO11 (MISO), MIO12 (SCLK), chip select MIO13 (GPIO), 3.3 V | Enabled by the carrier overlay; shares MIO12/13 with CAN1 |
 
 ## Pin configuration
 
@@ -25,10 +26,13 @@ reference design; the board's devicetree re-applies the settings that matter for
 Zephyr through Zephyr's pinctrl driver, so they do not depend on the boot loader:
 
 - UART0 on MIO14/15 (pull-ups as in the reference design);
-- CAN1 on MIO12/13 (pull-up on RX). In the reference design these pins are GPIO.
+- CAN1 on MIO12/13 (pull-up on RX). In the reference design these pins are GPIO;
+- SPI1 on MIO10 to MIO12 and its chip select MIO13 as GPIO (pull-ups, as in the
+  reference design). The SPI driver does not apply pinctrl either, so `board.c` applies
+  this state (see below).
 
-The GPIO pins (MIO7, MIO9) are left as the boot loader configures them, because the
-Zynq GPIO driver does not apply pinctrl.
+The other GPIO pins (MIO7, MIO9) are left as the boot loader configures them, because
+the Zynq GPIO driver does not apply pinctrl.
 
 ## CAN clock
 
@@ -46,6 +50,32 @@ A build-time check makes sure the devicetree's `clock-frequency` matches the 100
 For flight hardware the better place for this is the Vivado design, so that the FSBL
 configures CAN like every other peripheral.
 
+## SPI controllers
+
+Zephyr's `zynq7000.dtsi` has no SPI nodes yet, so `zynq7000-spi.dtsi` adds both PS
+SPI controllers: SPI0 at `0xE0006000` (GIC SPI 26) and SPI1 at `0xE0007000` (GIC SPI 49),
+as in Linux's `zynq-7000.dtsi`, with 128-entry, 8-bit FIFOs. They use Zephyr's
+`cdns,spi` driver (the controller is Cadence IP), under the compatible
+`xlnx,zynq-spi-r1p6` whose binding (`app/dts/bindings/spi/`) adds the pin
+configuration properties that `cdns,spi` lacks.
+
+The reference design leaves the SPI controllers disabled as well, so `board.c` sets
+them up when one is enabled in the devicetree:
+
+1. hold the enabled controllers in reset (`SPI_RST_CTRL`);
+2. set `SPI_REF_CLK` to IO PLL (1000 MHz) ÷ 7 = **142.86 MHz** (`SPI_CLK_CTRL`, shared by
+   both controllers), faster than CPU_1x (111 MHz);
+3. enable the controllers' bus clocks (`APER_CLK_CTRL` bits 14 and 15);
+4. release the reset;
+5. apply SPI1's pin configuration.
+
+The controller divides SPI_REF_CLK by 4 to 256, so SCLK can be 8.93, 4.46, 2.23, 1.12
+or 0.56 MHz within the sensors' 10 MHz limit. A build-time check ties the devicetree's
+`clock-frequency` to the divider. The chip select is a GPIO (`cs-gpios`); the
+controller's own slave selects stay deselected. Zephyr's driver did not configure
+`cs-gpios` pins at all, which patch `0001-spi-cdns-configure-cs-gpios` fixes (see
+[Dependencies and patches](dependencies.md)).
+
 ## Reboot
 
 Zephyr does not implement a reboot for the Zynq-7000. `board.c` provides one: it sets
@@ -60,6 +90,7 @@ Things that depend on the TE0701 carrier rather than the module are in overlays:
 |---|---|
 | `app/boards/te0715.overlay` | The Pmod J1 GPIO on MIO9, for the LED/GPIO demo |
 | `app/boards/te0701-can1.overlay` | Enables CAN1 at 1 Mbit/s as `zephyr,canbus` |
+| `app/boards/te0701-spi1.overlay` | Enables SPI1 with its chip select on MIO13, for the [SPI sensor benches](../tests/spi-sensors.md) |
 
 ## Loading over JTAG
 

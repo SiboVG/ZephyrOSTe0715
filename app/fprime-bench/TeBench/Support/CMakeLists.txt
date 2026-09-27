@@ -1,0 +1,12 @@
+register_fprime_module(
+    SOURCES
+        "${CMAKE_CURRENT_LIST_DIR}/BenchSpi.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/bench_parse.c"
+    HEADERS
+        "${CMAKE_CURRENT_LIST_DIR}/BenchSpi.hpp"
+        "${CMAKE_CURRENT_LIST_DIR}/EnumName.hpp"
+        "${CMAKE_CURRENT_LIST_DIR}/bench_parse.h"
+    DEPENDS
+        Fw_Types
+        fprime-zephyr_Drv_ZephyrSpiDriver
+)

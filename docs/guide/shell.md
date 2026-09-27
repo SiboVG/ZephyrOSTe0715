@@ -13,6 +13,10 @@ with three command groups for this project:
 Zephyr's own `can` and `kernel` command groups are included as well, for bus and
 system diagnostics.
 
+The SPI sensor bench images have their own command groups, `ina` and `adxl`,
+described in the [INA229 bench](../tests/ina229.md#shell-commands) and
+[ADXL355 bench](../tests/adxl355.md#shell-commands) guides.
+
 ## Using the shell
 
 - The prompt is `uart:~$`. Type a command and press Enter.

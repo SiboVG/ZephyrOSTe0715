@@ -1,0 +1,19 @@
+register_fprime_module(
+    AUTOCODER_INPUTS
+        "${CMAKE_CURRENT_LIST_DIR}/instances.fpp"
+        "${CMAKE_CURRENT_LIST_DIR}/topology.fpp"
+    HEADERS
+        "${CMAKE_CURRENT_LIST_DIR}/Ina229Te0715TopologyDefs.hpp"
+    DEPENDS
+        Components_Client
+        Ina229_Manager
+        Svc_ActiveRateGroup
+        Svc_CmdDispatcher
+        Svc_PassiveConsoleTextLogger
+        TeBench_ShellCommander
+        TeBench_Support
+        TeBench_TlmPrinter
+        fprime-zephyr_Drv_ZephyrRateDriver
+        fprime-zephyr_Drv_ZephyrSpiDriver
+        fprime-zephyr_Svc_ZephyrTime
+)

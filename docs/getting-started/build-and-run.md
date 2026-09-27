@@ -58,6 +58,10 @@ The results are in `build-fprime-automatic-zephyr/zephyr/`:
     `../CspLibparamFprimeTest` and the library from `../fprime-csp-libparam`,
     relative to the workspace. Both must be on their Zephyr branches.
 
+The two sensor benches build the same way, in `app/apps/fprime_ina229_bench` and
+`app/apps/fprime_adxl355_bench`, with `../fprime-ina229` or `../fprime-adxl355` next
+to the workspace; see [SPI sensor benches](../tests/spi-sensors.md#building).
+
 ## Upstream `main` builds
 
 The worktrees `zephyr-main/` and `zephyr-can-main/` hold the Zephyr branches for

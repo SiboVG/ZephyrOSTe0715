@@ -1,0 +1,48 @@
+module Adxl355Te0715 {
+
+  module Default {
+    constant QUEUE_SIZE = 10
+    @ Must equal CONFIG_DYNAMIC_THREAD_STACK_SIZE
+    constant STACK_SIZE = 16 * 1024
+  }
+
+  @ Dispatches the manager and application commands sent from the shell (`adxl cmd`)
+  instance cmdDisp: Svc.CommandDispatcher base id 0x10002000 \
+    queue size Default.QUEUE_SIZE \
+    stack size Default.STACK_SIZE \
+    priority 44
+
+  instance zephyrTime: Zephyr.ZephyrTime base id 0x10011000
+
+  @ Prints events on the Zephyr console
+  instance textLogger: Svc.PassiveTextLogger base id 0x10012000
+
+  @ Prints telemetry on the Zephyr console
+  instance tlmPrinter: TeBench.TlmPrinter base id 0x10013000
+
+  @ Sends shell-built commands to cmdDisp
+  instance commander: TeBench.ShellCommander base id 0x10014000
+
+  @ SPI1, ADXL355 on cs-gpios[0]; clock and mode from Kconfig, changed with `adxl spi`
+  instance spi: Zephyr.ZephyrSpiDriver base id 0x10020000 \
+  {
+    phase Fpp.ToCpp.Phases.configComponents """
+    TeBench::BenchSpi::configure(spi, state.spiHz, state.spiMode);
+    """
+  }
+
+  @ The device manager under test
+  instance sensor: Adxl355.Manager base id 0x10030000
+
+  @ The synchronized application under test, with one sensor
+  instance app: Adxl355.SynchronizedApplication base id 0x10031000 \
+  {
+    phase Fpp.ToCpp.Phases.configComponents """
+    state.appConfigured = (app.configure(1U) == Adxl355::DriverStatus::OK);
+    """
+  }
+
+  @ Shell and timing-thread access to the manager and the application
+  instance client: Adxl355Te0715.Client base id 0x10040000
+
+}

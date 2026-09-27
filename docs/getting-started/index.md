@@ -23,7 +23,9 @@ Sandbox/
 │   │   └── hal/cmsis*/          ARM CMSIS headers
 │   └── .venv/                   Python environment
 ├── fprime-csp-libparam/         reusable F Prime CSP/libparam library
-└── CspLibparamFprimeTest/       Linux acceptance bench (also used as the CAN test peer)
+├── CspLibparamFprimeTest/       Linux acceptance bench (also used as the CAN test peer)
+├── fprime-ina229/               INA229 library, for the INA229 sensor bench
+└── fprime-adxl355/              ADXL355 library, for the ADXL355 sensor bench
 ```
 
 The two F Prime repositories next to the workspace are used as they are by the
@@ -36,11 +38,14 @@ checked out on the branches that add Zephyr support (see below).
 |---|---|
 | `west.yml` | The manifest: which Zephyr, libcsp, libparam, F Prime and fprime-zephyr revisions to use |
 | `boards/trenz/te0715/` | The `te0715` board: devicetree, pin configuration, CAN clock setup, JTAG loading |
-| `boards/te0715.overlay`, `boards/te0701-can1.overlay` | Carrier-specific additions: the Pmod GPIO, and CAN1 on Pmod J1 |
+| `boards/te0715.overlay`, `boards/te0701-can1.overlay`, `boards/te0701-spi1.overlay` | Carrier-specific additions: the Pmod GPIO, CAN1 on Pmod J1, and SPI1 on Pmod J1 |
 | `src/` | LED and GPIO demo (the default application) |
 | `apps/can_bringup/` | Raw CAN test application |
 | `apps/csp_node/` | Plain libcsp/libparam node without F Prime |
 | `apps/fprime_csp_bench/` | The F Prime application (the image used on the FlatSat) |
+| `apps/fprime_ina229_bench/`, `apps/fprime_adxl355_bench/` | The F Prime sensor benches ([SPI sensor benches](../tests/spi-sensors.md)) |
+| `fprime-bench/` | F Prime components shared by the sensor benches |
+| `dts/bindings/` | Devicetree binding of the Zynq SPI controllers |
 | `zephyr/` | Makes `app/` a Zephyr module: board root, libparam build, patches |
 | `boot/` | U-Boot script for booting Zephyr from the SD card |
 | `scripts/` | Test tools, SD card installer, serial console |
