@@ -68,3 +68,17 @@ patches:
       unchanged (lower value = higher priority) and every value above 14 was
       clamped to 14, so all F Prime tasks ran at the lowest priority. Map p to
       CONFIG_NUM_PREEMPT_PRIORITIES - 1 - p, keeping order and spacing.
+  - path: zephyr/0001-spi-cdns-configure-cs-gpios.patch
+    sha256sum: 8955b1a3abed5ffe00ddf8a21c9cd5d5aa031f635de3816a039f267043589dbe
+    module: zephyr
+    author: Sibo Van Gool
+    email: sibo.vangool@hotmail.com
+    date: 2026-09-27
+    upstreamable: true
+    comments: |
+      spi_cdns never set up the GPIOs listed in cs-gpios: it neither
+      initialised the context's CS list (SPI_CONTEXT_CS_GPIOS_INITIALIZE)
+      nor configured the pins (spi_context_cs_configure_all), which every
+      other GPIO-CS capable SPI driver does. The chip select stayed an
+      input, so a GPIO-selected device was never selected. Needed for the
+      SPI1 sensor benches on the TE0715 (CS on MIO13).

@@ -71,5 +71,9 @@ jobs:
           west build -b te0715 app -d build/demo
           west build -b te0715 app/apps/can_bringup -d build/can_bringup
           west build -b te0715 app/apps/csp_node -d build/csp_node
+          # SPI1 on Pmod J1 (board support of the sensor benches, whose F Prime
+          # applications are not built here)
+          west build -b te0715 app -d build/demo-spi1 -- \
+            -DEXTRA_DTC_OVERLAY_FILE=$PWD/app/boards/te0701-spi1.overlay -DCONFIG_SPI=y
       - name: Build the unit tests for the board
         run: zephyr/scripts/twister -T app/tests -p te0715 --build-only -v -O twister-te0715

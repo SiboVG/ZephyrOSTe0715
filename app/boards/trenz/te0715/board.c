@@ -8,11 +8,14 @@
  * - software reset for sys_reboot(), which Zephyr does not implement for the
  *   Zynq-7000 (the default sys_arch_reboot() does nothing);
  * - CAN clock setup that the FSBL of the Trenz test_board reference design
- *   does not do: that design leaves the CAN controllers disabled.
+ *   does not do: that design leaves the CAN controllers disabled;
+ * - the same for the SPI controllers, plus SPI1's pin configuration, which the
+ *   cdns,spi driver does not apply.
  */
 
 #include <zephyr/device.h>
 #include <zephyr/devicetree.h>
+#include <zephyr/drivers/pinctrl.h>
 #include <zephyr/drivers/syscon.h>
 #include <zephyr/init.h>
 #include <zephyr/sys/util.h>
@@ -125,3 +128,112 @@ static int te0715_can_clock_init(void)
 SYS_INIT(te0715_can_clock_init, PRE_KERNEL_2, 0);
 
 #endif /* CAN0_OKAY || CAN1_OKAY */
+
+#define SPI0_OKAY DT_NODE_HAS_STATUS_OKAY(DT_NODELABEL(spi0))
+#define SPI1_OKAY DT_NODE_HAS_STATUS_OKAY(DT_NODELABEL(spi1))
+
+#if SPI0_OKAY || SPI1_OKAY
+
+/*
+ * SLCR registers (Zynq-7000 TRM, appendix B.28). The field layout is the one Linux's
+ * Zynq clock driver uses for SPI_CLK_CTRL (drivers/clk/zynq/clkc.c) and Xilinx's
+ * ps7_init field comments use for APER_CLK_CTRL.
+ */
+#define SLCR_APER_CLK_CTRL 0x12C
+#define SLCR_SPI_CLK_CTRL  0x158
+#define SLCR_SPI_RST_CTRL  0x21C
+
+#define APER_CLK_CTRL_SPI0_CPU_1XCLKACT BIT(14)
+#define APER_CLK_CTRL_SPI1_CPU_1XCLKACT BIT(15)
+
+#define SPI_CLK_CTRL_DIVISOR GENMASK(13, 8)
+#define SPI_CLK_CTRL_SRCSEL  GENMASK(5, 4) /* 0: IO PLL */
+#define SPI_CLK_CTRL_CLKACT1 BIT(1)
+#define SPI_CLK_CTRL_CLKACT0 BIT(0)
+
+/* SPI_RST_CTRL: bit 0 SPI0_CPU1X_RST, 1 SPI1_CPU1X_RST, 2 SPI0_REF_RST, 3 SPI1_REF_RST */
+#define SPI_RST_CTRL_SPI0 (BIT(2) | BIT(0))
+#define SPI_RST_CTRL_SPI1 (BIT(3) | BIT(1))
+
+/*
+ * SPI_REF_CLK = IO PLL (1000 MHz, set by ps7_init) / 7 = 142.86 MHz, above CPU_1x
+ * (111 MHz). The controllers divide it by 4 to 256, so SCLK can be 8.93 MHz, just
+ * below the 10 MHz limit of the INA229 and the ADXL355, and 4.46 MHz down to 558 kHz.
+ * Both controllers share this clock.
+ */
+#define IO_PLL_HZ       1000000000U
+#define SPI_REF_DIVISOR 7U
+#define SPI_REF_CLK_HZ  (IO_PLL_HZ / SPI_REF_DIVISOR)
+
+BUILD_ASSERT(DT_PROP(DT_NODELABEL(spi0), clock_frequency) == SPI_REF_CLK_HZ);
+BUILD_ASSERT(DT_PROP(DT_NODELABEL(spi1), clock_frequency) == SPI_REF_CLK_HZ);
+
+#if SPI1_OKAY
+PINCTRL_DT_DEFINE(DT_NODELABEL(spi1));
+#endif
+
+static int te0715_spi_clock_init(void)
+{
+	const struct device *slcr = DEVICE_DT_GET(DT_NODELABEL(slcr));
+	uint32_t aper_mask = 0U;
+	uint32_t clkact = 0U;
+	uint32_t rst = 0U;
+	uint32_t val;
+	int err;
+
+	if (SPI0_OKAY) {
+		aper_mask |= APER_CLK_CTRL_SPI0_CPU_1XCLKACT;
+		clkact |= SPI_CLK_CTRL_CLKACT0;
+		rst |= SPI_RST_CTRL_SPI0;
+	}
+	if (SPI1_OKAY) {
+		aper_mask |= APER_CLK_CTRL_SPI1_CPU_1XCLKACT;
+		clkact |= SPI_CLK_CTRL_CLKACT1;
+		rst |= SPI_RST_CTRL_SPI1;
+	}
+
+	if (!device_is_ready(slcr)) {
+		return -ENODEV;
+	}
+
+	/* Hold the controllers in reset while their clocks are changed */
+	err = syscon_read_reg(slcr, SLCR_SPI_RST_CTRL, &val);
+	if (err == 0) {
+		err = syscon_write_reg(slcr, SLCR_SPI_RST_CTRL, val | rst);
+	}
+
+	if (err == 0) {
+		err = syscon_write_reg(slcr, SLCR_SPI_CLK_CTRL,
+				       FIELD_PREP(SPI_CLK_CTRL_DIVISOR, SPI_REF_DIVISOR) |
+					       FIELD_PREP(SPI_CLK_CTRL_SRCSEL, 0U) | clkact);
+	}
+
+	if (err == 0) {
+		err = syscon_read_reg(slcr, SLCR_APER_CLK_CTRL, &val);
+	}
+	if (err == 0) {
+		err = syscon_write_reg(slcr, SLCR_APER_CLK_CTRL, val | aper_mask);
+	}
+
+	if (err == 0) {
+		err = syscon_read_reg(slcr, SLCR_SPI_RST_CTRL, &val);
+	}
+	if (err == 0) {
+		err = syscon_write_reg(slcr, SLCR_SPI_RST_CTRL, val & ~rst);
+	}
+
+#if SPI1_OKAY
+	/* MIO10..12 to SPI1 and MIO13 to GPIO (chip select), before the driver starts */
+	if (err == 0) {
+		err = pinctrl_apply_state(PINCTRL_DT_DEV_CONFIG_GET(DT_NODELABEL(spi1)),
+					  PINCTRL_STATE_DEFAULT);
+	}
+#endif
+
+	return err;
+}
+
+/* After the SLCR syscon device (PRE_KERNEL_1), before the SPI drivers (POST_KERNEL) */
+SYS_INIT(te0715_spi_clock_init, PRE_KERNEL_2, 1);
+
+#endif /* SPI0_OKAY || SPI1_OKAY */

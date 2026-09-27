@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: Apache-2.0
+
+description: |
+  Zynq-7000 PS SPI controller (Cadence IP, revision r1p6).
+
+  Zephyr's cdns,spi driver serves this controller; list "cdns,spi" as the second
+  compatible. This binding adds the pin configuration properties, so board code
+  can apply the controller's MIO pin state: the driver itself does not apply
+  pinctrl (see app/boards/trenz/te0715/board.c).
+
+compatible: "xlnx,zynq-spi-r1p6"
+
+include:
+  - "cdns,spi.yaml"
+  - pinctrl-device.yaml

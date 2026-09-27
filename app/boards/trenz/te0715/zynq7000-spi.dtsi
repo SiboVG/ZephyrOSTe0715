@@ -1,0 +1,37 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The two PS SPI controllers of the Zynq-7000, which Zephyr's zynq7000.dtsi does not
+ * describe yet. Addresses and interrupts as in Linux's zynq-7000.dtsi (SPI0: GIC SPI 26,
+ * SPI1: GIC SPI 49). The controllers have 128-entry, 8-bit TX and RX FIFOs (Xilinx
+ * xspips_hw.h, XSPIPS_FIFO_DEPTH).
+ *
+ * clock-frequency is SPI_REF_CLK, which board.c sets up; it is shared by both
+ * controllers (SLCR SPI_CLK_CTRL has one divisor).
+ */
+
+&{/soc} {
+	spi0: spi@e0006000 {
+		compatible = "xlnx,zynq-spi-r1p6", "cdns,spi";
+		status = "disabled";
+		reg = <0xe0006000 0x1000>;
+		interrupts = <GIC_SPI 26 IRQ_TYPE_LEVEL IRQ_DEFAULT_PRIORITY>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+		fifo-width = <8>;
+		rx-fifo-depth = <128>;
+		tx-fifo-depth = <128>;
+	};
+
+	spi1: spi@e0007000 {
+		compatible = "xlnx,zynq-spi-r1p6", "cdns,spi";
+		status = "disabled";
+		reg = <0xe0007000 0x1000>;
+		interrupts = <GIC_SPI 49 IRQ_TYPE_LEVEL IRQ_DEFAULT_PRIORITY>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+		fifo-width = <8>;
+		rx-fifo-depth = <128>;
+		tx-fifo-depth = <128>;
+	};
+};

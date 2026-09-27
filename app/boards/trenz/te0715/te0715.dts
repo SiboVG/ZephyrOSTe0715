@@ -3,7 +3,7 @@
 #include <zephyr/dt-bindings/gpio/gpio.h>
 
 #include "te0715-pinctrl.dtsi"
-/* TODO: import other custom .dtsi files */
+#include "zynq7000-spi.dtsi"
 
 / {
     model = "Trenz TE0715";
@@ -80,5 +80,19 @@
 &can1 {
     clock-frequency = <100000000>;
     pinctrl-0 = <&pinctrl_can1_default>;
+    pinctrl-names = "default";
+};
+
+/*
+ * SPI_REF_CLK is set up by board.c (IO PLL / 7). The SPI driver does not apply
+ * pinctrl; board.c applies SPI1's pin state when the controller is enabled.
+ */
+&spi0 {
+    clock-frequency = <142857142>;
+};
+
+&spi1 {
+    clock-frequency = <142857142>;
+    pinctrl-0 = <&pinctrl_spi1_default>;
     pinctrl-names = "default";
 };

@@ -44,4 +44,29 @@
 			bias-disable;
 		};
 	};
+
+	/*
+	 * SPI1 on MIO10 (MOSI), MIO11 (MISO) and MIO12 (SCLK), and MIO13 as the GPIO chip
+	 * select (the SPI driver controls it through cs-gpios). The same pins as CAN1 on
+	 * MIO12/13: an application enables either spi1 or can1. MISO keeps its pull-up, so
+	 * an unconnected sensor reads as all ones rather than as floating data.
+	 */
+	pinctrl_spi1_default: spi1-default {
+		mux {
+			groups = "spi1_0_grp";
+			function = "spi1";
+		};
+
+		mux-cs {
+			groups = "gpio0_13_grp";
+			function = "gpio0";
+		};
+
+		conf {
+			groups = "spi1_0_grp", "gpio0_13_grp";
+			slew-rate = <IO_SPEED_SLOW>;
+			power-source = <IO_STANDARD_LVCMOS33>;
+			bias-pull-up;
+		};
+	};
 };
