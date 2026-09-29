@@ -46,8 +46,11 @@
 	};
 
 	/*
-	 * SPI1 on MIO10 (MOSI), MIO11 (MISO) and MIO12 (SCLK), and MIO13 as the GPIO chip
-	 * select (the SPI driver controls it through cs-gpios). The same pins as CAN1 on
+	 * SPI1 on MIO10 (MOSI), MIO11 (MISO) and MIO12 (SCLK), with its own slave select
+	 * SS0 on MIO13 as the chip select. SS0 must be on a pin: in master mode the
+	 * controller does not start a transfer while its SS0 input is low, and without
+	 * the pin that input comes from the PL, where it is low in the reference design.
+	 * A GPIO chip select on MIO13 therefore cannot work. The same pins as CAN1 on
 	 * MIO12/13: an application enables either spi1 or can1. MISO keeps its pull-up, so
 	 * an unconnected sensor reads as all ones rather than as floating data.
 	 */
@@ -58,12 +61,12 @@
 		};
 
 		mux-cs {
-			groups = "gpio0_13_grp";
-			function = "gpio0";
+			groups = "spi1_0_ss0";
+			function = "spi1_ss";
 		};
 
 		conf {
-			groups = "spi1_0_grp", "gpio0_13_grp";
+			groups = "spi1_0_grp", "spi1_0_ss0";
 			slew-rate = <IO_SPEED_SLOW>;
 			power-source = <IO_STANDARD_LVCMOS33>;
 			bias-pull-up;

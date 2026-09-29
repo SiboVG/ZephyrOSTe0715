@@ -197,7 +197,7 @@ Common preconditions for all test cases: the workspace built as in
 | **Verifies** | `TE-ADXL-003` |
 | **Preconditions** | TC-18 passed; the sensor at rest |
 | **Procedure** | As in [ADXL355 bench, TC-19](../tests/adxl355.md#tc-19-the-synchronized-application): at 1 kHz output data rate, triggered at 500 Hz (2500 frames) and 2 kHz (4000 frames); at 4 kHz, triggered at 2 kHz (10000 frames) and 4 kHz (20000 frames) |
-| **Pass criteria** | 500 Hz: 2500 complete frames, none stale, no sequence gap, no missed tick. 2 kHz at 1 kHz ODR: 35 % to 65 % stale, none implausible or with another error. 2 kHz at 4 kHz ODR: 10000 complete frames. 4 kHz: longest acquisition below 250 µs, no missed tick or sequence gap |
+| **Pass criteria** | 500 Hz: 2500 complete frames, none stale, no sequence gap, no missed tick. 2 kHz at 1 kHz ODR: 35 % to 65 % stale, none implausible or with another error, no missed tick. 2 kHz at 4 kHz ODR: 10000 complete frames. 4 kHz: longest acquisition below 250 µs, no missed tick or sequence gap, none implausible or with another error; the share of stale frames (the timer and the sensor's oscillator drift against each other) is recorded |
 | **Evidence** | `sensor_bench.py adxl355` package |
 
 ## TC-20 ADXL355 six orientations

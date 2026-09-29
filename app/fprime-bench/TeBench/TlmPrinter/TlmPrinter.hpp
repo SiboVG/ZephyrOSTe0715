@@ -28,6 +28,9 @@ class TlmPrinter final : public TlmPrinterComponentBase {
     //! Values written to unregistered channels, or that did not decode (not printed)
     U32 unprintedCount() const { return this->m_unprinted.load(); }
 
+    //! Values dropped because the queue was full
+    U32 droppedCount() const { return this->m_dropped.load(); }
+
     template <typename T>
     static bool formatUnsigned(Fw::TlmBuffer& value, char* text, FwSizeType size) {
         T v = 0;
@@ -65,6 +68,7 @@ class TlmPrinter final : public TlmPrinterComponentBase {
 
   private:
     void tlmIn_handler(FwIndexType portNum, FwChanIdType id, Fw::Time& timeTag, Fw::TlmBuffer& val) override;
+    void tlmIn_overflowHook(FwIndexType portNum, FwChanIdType id, Fw::Time& timeTag, Fw::TlmBuffer& val) override;
 
     struct Entry {
         FwChanIdType id;
@@ -76,6 +80,7 @@ class TlmPrinter final : public TlmPrinterComponentBase {
     FwSizeType m_count = 0;
     std::atomic<bool> m_enabled{true};
     std::atomic<U32> m_unprinted{0U};
+    std::atomic<U32> m_dropped{0U};
 };
 
 }  // namespace TeBench

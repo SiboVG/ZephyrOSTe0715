@@ -332,9 +332,9 @@ void timingThread(void* p1, void* p2, void* p3) {
             const U64 triggers = g_triggers.fetch_add(1U) + 1U;
             const U64 limit = g_frameLimit.load();
             if ((limit != 0U) && (triggers >= limit)) {
+                // No console output from this thread: `adxl stream status` reports the end
                 g_streaming.store(false);
                 k_timer_stop(&g_frameTimer);
-                printk("ADXL_STREAM_DONE triggers=%llu\n", static_cast<unsigned long long>(triggers));
             }
         }
     }
@@ -364,8 +364,9 @@ extern "C" void adxl_bench_register_telemetry(void) {
     using M = ManagerIds;
     using A = AppIds;
     using P = TeBench::TlmPrinter;
-    const FwChanIdType m = sensor.getIdBase();
-    const FwChanIdType a = app.getIdBase();
+    // The topology's base IDs: setup() assigns them only after this registration
+    const FwChanIdType m = Adxl355Te0715::BaseIds::Adxl355Te0715_sensor;
+    const FwChanIdType a = Adxl355Te0715::BaseIds::Adxl355Te0715_app;
     (void)tlmPrinter.add(m + M::CHANNELID_INITIALIZED, "sensor.Initialized", P::formatUnsigned<U8>);
     (void)tlmPrinter.add(m + M::CHANNELID_MEASURING, "sensor.Measuring", P::formatUnsigned<U8>);
     (void)tlmPrinter.add(m + M::CHANNELID_LASTSTATUS, "sensor.LastStatus",
@@ -950,6 +951,7 @@ extern "C" int adxl_cmd_tlm(const struct shell* sh, size_t argc, char** argv) {
         return -EINVAL;
     }
     tlmPrinter.setEnabled(on);
-    shell_print(sh, "ADXL_TLM printing=%s unprinted=%u", on ? "on" : "off", tlmPrinter.unprintedCount());
+    shell_print(sh, "ADXL_TLM printing=%s unprinted=%u dropped=%u", on ? "on" : "off", tlmPrinter.unprintedCount(),
+                tlmPrinter.droppedCount());
     return 0;
 }

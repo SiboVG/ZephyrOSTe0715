@@ -2,6 +2,10 @@ module Adxl355Te0715 {
 
   module Default {
     constant QUEUE_SIZE = 10
+    @ Console printers: room for a burst of throttled events or telemetry
+    constant LOG_QUEUE_SIZE = 64
+    @ Console printers at the shell's priority (Zephyr 99), see prj.conf
+    constant CONSOLE_PRIORITY = 0
     @ Must equal CONFIG_DYNAMIC_THREAD_STACK_SIZE
     constant STACK_SIZE = 16 * 1024
   }
@@ -14,16 +18,23 @@ module Adxl355Te0715 {
 
   instance zephyrTime: Zephyr.ZephyrTime base id 0x10011000
 
-  @ Prints events on the Zephyr console
-  instance textLogger: Svc.PassiveTextLogger base id 0x10012000
+  @ Prints events on the Zephyr console, from its own thread, so that emitting an
+  @ event never waits for the 115200 baud console
+  instance textLogger: Svc.ActiveTextLogger base id 0x10012000 \
+    queue size Default.LOG_QUEUE_SIZE \
+    stack size Default.STACK_SIZE \
+    priority Default.CONSOLE_PRIORITY
 
-  @ Prints telemetry on the Zephyr console
-  instance tlmPrinter: TeBench.TlmPrinter base id 0x10013000
+  @ Prints telemetry on the Zephyr console, also from its own thread
+  instance tlmPrinter: TeBench.TlmPrinter base id 0x10013000 \
+    queue size Default.LOG_QUEUE_SIZE \
+    stack size Default.STACK_SIZE \
+    priority Default.CONSOLE_PRIORITY
 
   @ Sends shell-built commands to cmdDisp
   instance commander: TeBench.ShellCommander base id 0x10014000
 
-  @ SPI1, ADXL355 on cs-gpios[0]; clock and mode from Kconfig, changed with `adxl spi`
+  @ SPI1, ADXL355 on the chip select SS0; clock and mode from Kconfig, changed with `adxl spi`
   instance spi: Zephyr.ZephyrSpiDriver base id 0x10020000 \
   {
     phase Fpp.ToCpp.Phases.configComponents """

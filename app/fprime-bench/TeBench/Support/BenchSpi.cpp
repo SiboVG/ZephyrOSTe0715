@@ -4,13 +4,14 @@
 #include "fprime-zephyr/Drv/ZephyrSpiDriver/ZephyrSpiDriver.hpp"
 
 #include <zephyr/devicetree.h>
-#include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/spi.h>
 
 #define BENCH_SPI DT_NODELABEL(spi1)
 
 BUILD_ASSERT(DT_NODE_HAS_STATUS_OKAY(BENCH_SPI), "the sensor benches need spi1 (te0701-spi1.overlay)");
-BUILD_ASSERT(DT_PROP_LEN(BENCH_SPI, cs_gpios) >= 1, "spi1 needs a chip select in cs-gpios");
+// The controller's SS0 is the chip select; a GPIO chip select cannot work on this
+// board (see te0715-pinctrl.dtsi)
+BUILD_ASSERT(!DT_NODE_HAS_PROP(BENCH_SPI, cs_gpios), "the sensor benches use SPI1's own SS0 as chip select");
 
 namespace TeBench {
 namespace BenchSpi {
@@ -58,10 +59,9 @@ void configure(Zephyr::ZephyrSpiDriver& driver, U32 requestedHz, U8 mode) {
     config.frequency = requestedHz;
     config.operation = SPI_OP_MODE_MASTER | SPI_WORD_SET(8) | SPI_TRANSFER_MSB |
                        (((mode & 2U) != 0U) ? SPI_MODE_CPOL : 0U) | (((mode & 1U) != 0U) ? SPI_MODE_CPHA : 0U);
+    // Native chip select SS0 (slave 0), asserted by the driver over the whole transfer
     config.slave = 0U;
-    config.cs.gpio = GPIO_DT_SPEC_GET_BY_IDX(BENCH_SPI, cs_gpios, 0);
-    config.cs.delay = 1U;
-    config.cs.cs_is_gpio = true;
+    config.cs.cs_is_gpio = false;
     driver.configure(DEVICE_DT_GET(BENCH_SPI), config);
 }
 

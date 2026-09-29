@@ -5,13 +5,13 @@
  *   Pmod J1 pin 8  = MIO10 = MOSI (sensor SDI)
  *   Pmod J1 pin 9  = MIO11 = MISO (sensor SDO)
  *   Pmod J1 pin 10 = MIO12 = SCLK
- *   Pmod J1 pin 7  = MIO13 = CS, active low (GPIO)
+ *   Pmod J1 pin 7  = MIO13 = SS0, the controller's own chip select, active low
  *
- * MIO12/13 are also CAN1 (te0701-can1.overlay): use one overlay or the other. MIO10/11
- * also reach the TE0701 CPLD; see docs/tests/spi-sensors.md.
+ * The chip select is the controller's SS0 (native, slave 0), not a GPIO: see
+ * te0715-pinctrl.dtsi. MIO12/13 are also CAN1 (te0701-can1.overlay): use one overlay
+ * or the other. MIO10/11 also reach the TE0701 CPLD; see docs/tests/spi-sensors.md.
  */
 
 &spi1 {
 	status = "okay";
-	cs-gpios = <&psgpio_bank0 13 GPIO_ACTIVE_LOW>;
 };

@@ -24,6 +24,14 @@ bool TlmPrinter::formatF64(Fw::TlmBuffer& value, char* text, FwSizeType size) {
     return true;
 }
 
+void TlmPrinter::tlmIn_overflowHook(FwIndexType portNum, FwChanIdType id, Fw::Time& timeTag, Fw::TlmBuffer& val) {
+    (void)portNum;
+    (void)id;
+    (void)timeTag;
+    (void)val;
+    this->m_dropped.fetch_add(1U);
+}
+
 void TlmPrinter::tlmIn_handler(FwIndexType portNum, FwChanIdType id, Fw::Time& timeTag, Fw::TlmBuffer& val) {
     (void)portNum;
     for (FwSizeType i = 0; i < this->m_count; i++) {

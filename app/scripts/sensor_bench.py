@@ -81,8 +81,10 @@ class Console:
         return ANSI.sub('', data.decode(errors='replace')).replace('\r', '')
 
     def wait_for(self, pattern, timeout, since=0):
-        """The first line after since that matches pattern, or None after timeout seconds."""
-        regex = re.compile(pattern, re.M)
+        """The first complete line after since that matches pattern, or None after timeout
+        seconds. A line counts once its newline has arrived, so a result line is never
+        read half-received."""
+        regex = re.compile(f'(?:{pattern})(?=\n)', re.M)
         deadline = time.time() + timeout
         while True:
             found = regex.search(self.text(since))
@@ -372,10 +374,14 @@ def adxl_read(con, count):
 
 def stream(con, rate, frames, timeout):
     """Trigger frames at rate until the timing thread reports them done; the counts"""
-    since = con.mark()
     started, _ = con.run(f'adxl stream start {rate} {frames}', r'ADXL_STREAM_STARTED .*|error.*')
     if started and started.startswith('ADXL_STREAM_STARTED'):
-        con.wait_for(r'ADXL_STREAM_DONE .*', timeout, since)
+        deadline = time.time() + timeout
+        while time.time() < deadline:
+            status, _ = con.run('adxl stream status', r'ADXL_STREAM .*')
+            if fields(status).get('streaming') == '0':
+                break
+            time.sleep(0.5)
     line, _ = con.run('adxl stream stop', r'ADXL_STREAM_STOPPED .*')
     return fields(line), line
 
@@ -437,17 +443,22 @@ def adxl355(con, res, args):
     f, line = stream(con, 2000, 4000, 30)
     frames = number(f, 'frames', 0)
     stale_share = number(f, 'stale', 0) / frames if frames else float('nan')
-    res.check('TC-19.2', 'ODR 1 kHz, triggered at 2 kHz: about half the frames stale, none implausible',
-              0.35 <= stale_share <= 0.65 and f.get('implausible') == '0' and f.get('other') == '0',
-              f'stale share {stale_share:.3f}; {line}')
+    res.check('TC-19.2', 'ODR 1 kHz, triggered at 2 kHz: about half the frames stale, none implausible, '
+              'no missed tick', 0.35 <= stale_share <= 0.65 and f.get('implausible') == '0' and
+              f.get('other') == '0' and f.get('missed_ticks') == '0', f'stale share {stale_share:.3f}; {line}')
     con.run('adxl init 2 4000 0', r'ADXL_INIT .*', timeout=20)
     f, line = stream(con, 2000, 10000, 30)
     res.check('TC-19.3', 'ODR 4 kHz, triggered at 2 kHz: 10000 complete frames',
               f.get('complete') == '10000' and f.get('stale') == '0' and f.get('seq_gaps') == '0', line)
     f, line = stream(con, 4000, 20000, 30)
-    res.check('TC-19.4', 'ODR 4 kHz, triggered at 4 kHz: acquisition within the 250 us period, no trigger lost',
-              number(f, 'acq_max_us', 1e9) < 250 and f.get('missed_ticks') == '0' and f.get('seq_gaps') == '0',
-              line)
+    # Triggered at the output data rate, the timer and the sensor's own oscillator drift
+    # against each other, so an occasional stale frame is expected; it is recorded
+    res.check('TC-19.4', 'ODR 4 kHz, triggered at 4 kHz: acquisition within the 250 us period, no trigger lost, '
+              'nothing implausible', number(f, 'acq_max_us', 1e9) < 250 and f.get('missed_ticks') == '0' and
+              f.get('seq_gaps') == '0' and f.get('implausible') == '0' and f.get('other') == '0', line)
+    frames = number(f, 'frames', 0)
+    res.info('TC-19.4', f'stale frames at trigger rate = ODR (clock drift): {f.get("stale")} of {f.get("frames")} '
+                        f'({(number(f, "stale", 0) / frames * 100) if frames else float("nan"):.3f} %)')
     con.run('adxl init 2 125 0', r'ADXL_INIT .*', timeout=20)
 
     if args.interactive:

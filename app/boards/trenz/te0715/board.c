@@ -223,7 +223,7 @@ static int te0715_spi_clock_init(void)
 	}
 
 #if SPI1_OKAY
-	/* MIO10..12 to SPI1 and MIO13 to GPIO (chip select), before the driver starts */
+	/* MIO10..13 to SPI1 (MOSI, MISO, SCLK, SS0), before the driver starts */
 	if (err == 0) {
 		err = pinctrl_apply_state(PINCTRL_DT_DEV_CONFIG_GET(DT_NODELABEL(spi1)),
 					  PINCTRL_STATE_DEFAULT);

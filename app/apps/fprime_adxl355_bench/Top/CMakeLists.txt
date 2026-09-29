@@ -9,7 +9,7 @@ register_fprime_module(
         Adxl355_Manager
         Components_Client
         Svc_CmdDispatcher
-        Svc_PassiveConsoleTextLogger
+        Svc_ActiveTextLogger
         TeBench_ShellCommander
         TeBench_Support
         TeBench_TlmPrinter

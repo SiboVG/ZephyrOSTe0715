@@ -50,7 +50,7 @@ With the power off, connect the sensor board with short jumper leads (under 20 c
 | 8 | MIO10 | SPI1 MOSI | SDI | MOSI (SDI) |
 | 9 | MIO11 | SPI1 MISO | SDO | MISO (SDO) |
 | 10 | MIO12 | SPI1 SCLK | SCLK | SCLK |
-| 7 | MIO13 | chip select, active low (GPIO) | CS | CS |
+| 7 | MIO13 | chip select, SPI1 SS0, active low | CS | CS |
 | 6 | – | 3.3 V | VS | VSUPPLY and VDDIO |
 | 12 | – | GND | GND | GND |
 
@@ -76,6 +76,9 @@ Further points:
   meant to catch that; capture a few transfers with a logic analyzer as well.
 - MIO11 (MISO) has its pull-up enabled, so an unconnected or unselected sensor reads
   as all ones.
+- The chip select is SPI1's own SS0, not a GPIO: the controller does not transfer while
+  its SS0 input is low, which it is when SS0 is not on a pin (see
+  [Board support](../architecture/board.md#spi-controllers)).
 - For waveform captures, connect a logic analyzer to Pmod J1 pins 7 to 10 and GND.
 
 ## SPI clock and mode

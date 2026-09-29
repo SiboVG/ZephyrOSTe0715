@@ -114,7 +114,7 @@ library inside this repository, `app/fprime-bench/` (listed in each bench's
 | Component | What it does |
 |---|---|
 | `TeBench.ShellCommander` | Builds a command packet (packet type, opcode, arguments) from a shell command, sends it to `cmdDisp.seqCmdBuff` and waits for the response on `seqCmdStatus`: a shell command takes the same path as a ground command |
-| `TeBench.TlmPrinter` | Receives all telemetry (`telemetry connections`) and prints the channels the bench registers, decoded; others, such as a rate group's per-cycle `RgMaxTime`, are only counted |
+| `TeBench.TlmPrinter` | Receives all telemetry (`telemetry connections`) and prints the channels the bench registers, decoded, from its own thread; others, such as a rate group's per-cycle `RgMaxTime`, are only counted, and values that find its queue full are dropped and counted |
 | `TeBench/Support` | SPI settings for SPI1 (`BenchSpi`), argument parsing for the shell, enum names |
 
 ```mermaid
@@ -128,6 +128,13 @@ flowchart LR
     M -. "telemetry" .-> TP["tlmPrinter"]
     M -. "events" .-> TL["textLogger"]
 ```
+
+Events go to F Prime's `Svc.ActiveTextLogger`, which also prints from its own thread.
+Both printers run at the shell's priority with time slicing off, so console lines are
+never cut and no acquisition thread waits for the 115200 baud console; printing events
+synchronously in the frame timing thread had stalled it for up to 27 ms. The channel
+table uses the topology's `BaseIds` constants, because it is filled before `setup()`
+assigns the components' base IDs.
 
 The ADXL355 bench has no rate group. Its client drives the synchronized application's
 `acquireFrame` port from a Zephyr thread (`frame_timing`, Zephyr priority

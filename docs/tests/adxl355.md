@@ -88,8 +88,11 @@ With `adxl init 2 4000 0` (4 kHz):
 
 3. Triggered at 2 kHz for 10000 frames: all complete.
 4. Triggered at 4 kHz for 20000 frames: the longest acquisition stays below the
-   250 µs period, no trigger is lost. Record the acquisition times; they cover one
-   sensor at the SCLK in use, not the seven-sensor flight budget (ADXL-INT-004).
+   250 µs period, no trigger is lost, nothing is implausible. Triggered exactly at the
+   output data rate, the timer and the sensor's own oscillator drift against each
+   other, so an occasional frame is stale: its share is recorded, not failed. Record
+   the acquisition times; they cover one sensor at the SCLK in use, not the
+   seven-sensor flight budget (ADXL-INT-004).
 
 ### TC-20 Six orientations (interactive)
 

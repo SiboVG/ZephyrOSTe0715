@@ -96,6 +96,16 @@ def test_wait_for_only_sees_output_after_the_mark():
     assert con.wait_for(r'INA_ID .*', 0) == 'INA_ID result=FAIL'
 
 
+def test_a_result_line_counts_only_once_complete():
+    # A result line read while it is still arriving would lose its last fields
+    con = FakeConsole(lambda line: '')
+    con.buf.extend(b'ADXL_SOAK n=20000 bad_value=0 spi_er')
+    assert con.wait_for(r'ADXL_SOAK n=.*', 0) is None
+    con.buf.extend(b'rors=0 result=PASS\r\n')
+    line = con.wait_for(r'ADXL_SOAK n=.*', 0)
+    assert sensor_bench.fields(line)['result'] == 'PASS'
+
+
 def test_ina229_healthy_board_passes(tmp_path):
     res = results(tmp_path)
     con = FakeConsole(Ina229Board())
@@ -180,7 +190,9 @@ class Adxl355Board:
         if words[:3] == ['adxl', 'stream', 'start']:
             self.synced = False
             self.rate, self.frames = float(words[3]), int(words[4])
-            return 'ADXL_STREAM_STARTED\nADXL_STREAM_DONE\n'
+            return 'ADXL_STREAM_STARTED\n'
+        if words[:3] == ['adxl', 'stream', 'status']:
+            return 'ADXL_STREAM triggers=1 frames=1 streaming=0\n'
         if words[:3] == ['adxl', 'stream', 'stop']:
             stale = int(self.frames * self.stale_share) if self.rate == 2000 and self.frames == 4000 else 0
             return (f'ADXL_STREAM_STOPPED triggers={self.frames} frames={self.frames} '

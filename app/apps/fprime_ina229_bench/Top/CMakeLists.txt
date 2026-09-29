@@ -9,7 +9,7 @@ register_fprime_module(
         Ina229_Manager
         Svc_ActiveRateGroup
         Svc_CmdDispatcher
-        Svc_PassiveConsoleTextLogger
+        Svc_ActiveTextLogger
         TeBench_ShellCommander
         TeBench_Support
         TeBench_TlmPrinter

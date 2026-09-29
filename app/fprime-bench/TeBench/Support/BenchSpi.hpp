@@ -11,7 +11,8 @@ class ZephyrSpiDriver;
 
 namespace TeBench {
 
-//! The benches use one sensor on SPI1, selected by cs-gpios[0] (te0701-spi1.overlay).
+//! The benches use one sensor on SPI1, selected by the controller's SS0 on MIO13
+//! (te0701-spi1.overlay).
 //! The Zynq controller divides SPI_REF_CLK by 4 to 256 (Xilinx xspips.h,
 //! XSPIPS_CLK_PRESCALE_4..256); Zephyr's cdns,spi driver picks the fastest division
 //! that does not exceed the request.
@@ -29,8 +30,7 @@ U32 maximumSclkHz();
 U32 actualSclkHz(U32 requestedHz);
 
 //! Point the driver at SPI1: master, 8-bit words, MSB first, SPI mode 0..3 (bit 1
-//! CPOL, bit 0 CPHA), GPIO chip select cs-gpios[0] with 1 us setup and hold. Call
-//! only while no transfer is in progress.
+//! CPOL, bit 0 CPHA), chip select SS0. Call only while no transfer is in progress.
 void configure(Zephyr::ZephyrSpiDriver& driver, U32 requestedHz, U8 mode);
 
 }  // namespace BenchSpi

@@ -28,7 +28,7 @@ and listed in `app/zephyr/patches.yml`; `west patch apply` applies them.
 | fprime-zephyr | `0001-lora-enum-command-handler-signature` | The LoRa driver did not compile with the pinned F Prime | already upstream (`b76db2b`) |
 | fprime-zephyr | `0002-os-task-default-stack-size` | A task started with the default stack size failed (the size was passed as `SIZE_MAX`); the CSP router could not start | could be offered |
 | fprime-zephyr | `0003-os-task-map-fprime-priorities` | All F Prime tasks ran at the same, lowest priority | could be offered; changes behaviour for existing users |
-| zephyr | `0001-spi-cdns-configure-cs-gpios` | The `cdns,spi` driver never configured the pins in `cs-gpios`, so a GPIO chip select stayed an input and the device was never selected | could be offered (other SPI drivers do this) |
+| zephyr | `0001-spi-cdns-map-the-register-block` | The `cdns,spi` driver used its devicetree register address without mapping it: on the TE0715 (MMU on) the first register write took a translation fault at `0xe0007000` and Zephyr halted at boot | backport of upstream `1b7a2b68e0e0` (PR #115179); drop when the fork moves past it |
 
 ## Other integration changes
 

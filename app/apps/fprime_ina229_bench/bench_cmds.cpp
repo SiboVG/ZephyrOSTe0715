@@ -214,7 +214,8 @@ bool formatReading(Fw::TlmBuffer& value, char* text, FwSizeType size) {
 extern "C" void ina_bench_register_telemetry(void) {
     using Base = ManagerIds;
     using Printer = TeBench::TlmPrinter;
-    const FwChanIdType base = sensor.getIdBase();
+    // The topology's base ID: setup() assigns it only after this registration
+    const FwChanIdType base = Ina229Te0715::BaseIds::Ina229Te0715_sensor;
     (void)tlmPrinter.add(base + Base::CHANNELID_INITIALIZED, "sensor.Initialized", Printer::formatUnsigned<U8>);
     (void)tlmPrinter.add(base + Base::CHANNELID_LASTSTATUS, "sensor.LastStatus",
                          Printer::formatSerializable<Ina229::DriverStatus>);
@@ -551,6 +552,7 @@ extern "C" int ina_cmd_tlm(const struct shell* sh, size_t argc, char** argv) {
         return -EINVAL;
     }
     tlmPrinter.setEnabled(on);
-    shell_print(sh, "INA_TLM printing=%s unprinted=%u", on ? "on" : "off", tlmPrinter.unprintedCount());
+    shell_print(sh, "INA_TLM printing=%s unprinted=%u dropped=%u", on ? "on" : "off", tlmPrinter.unprintedCount(),
+                tlmPrinter.droppedCount());
     return 0;
 }

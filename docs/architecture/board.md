@@ -27,7 +27,7 @@ Zephyr through Zephyr's pinctrl driver, so they do not depend on the boot loader
 
 - UART0 on MIO14/15 (pull-ups as in the reference design);
 - CAN1 on MIO12/13 (pull-up on RX). In the reference design these pins are GPIO;
-- SPI1 on MIO10 to MIO12 and its chip select MIO13 as GPIO (pull-ups, as in the
+- SPI1 on MIO10 to MIO12 and its slave select SS0 on MIO13 (pull-ups, as in the
   reference design). The SPI driver does not apply pinctrl either, so `board.c` applies
   this state (see below).
 
@@ -71,10 +71,18 @@ them up when one is enabled in the devicetree:
 
 The controller divides SPI_REF_CLK by 4 to 256, so SCLK can be 8.93, 4.46, 2.23, 1.12
 or 0.56 MHz within the sensors' 10 MHz limit. A build-time check ties the devicetree's
-`clock-frequency` to the divider. The chip select is a GPIO (`cs-gpios`); the
-controller's own slave selects stay deselected. Zephyr's driver did not configure
-`cs-gpios` pins at all, which patch `0001-spi-cdns-configure-cs-gpios` fixes (see
-[Dependencies and patches](dependencies.md)).
+`clock-frequency` to the divider.
+
+The chip select is the controller's own SS0 on MIO13, not a GPIO. In master mode the
+controller does not start a transfer while its SS0 input is low. When SS0 is not on a
+pin, that input comes from the PL, where it is low in the reference design: with a
+GPIO chip select on MIO13 every transfer stalled with its bytes in the TX FIFO (found
+on the bench, 2026-09-29; see [Known issues](../known-issues.md)). A GPIO chip select
+needs SS0 on a pin (idle, high) or tied high through EMIO in the Vivado design.
+
+Zephyr v4.4.2's `cdns,spi` driver also used the register address without mapping it,
+which faults on the Cortex-A9 with its MMU on; patch `0001-spi-cdns-map-the-register-block`
+backports the upstream fix (see [Dependencies and patches](dependencies.md)).
 
 ## Reboot
 
