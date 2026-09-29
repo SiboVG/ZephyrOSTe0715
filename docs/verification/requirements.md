@@ -13,6 +13,7 @@ record.
 | Observed during bring-up | Demonstrated on hardware during development and recorded in these docs, but not part of a retained as-run package |
 | Pending hardware execution | The procedure exists; it has not been run yet |
 | Not met | The test case failed in a retained as-run record |
+| To do | Required, but no procedure exists yet; planned for later |
 
 All hardware verification uses one asset set: TE0715-05-71I33-L on a TE0701, TI
 SN65HVD233 transceiver on a TCAN-SOIC8-EVM, Kvaser USBcan Light 2xHS (see
@@ -68,6 +69,7 @@ instruments named in the as-run record. See [SPI sensor benches](../tests/spi-se
 | `TE-ADXL-004` | On the silicon, STATUS bits 7:5 shall read 0 and a STATUS read shall clear DATA_RDY; without its external clock, a synchronized configuration shall give no fresh sample. | library | TC-18 steps 5, 8 | Verified on hardware ([as-run 2026-09-29](as-run-adxl355-2026-09-29.md)) |
 | `TE-ADXL-005` | Each axis shall read ±1 g along gravity with the data sheet's sensitivity and 0 g offset limits. | library (typical sensitivities) | [TC-20](test-cases.md#tc-20-adxl355-six-orientations) | Verified on hardware ([as-run 2026-09-29](as-run-adxl355-2026-09-29.md)) |
 | `TE-ADXL-006` | With MISO or CS disconnected, no sample or frame shall be reported valid; samples and frames shall recover when the link is restored. | library | [TC-21](test-cases.md#tc-21-adxl355-faults) | Verified on hardware ([as-run 2026-09-29](as-run-adxl355-2026-09-29.md)) |
+| `TE-ADXL-007` | With the ADXL355 on an external 1.024 MHz clock and synchronization pulse, the synchronized application shall deliver complete frames at 4 kHz, in phase with the pulse, and the library's startup sequence (clock, initialization, pulses, then enable after one filter group delay) shall give no corrupted first samples. | library (`INITIALIZE_ALL`, fprime-adxl355 ADXL-INT-003 and ADXL-INT-008 in the synchronized mode) | – | To do: needs the FPGA's clock and pulse, or a signal generator on the sensor's `INT2`/`DRDY` pins; the bench now runs on the internal clock only |
 
 These cases also cover part of the libraries' open hardware items: fprime-ina229's
 INA-HIL-001 (waveforms and readback on a real INA229, here with the Zephyr driver),

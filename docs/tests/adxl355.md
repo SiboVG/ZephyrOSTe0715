@@ -132,3 +132,10 @@ the sensitivity within ±8 % of nominal.
 2. Reconnect MISO: frames complete again without reinitialization.
 3. Disconnect CS: no sample is reported valid.
 4. Reconnect CS: samples recover.
+
+## Not covered yet
+
+- **External synchronization (to do).** The flight mode, with the sensor on an external
+  1.024 MHz clock and synchronization pulse, is not tested here (`TE-ADXL-007`). It needs
+  the FPGA's clock and pulse, or a signal generator. TC-18 step 8 only shows that
+  without the clock no sample is reported fresh.
