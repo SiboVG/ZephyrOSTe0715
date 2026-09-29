@@ -96,12 +96,24 @@ With `adxl init 2 1000 0` (1 kHz):
 With `adxl init 2 4000 0` (4 kHz):
 
 3. Triggered at 2 kHz for 10000 frames: all complete.
+
+Steps 4 and 5 check the 250 µs period of 4 kHz triggering, so they run at SCLK
+8.93 MHz (`adxl spi 9000000 0`), the clock closest to the flight SPI's 10 MHz. At the
+default 1.116 MHz the 15-byte read alone takes about 107 µs. Afterwards the default
+clock is restored.
+
 4. Triggered at 4 kHz for 20000 frames: the longest acquisition stays below the
    250 µs period, no trigger is lost, nothing is implausible. Triggered exactly at the
    output data rate, the timer and the sensor's own oscillator drift against each
-   other, so an occasional frame is stale: its share is recorded, not failed. Record
-   the acquisition times; they cover one sensor at the SCLK in use, not the
-   seven-sensor flight budget (ADXL-INT-004).
+   other, so an occasional frame is stale: its share is recorded, not failed.
+5. With `adxl init 2 2000 0` (2 kHz), triggered at 4 kHz for 20000 frames: 35 % to
+   65 % of the frames stale, and the same limits as step 4. Here every second frame
+   is a stale or recovery edge. The manager and the application report these edges
+   with events (throttled after 10 each) and telemetry on the acquisition thread, so
+   this step bounds the fault handling's cost within the period.
+
+Record the acquisition times. They cover one sensor at 8.93 MHz, not the seven-sensor
+flight budget (ADXL-INT-004).
 
 ### TC-20 Six orientations (interactive)
 

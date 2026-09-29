@@ -47,6 +47,7 @@ STANDARD_GRAVITY = 9.80665
 INA229_SPI_POINTS = [(600000, 1), (1200000, 1), (2300000, 1), (4500000, 1), (9000000, 1), (1200000, 2)]
 ADXL355_SPI_POINTS = [(600000, 0), (1200000, 0), (2300000, 0), (4500000, 0), (9000000, 0)]
 DEFAULT_SPI = {'ina': (1200000, 1), 'adxl': (1200000, 0)}  # by shell command
+TC19_BUDGET_SPI = (9000000, 0)  # 8.93 MHz, the fastest SCLK within the ADXL355's 10 MHz
 
 
 class Console:
@@ -386,6 +387,12 @@ def stream(con, rate, frames, timeout):
     return fields(line), line
 
 
+def budget_met(f):
+    """A 4 kHz stream: every acquisition within the 250 us period, no trigger lost, no bad data"""
+    return (number(f, 'acq_max_us', 1e9) < 250 and f.get('missed_ticks') == '0' and f.get('seq_gaps') == '0' and
+            f.get('implausible') == '0' and f.get('other') == '0')
+
+
 def adxl355(con, res, args):
     if not ready(con, res, 'adxl', '[ADXL355_BENCH_READY]', args.attach):
         return
@@ -450,15 +457,30 @@ def adxl355(con, res, args):
     f, line = stream(con, 2000, 10000, 30)
     res.check('TC-19.3', 'ODR 4 kHz, triggered at 2 kHz: 10000 complete frames',
               f.get('complete') == '10000' and f.get('stale') == '0' and f.get('seq_gaps') == '0', line)
+
+    # The 250 us budget at the SCLK closest to flight (about 10 MHz)
+    hz, mode = TC19_BUDGET_SPI
+    line, _ = con.run(f'adxl spi {hz} {mode}', r'ADXL_SPI .*')
+    sclk = fields(line).get('sclk_hz', '?')
     f, line = stream(con, 4000, 20000, 30)
     # Triggered at the output data rate, the timer and the sensor's own oscillator drift
     # against each other, so an occasional stale frame is expected; it is recorded
-    res.check('TC-19.4', 'ODR 4 kHz, triggered at 4 kHz: acquisition within the 250 us period, no trigger lost, '
-              'nothing implausible', number(f, 'acq_max_us', 1e9) < 250 and f.get('missed_ticks') == '0' and
-              f.get('seq_gaps') == '0' and f.get('implausible') == '0' and f.get('other') == '0', line)
+    res.check('TC-19.4', f'ODR 4 kHz, triggered at 4 kHz, SCLK {sclk} Hz: acquisition within the 250 us period, '
+              'no trigger lost, nothing implausible', budget_met(f), line)
     frames = number(f, 'frames', 0)
     res.info('TC-19.4', f'stale frames at trigger rate = ODR (clock drift): {f.get("stale")} of {f.get("frames")} '
                         f'({(number(f, "stale", 0) / frames * 100) if frames else float("nan"):.3f} %)')
+    # Every second trigger finds no new sample: the stale and recovery edges, with their
+    # events and telemetry on the acquisition thread, must fit in the period as well
+    con.run('adxl init 2 2000 0', r'ADXL_INIT .*', timeout=20)
+    f, line = stream(con, 4000, 20000, 30)
+    frames = number(f, 'frames', 0)
+    stale_share = number(f, 'stale', 0) / frames if frames else float('nan')
+    res.check('TC-19.5', f'ODR 2 kHz, triggered at 4 kHz, SCLK {sclk} Hz: about half the frames stale, '
+              'acquisition within the 250 us period, no trigger lost, nothing implausible',
+              0.35 <= stale_share <= 0.65 and budget_met(f), f'stale share {stale_share:.3f}; {line}')
+    hz, mode = DEFAULT_SPI['adxl']
+    con.run(f'adxl spi {hz} {mode}', r'ADXL_SPI .*')
     con.run('adxl init 2 125 0', r'ADXL_INIT .*', timeout=20)
 
     if args.interactive:

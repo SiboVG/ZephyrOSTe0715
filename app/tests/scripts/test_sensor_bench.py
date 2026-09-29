@@ -151,8 +151,10 @@ def test_ina229_current_inconsistent_with_shunt_voltage_fails(tmp_path):
 class Adxl355Board:
     """Answers like fprime_adxl355_bench with a healthy ADXL355 lying flat (+Z up)"""
 
-    def __init__(self, stale_share=0.5):
+    def __init__(self, stale_share=0.5, stale_acq_max_us=180):
         self.stale_share = stale_share
+        self.stale_acq_max_us = stale_acq_max_us
+        self.odr = 125.0
 
     def __call__(self, line):
         words = line.split()
@@ -165,7 +167,8 @@ class Adxl355Board:
         if words[:2] == ['adxl', 'soak']:
             return f'ADXL_SOAK n={words[2]} bad_value=0 spi_errors=0 min_us=50 mean_us=52 max_us=70 result=PASS\n'
         if words[:2] == ['adxl', 'init']:
-            return 'ADXL_INIT status=OK ms=40 odr_hz=125.000\n'
+            self.odr = float(words[3]) if len(words) > 3 else 125.0
+            return f'ADXL_INIT status=OK ms=40 odr_hz={self.odr:.3f}\n'
         if words[:2] == ['adxl', 'temp']:
             return ''.join(f'ADXL_TEMP status=OK raw=1885 celsius=25.000\n' for _ in range(int(words[2])))
         if words[:2] == ['adxl', 'read']:
@@ -194,17 +197,33 @@ class Adxl355Board:
         if words[:3] == ['adxl', 'stream', 'status']:
             return 'ADXL_STREAM triggers=1 frames=1 streaming=0\n'
         if words[:3] == ['adxl', 'stream', 'stop']:
-            stale = int(self.frames * self.stale_share) if self.rate == 2000 and self.frames == 4000 else 0
+            # a new sample only every second trigger
+            stale = int(self.frames * self.stale_share) if self.rate == 2 * self.odr else 0
+            acq_max = self.stale_acq_max_us if stale else 180
             return (f'ADXL_STREAM_STOPPED triggers={self.frames} frames={self.frames} '
                     f'complete={self.frames - stale} partial={stale} stale={stale} implausible=0 busy=0 other=0 '
-                    f'seq_gaps=0 missed_ticks=0 acq_min_us=120 acq_mean_us=130 acq_max_us=180\n')
+                    f'seq_gaps=0 missed_ticks=0 acq_min_us=120 acq_mean_us=130 acq_max_us={acq_max}\n')
         return 'unknown\n'
 
 
 def test_adxl355_healthy_board_passes(tmp_path):
     res = results(tmp_path)
-    sensor_bench.adxl355(FakeConsole(Adxl355Board()), res, ina_args())
+    con = FakeConsole(Adxl355Board())
+    sensor_bench.adxl355(con, res, ina_args())
     assert res.failed == 0, (tmp_path / 'results.txt').read_text()
+    # the 4 kHz budget steps run at 8.93 MHz, then the default clock is restored
+    fast = con.sent.index('adxl spi 9000000 0', con.sent.index('adxl init 2 4000 0'))
+    assert con.sent[fast + 1] == 'adxl stream start 4000 20000'
+    assert con.sent[-2:] == ['adxl spi 1200000 0', 'adxl init 2 125 0']
+
+
+def test_adxl355_slow_stale_frames_fail_the_budget(tmp_path):
+    # a stale frame whose fault handling overruns the 250 us period at 4 kHz
+    res = results(tmp_path)
+    sensor_bench.adxl355(FakeConsole(Adxl355Board(stale_acq_max_us=265)), res, ina_args())
+    text = (tmp_path / 'results.txt').read_text()
+    assert re.search(r'^FAIL\s+TC-19\.5', text, re.M)
+    assert re.search(r'^PASS\s+TC-19\.4', text, re.M)
 
 
 def test_adxl355_stale_data_not_detected_fails(tmp_path):

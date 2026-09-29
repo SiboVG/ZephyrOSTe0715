@@ -1,0 +1,5 @@
+image: the one loaded for 2026-09-29-2034-adxl355 (see its image.txt), still running: uptime 2943.5 s at 21:27:37 CEST, boot at about 20:38:34, when that image was loaded
+zephyr.bin sha256: ff1e14e6a141b163362448427649cb99e8cf56f803f3f8d7139a12046115257e
+zephyr.elf sha256: 9deddf7681dc703ab605e78e2fceaa0348503695d1f48ee54959fbf8c42accd6
+sources: the firmware under app/ of ade3cf1 is that of the image (227bd3c + 2026-09-29-2034-adxl355/bench-uncommitted.diff), except the Zephyr patch files, which that diff does not contain; the Zephyr tree carries only spi_cdns.c changes, exactly app/zephyr/patches/zephyr/0001-spi-cdns-map-the-register-block.patch of ade3cf1 (git apply --reverse --check); the only uncommitted code changes at this run were in sensor_bench.py and its tests (bench-uncommitted.diff here): TC-19 steps 4 and 5 at SCLK 8.93 MHz, step 5 new
+wiring: as in 2026-09-29-interactive-adxl355; STBY jumper on VDDIO (pins 1-2), which run 4 showed has no effect

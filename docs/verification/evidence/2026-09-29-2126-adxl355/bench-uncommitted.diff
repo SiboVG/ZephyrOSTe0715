@@ -1,0 +1,122 @@
+diff --git a/app/scripts/sensor_bench.py b/app/scripts/sensor_bench.py
+index 0c67c78..684592f 100755
+--- a/app/scripts/sensor_bench.py
++++ b/app/scripts/sensor_bench.py
+@@ -47,6 +47,7 @@ STANDARD_GRAVITY = 9.80665
+ INA229_SPI_POINTS = [(600000, 1), (1200000, 1), (2300000, 1), (4500000, 1), (9000000, 1), (1200000, 2)]
+ ADXL355_SPI_POINTS = [(600000, 0), (1200000, 0), (2300000, 0), (4500000, 0), (9000000, 0)]
+ DEFAULT_SPI = {'ina': (1200000, 1), 'adxl': (1200000, 0)}  # by shell command
++TC19_BUDGET_SPI = (9000000, 0)  # 8.93 MHz, the fastest SCLK within the ADXL355's 10 MHz
+ 
+ 
+ class Console:
+@@ -386,6 +387,12 @@ def stream(con, rate, frames, timeout):
+     return fields(line), line
+ 
+ 
++def budget_met(f):
++    """A 4 kHz stream: every acquisition within the 250 us period, no trigger lost, no bad data"""
++    return (number(f, 'acq_max_us', 1e9) < 250 and f.get('missed_ticks') == '0' and f.get('seq_gaps') == '0' and
++            f.get('implausible') == '0' and f.get('other') == '0')
++
++
+ def adxl355(con, res, args):
+     if not ready(con, res, 'adxl', '[ADXL355_BENCH_READY]', args.attach):
+         return
+@@ -450,15 +457,30 @@ def adxl355(con, res, args):
+     f, line = stream(con, 2000, 10000, 30)
+     res.check('TC-19.3', 'ODR 4 kHz, triggered at 2 kHz: 10000 complete frames',
+               f.get('complete') == '10000' and f.get('stale') == '0' and f.get('seq_gaps') == '0', line)
++
++    # The 250 us budget at the SCLK closest to flight (about 10 MHz)
++    hz, mode = TC19_BUDGET_SPI
++    line, _ = con.run(f'adxl spi {hz} {mode}', r'ADXL_SPI .*')
++    sclk = fields(line).get('sclk_hz', '?')
+     f, line = stream(con, 4000, 20000, 30)
+     # Triggered at the output data rate, the timer and the sensor's own oscillator drift
+     # against each other, so an occasional stale frame is expected; it is recorded
+-    res.check('TC-19.4', 'ODR 4 kHz, triggered at 4 kHz: acquisition within the 250 us period, no trigger lost, '
+-              'nothing implausible', number(f, 'acq_max_us', 1e9) < 250 and f.get('missed_ticks') == '0' and
+-              f.get('seq_gaps') == '0' and f.get('implausible') == '0' and f.get('other') == '0', line)
++    res.check('TC-19.4', f'ODR 4 kHz, triggered at 4 kHz, SCLK {sclk} Hz: acquisition within the 250 us period, '
++              'no trigger lost, nothing implausible', budget_met(f), line)
+     frames = number(f, 'frames', 0)
+     res.info('TC-19.4', f'stale frames at trigger rate = ODR (clock drift): {f.get("stale")} of {f.get("frames")} '
+                         f'({(number(f, "stale", 0) / frames * 100) if frames else float("nan"):.3f} %)')
++    # Every second trigger finds no new sample: the stale and recovery edges, with their
++    # events and telemetry on the acquisition thread, must fit in the period as well
++    con.run('adxl init 2 2000 0', r'ADXL_INIT .*', timeout=20)
++    f, line = stream(con, 4000, 20000, 30)
++    frames = number(f, 'frames', 0)
++    stale_share = number(f, 'stale', 0) / frames if frames else float('nan')
++    res.check('TC-19.5', f'ODR 2 kHz, triggered at 4 kHz, SCLK {sclk} Hz: about half the frames stale, '
++              'acquisition within the 250 us period, no trigger lost, nothing implausible',
++              0.35 <= stale_share <= 0.65 and budget_met(f), f'stale share {stale_share:.3f}; {line}')
++    hz, mode = DEFAULT_SPI['adxl']
++    con.run(f'adxl spi {hz} {mode}', r'ADXL_SPI .*')
+     con.run('adxl init 2 125 0', r'ADXL_INIT .*', timeout=20)
+ 
+     if args.interactive:
+diff --git a/app/tests/scripts/test_sensor_bench.py b/app/tests/scripts/test_sensor_bench.py
+index 3b7c015..9a98775 100644
+--- a/app/tests/scripts/test_sensor_bench.py
++++ b/app/tests/scripts/test_sensor_bench.py
+@@ -151,8 +151,10 @@ def test_ina229_current_inconsistent_with_shunt_voltage_fails(tmp_path):
+ class Adxl355Board:
+     """Answers like fprime_adxl355_bench with a healthy ADXL355 lying flat (+Z up)"""
+ 
+-    def __init__(self, stale_share=0.5):
++    def __init__(self, stale_share=0.5, stale_acq_max_us=180):
+         self.stale_share = stale_share
++        self.stale_acq_max_us = stale_acq_max_us
++        self.odr = 125.0
+ 
+     def __call__(self, line):
+         words = line.split()
+@@ -165,7 +167,8 @@ class Adxl355Board:
+         if words[:2] == ['adxl', 'soak']:
+             return f'ADXL_SOAK n={words[2]} bad_value=0 spi_errors=0 min_us=50 mean_us=52 max_us=70 result=PASS\n'
+         if words[:2] == ['adxl', 'init']:
+-            return 'ADXL_INIT status=OK ms=40 odr_hz=125.000\n'
++            self.odr = float(words[3]) if len(words) > 3 else 125.0
++            return f'ADXL_INIT status=OK ms=40 odr_hz={self.odr:.3f}\n'
+         if words[:2] == ['adxl', 'temp']:
+             return ''.join(f'ADXL_TEMP status=OK raw=1885 celsius=25.000\n' for _ in range(int(words[2])))
+         if words[:2] == ['adxl', 'read']:
+@@ -194,17 +197,33 @@ class Adxl355Board:
+         if words[:3] == ['adxl', 'stream', 'status']:
+             return 'ADXL_STREAM triggers=1 frames=1 streaming=0\n'
+         if words[:3] == ['adxl', 'stream', 'stop']:
+-            stale = int(self.frames * self.stale_share) if self.rate == 2000 and self.frames == 4000 else 0
++            # a new sample only every second trigger
++            stale = int(self.frames * self.stale_share) if self.rate == 2 * self.odr else 0
++            acq_max = self.stale_acq_max_us if stale else 180
+             return (f'ADXL_STREAM_STOPPED triggers={self.frames} frames={self.frames} '
+                     f'complete={self.frames - stale} partial={stale} stale={stale} implausible=0 busy=0 other=0 '
+-                    f'seq_gaps=0 missed_ticks=0 acq_min_us=120 acq_mean_us=130 acq_max_us=180\n')
++                    f'seq_gaps=0 missed_ticks=0 acq_min_us=120 acq_mean_us=130 acq_max_us={acq_max}\n')
+         return 'unknown\n'
+ 
+ 
+ def test_adxl355_healthy_board_passes(tmp_path):
+     res = results(tmp_path)
+-    sensor_bench.adxl355(FakeConsole(Adxl355Board()), res, ina_args())
++    con = FakeConsole(Adxl355Board())
++    sensor_bench.adxl355(con, res, ina_args())
+     assert res.failed == 0, (tmp_path / 'results.txt').read_text()
++    # the 4 kHz budget steps run at 8.93 MHz, then the default clock is restored
++    fast = con.sent.index('adxl spi 9000000 0', con.sent.index('adxl init 2 4000 0'))
++    assert con.sent[fast + 1] == 'adxl stream start 4000 20000'
++    assert con.sent[-2:] == ['adxl spi 1200000 0', 'adxl init 2 125 0']
++
++
++def test_adxl355_slow_stale_frames_fail_the_budget(tmp_path):
++    # a stale frame whose fault handling overruns the 250 us period at 4 kHz
++    res = results(tmp_path)
++    sensor_bench.adxl355(FakeConsole(Adxl355Board(stale_acq_max_us=265)), res, ina_args())
++    text = (tmp_path / 'results.txt').read_text()
++    assert re.search(r'^FAIL\s+TC-19\.5', text, re.M)
++    assert re.search(r'^PASS\s+TC-19\.4', text, re.M)
+ 
+ 
+ def test_adxl355_stale_data_not_detected_fails(tmp_path):
