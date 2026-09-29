@@ -13,6 +13,12 @@ flight, but without external synchronization.
 Mount the sensor board so it can rest flat and on each of its sides (for TC-20), for
 example on a small block with square faces.
 
+On the EVAL-ADXL355Z, put the 3-pin jumper labelled STBY on pins 2–3 (GND) or remove
+it. It is a leftover of the ADXL354 layout: on the ADXL355 it connects pin 7, which
+the data sheet reserves (ground or open), and on pins 1–2 it ties that pin to VDDIO.
+The headers are described in UG-1030 (P1: VDDIO, VDD, GND, INT1, INT2, DRDY; P2:
+V1P8ANA, V1P8DIG, MISO, CS, SCLK, MOSI); leave V1P8ANA and V1P8DIG unconnected.
+
 ## Shell commands
 
 | Command | What it does |
