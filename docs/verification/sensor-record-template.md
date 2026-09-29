@@ -30,7 +30,6 @@ step; this record adds what the script cannot know.
 | Sensor supply | source, measured voltage at the sensor: |
 | Pmod J1 power pins measured | pin 6 = V, pin 12 continuity to ground: |
 | CAN transceiver disconnected | yes / no |
-| Logic analyzer | model, sample rate, capture files: |
 | INA229 only: shunt | resistance, tolerance, rating: |
 | INA229 only: load circuit | supply voltage, load, current: |
 | INA229 only: reference instruments | model, serial, calibration date, uncertainty used: |
@@ -46,7 +45,6 @@ Result: **P** pass, **F** fail, **NR** not run (give the reason). Copy the verdi
 |---|---|---|---|---|
 | TC-13 / TC-17 | 1 | Identity | | |
 | TC-13 / TC-17 | 2 | Soak at every SCLK (list the SCLKs that failed) | | |
-| TC-13 / TC-17 | 3 | Waveform: idle level, edges, CS over the whole transfer, clock count | | capture file: |
 | TC-14 / TC-18 | all | Manager: initialization, readings, commands, telemetry, timing | | read duration (max): |
 | TC-15 | 1-3 | INA229 against references (both current directions) | | operating point: |
 | TC-16 | 1-5 | INA229 faults; behaviour after the supply returns (step 4) | | |

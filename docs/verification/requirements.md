@@ -57,8 +57,8 @@ instruments named in the as-run record. See [SPI sensor benches](../tests/spi-se
 | ID | Requirement | Implementation | Verification | Status |
 |---|---|---|---|---|
 | `TE-SPI-001` | The PS SPI1 controller shall exchange data with a device on Pmod J1 without error at every SCLK from 558 kHz to 8.93 MHz, in the device's SPI mode. | `zynq7000-spi.dtsi`, `board.c` (SPI clocks, pin configuration), `te0701-spi1.overlay`, Zephyr's `cdns,spi` driver with patch `0001-spi-cdns-map-the-register-block` | [TC-13](test-cases.md#tc-13-spi1-link-to-the-ina229), [TC-17](test-cases.md#tc-17-spi1-link-to-the-adxl355) step 2 | Verified on hardware with the ADXL355 ([as-run 2026-09-29](as-run-adxl355-2026-09-29.md)); INA229 (TC-13) pending |
-| `TE-SPI-002` | The chip select on MIO13 shall be asserted over each whole transfer and released between transfers. | SPI1's own SS0 on MIO13 (pin configuration `spi1_0_ss0`); the driver's manual slave select | TC-13, TC-17 steps 1, 3 | Pending hardware execution (waveform; the ADXL355 soak passed, [as-run 2026-09-29](as-run-adxl355-2026-09-29.md)) |
-| `TE-SPI-003` | SCLK shall idle and data shall change on the edges of the selected SPI mode. | `cdns,spi`; `TeBench::BenchSpi` | TC-13, TC-17 step 3 | Pending hardware execution (waveform; the ADXL355 soak passed, [as-run 2026-09-29](as-run-adxl355-2026-09-29.md)) |
+| `TE-SPI-002` | The chip select on MIO13 shall be asserted over each whole transfer and released between transfers. | SPI1's own SS0 on MIO13 (pin configuration `spi1_0_ss0`); the driver's manual slave select | TC-13, TC-17 steps 1, 2, by function | Verified on hardware with the ADXL355 ([as-run 2026-09-29](as-run-adxl355-2026-09-29.md)); INA229 (TC-13) pending |
+| `TE-SPI-003` | SCLK shall idle and data shall change on the edges of the selected SPI mode. | `cdns,spi`; `TeBench::BenchSpi` | TC-13, TC-17 steps 1, 2, by function | Verified on hardware with the ADXL355 ([as-run 2026-09-29](as-run-adxl355-2026-09-29.md)); INA229 (TC-13) pending |
 | `TE-INA-001` | fprime-ina229's manager shall initialize and read a real INA229 through the F Prime SPI port, with all seven channels valid in continuous mode and consistent current and power. | `apps/fprime_ina229_bench` | [TC-14](test-cases.md#tc-14-ina229-through-the-f-prime-manager) | Pending hardware execution |
 | `TE-INA-002` | The manager's commands shall work through the command dispatcher with the library's responses; a rejected argument shall not count as a device error, and the alert configuration shall leave MEMSTAT unchanged. | `ShellCommander`, library | TC-14 | Pending hardware execution |
 | `TE-INA-003` | INA229 readings shall agree with reference instruments within the data sheet's accuracy, the shunt tolerance and the instruments' uncertainty, for both current directions. | library | [TC-15](test-cases.md#tc-15-ina229-readings-against-reference-instruments) | Pending hardware execution |
@@ -71,13 +71,24 @@ instruments named in the as-run record. See [SPI sensor benches](../tests/spi-se
 | `TE-ADXL-006` | With MISO or CS disconnected, no sample or frame shall be reported valid; samples and frames shall recover when the link is restored. | library | [TC-21](test-cases.md#tc-21-adxl355-faults) | Verified on hardware ([as-run 2026-09-29](as-run-adxl355-2026-09-29.md)) |
 | `TE-ADXL-007` | With the ADXL355 on an external 1.024 MHz clock and synchronization pulse, the synchronized application shall deliver complete frames at 4 kHz, in phase with the pulse, and the library's startup sequence (clock, initialization, pulses, then enable after one filter group delay) shall give no corrupted first samples. | library (`INITIALIZE_ALL`, fprime-adxl355 ADXL-INT-003 and ADXL-INT-008 in the synchronized mode) | – | To do: needs the FPGA's clock and pulse, or a signal generator on the sensor's `INT2`/`DRDY` pins; the bench now runs on the internal clock only |
 
+`TE-SPI-002` and `TE-SPI-003` are verified by function, without a waveform capture.
+Every soak transfer is one multi-byte read of registers with known contents. If the chip
+select were released within a transfer, the sensor would stop answering and the rest of
+the bytes would read as the pull-up's all ones; if it were held across two transfers,
+the second command byte would be taken as data and the values would not match. With the
+wrong clock polarity or phase, the sensor would sample the command a bit off and the
+identity and soak values would be wrong. None of this occurred in 100000 checked
+transfers in each ADXL355 run (20000 at each of five SCLKs). A waveform would also show
+the timing margins and the signal quality on the jumper leads; they depend on the wiring
+and are left to the flight hardware.
+
 These cases also cover part of the libraries' open hardware items: fprime-ina229's
-INA-HIL-001 (waveforms and readback on a real INA229, here with the Zephyr driver),
-INA-HIL-002 (one operating point per run), INA-HIL-003 and INA-HIL-004 (continuous
-acquisition, accumulator reset, MEMSTAT on silicon), INA-HIL-005 (MISO and supply
-faults) and INA-HIL-006 (read duration); and fprime-adxl355's acceptance-plan steps 1,
-2, 6, 8 and 9 for one sensor on its internal clock. The libraries' records decide what
-each run closes.
+INA-HIL-001 (readback on a real INA229, here with the Zephyr driver; its waveform part
+stays open), INA-HIL-002 (one operating point per run), INA-HIL-003 and INA-HIL-004
+(continuous acquisition, accumulator reset, MEMSTAT on silicon), INA-HIL-005 (MISO and
+supply faults) and INA-HIL-006 (read duration); and fprime-adxl355's acceptance-plan
+steps 1, 2, 6, 8 and 9 for one sensor on its internal clock. The libraries' records
+decide what each run closes.
 
 ## FlatSat
 

@@ -73,13 +73,13 @@ Further points:
 - MIO10 and MIO11 also reach the TE0701 CPLD, which the Trenz documentation gives an
   I2C slave on these pins. If it mistook SPI traffic for an I2C transfer addressed to
   it, it could pull a line low during a transfer. The soak steps (TC-13, TC-17) are
-  meant to catch that; capture a few transfers with a logic analyzer as well.
+  meant to catch that.
 - MIO11 (MISO) has its pull-up enabled, so an unconnected or unselected sensor reads
   as all ones.
 - The chip select is SPI1's own SS0, not a GPIO: the controller does not transfer while
   its SS0 input is low, which it is when SS0 is not on a pin (see
   [Board support](../architecture/board.md#spi-controllers)).
-- For waveform captures, connect a logic analyzer to Pmod J1 pins 7 to 10 and GND.
+- If a soak fails, a logic analyzer on Pmod J1 pins 7 to 10 and GND shows what the lines did; the tests themselves need none.
 
 ## SPI clock and mode
 

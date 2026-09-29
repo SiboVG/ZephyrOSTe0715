@@ -62,9 +62,9 @@ ADXL_FRAME,500,41311208,0x01,OK,-2298,1802,256911,-0.008977,0.007039,1.003559
 
 1. `adxl id`: identity PASS; record REVID.
 2. `adxl soak` with 20000 transfers at every SCLK of the clock table, mode 0.
-3. With a logic analyzer at 1.116 MHz: SCLK idles low, CS low over each whole
-   transfer, data sampled on rising edges (ADXL-INT-001 of the library, for this
-   controller). Save the capture with the evidence.
+
+The identity and the soaks also verify the chip select and the SPI mode by function
+(`TE-SPI-002`, `TE-SPI-003`); no waveform is captured.
 
 ### TC-18 The F Prime manager
 

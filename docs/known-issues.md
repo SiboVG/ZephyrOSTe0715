@@ -29,7 +29,7 @@
 | Pmod J1 power pins | Trenz documentation and the Pmod standard disagree; measure (see [Hardware setup](tests/hardware-setup.md#1-connect-the-transceiver-to-pmod-j1)) |
 | MIO12/13 are also connected to the TE0701 CPLD | Documented as unused for AMD modules; confirmed in practice by the CAN tests |
 | The SPI clocks are set up by `board.c`, not the FSBL | As for CAN: the reference design has SPI disabled. For flight, enable the SPI controller in the Vivado design |
-| MIO10/11 (SPI1 MOSI/MISO) also reach the TE0701 CPLD, which has an I2C slave there | Not yet shown harmless for SPI traffic; the soak steps and a logic-analyzer capture (TC-13, TC-17) check it |
+| MIO10/11 (SPI1 MOSI/MISO) also reach the TE0701 CPLD, which has an I2C slave there | No disturbed transfer in the ADXL355 soaks (TC-17: 100000 checked transfers in each of runs 3, 5 and 6); the INA229 soak (TC-13) is still to run |
 | A Pmod module plugged into Pmod J1 lands on MIO0, MIO9 and the console UART | Wire SPI sensors by hand ([SPI sensor benches](tests/spi-sensors.md#wiring-on-pmod-j1)) |
 | Zephyr's `cdns,spi` driver on the Zynq-7000: the controller has no FIFO-clear bits | The driver writes TXCLR/RXCLR (Config bits 19/20), which this controller does not have (Xilinx `xspips_hw.h`). A transfer that ends in an RX overflow could leave bytes in the FIFO for the next one; the libraries' checks would reject that data |
 | Zephyr's `cdns,spi` driver reads the last received byte as soon as the TX FIFO drains | Linux's driver waits 10 µs there in master mode (Xilinx AR 65885); Xilinx's standalone driver no longer does. A lost last byte would show in the soak steps, most likely at 558 kHz |

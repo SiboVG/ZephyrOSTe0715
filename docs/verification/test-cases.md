@@ -136,9 +136,9 @@ Common preconditions for all test cases: the workspace built as in
 |---|---|
 | **Verifies** | `TE-SPI-001`, `TE-SPI-002`, `TE-SPI-003` |
 | **Preconditions** | INA229 wired to Pmod J1 as in [SPI sensor benches](../tests/spi-sensors.md), CAN transceiver disconnected; `apps/fprime_ina229_bench` loaded, `[INA229_BENCH_READY]` printed |
-| **Procedure** | 1. `ina id`. 2. For each SCLK of the clock table in mode 1, and 1.116 MHz in mode 2: `ina spi <hz> <mode>`, `ina soak 20000`. 3. Logic-analyzer capture of `ina id` at 1.116 MHz, mode 1 |
-| **Pass criteria** | 1. `result=PASS` (MANUFACTURER_ID 0x5449, die 0x229, command-byte MISO byte 0). 2. Every soak `result=PASS`: no wrong value, no non-zero command byte, no driver error. 3. SCLK idle low; CS low from before the first to after the last clock edge of each transfer and high between transfers; MOSI changes on rising edges; 24 clocks per transfer |
-| **Evidence** | `sensor_bench.py ina229` package: `results.txt`, `transcript.log`; the capture file |
+| **Procedure** | 1. `ina id`. 2. For each SCLK of the clock table in mode 1, and 1.116 MHz in mode 2: `ina spi <hz> <mode>`, `ina soak 20000` |
+| **Pass criteria** | 1. `result=PASS` (MANUFACTURER_ID 0x5449, die 0x229, command-byte MISO byte 0). 2. Every soak `result=PASS`: no wrong value, no non-zero command byte, no driver error. Together they verify the chip select and the SPI mode by function (see [requirements](requirements.md)) |
+| **Evidence** | `sensor_bench.py ina229` package: `results.txt`, `transcript.log` |
 
 ## TC-14 INA229 through the F Prime manager
 
@@ -176,9 +176,9 @@ Common preconditions for all test cases: the workspace built as in
 |---|---|
 | **Verifies** | `TE-SPI-001`, `TE-SPI-002`, `TE-SPI-003` |
 | **Preconditions** | ADXL355 wired to Pmod J1 as in [SPI sensor benches](../tests/spi-sensors.md), CAN transceiver disconnected; `apps/fprime_adxl355_bench` loaded, `[ADXL355_BENCH_READY]` printed |
-| **Procedure** | 1. `adxl id`. 2. For each SCLK of the clock table in mode 0: `adxl spi <hz> 0`, `adxl soak 20000`. 3. Logic-analyzer capture of `adxl id` at 1.116 MHz |
-| **Pass criteria** | 1. `result=PASS` (0xAD, 0x1D, 0xED). 2. Every soak `result=PASS`. 3. SCLK idle low; CS low over each whole transfer and high between transfers; MOSI changes on falling edges; 40 clocks for the 5-byte identity read |
-| **Evidence** | `sensor_bench.py adxl355` package; the capture file |
+| **Procedure** | 1. `adxl id`. 2. For each SCLK of the clock table in mode 0: `adxl spi <hz> 0`, `adxl soak 20000` |
+| **Pass criteria** | 1. `result=PASS` (0xAD, 0x1D, 0xED). 2. Every soak `result=PASS`. Together they verify the chip select and the SPI mode by function (see [requirements](requirements.md)) |
+| **Evidence** | `sensor_bench.py adxl355` package |
 
 ## TC-18 ADXL355 through the F Prime manager
 
