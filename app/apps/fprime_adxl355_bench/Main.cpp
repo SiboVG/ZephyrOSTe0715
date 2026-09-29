@@ -3,7 +3,8 @@
 // ADXL355 bench on the TE0715: the fprime-adxl355 manager and synchronized application
 // on SPI1 (Pmod J1), with the serial shell as the operator interface (shell_cmds.c,
 // bench_cmds.cpp) and a timing thread in place of the FPGA synchronization source.
-// Events and telemetry are printed on the console.
+// A 10 Hz rate group publishes the library's fault events; events and telemetry
+// are printed on the console.
 
 #include "Os/Os.hpp"
 #include "Top/Adxl355Te0715TopologyAc.hpp"
@@ -23,8 +24,9 @@ int main() {
     Adxl355Te0715::setup(state);
     adxl_bench_started(CONFIG_APP_SPI_FREQUENCY, CONFIG_APP_SPI_MODE, state.appConfigured);
 
+    // Main runs below the frame timing thread (prj.conf), so a tick never delays a frame
     while (true) {
-        k_sleep(K_FOREVER);
+        Adxl355Te0715::rateDriver.cycle();
     }
     return 0;
 }

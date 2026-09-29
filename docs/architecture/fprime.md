@@ -136,13 +136,29 @@ synchronously in the frame timing thread had stalled it for up to 27 ms. The cha
 table uses the topology's `BaseIds` constants, because it is filled before `setup()`
 assigns the components' base IDs.
 
-The ADXL355 bench has no rate group. Its client drives the synchronized application's
-`acquireFrame` port from a Zephyr thread (`frame_timing`, Zephyr priority
+The ADXL355 bench's client drives the synchronized application's `acquireFrame` port
+from a Zephyr thread (`frame_timing`, Zephyr priority
 `CONFIG_APP_TIMING_THREAD_PRIORITY`, default 2) that waits on a kernel timer, in place
 of the FPGA's synchronization source, and receives the application's `frameReady`
 frames. The application reads the manager through `readSensor[0]`; the shell's direct
 reads use the manager's other port connection. `CONFIG_SYS_CLOCK_TICKS_PER_SEC=20000`
 makes every output data rate period a whole number of ticks.
+
+The library's acquisition path emits no events: the manager and the application queue
+their fault edges, and their `schedIn` ports publish them. A 10 Hz `rateGroup` (F Prime
+priority 43, Zephyr 56) calls both. Its `rateDriver` is cycled by the main thread, which
+runs at Zephyr priority 3 (`CONFIG_MAIN_THREAD_PRIORITY`), below `frame_timing`, so a
+timer tick never delays a frame.
+
+```mermaid
+flowchart LR
+    FT["frame_timing<br/>Zephyr 2"] -- "acquireFrame" --> APP["app<br/>SynchronizedApplication"]
+    APP -- "readSensor[0]" --> M["sensor<br/>Adxl355.Manager"]
+    RG["rateGroup<br/>10 Hz, Zephyr 56"] -- "schedIn" --> APP
+    RG -- "schedIn" --> M
+    M -. "events, telemetry" .-> P["textLogger,<br/>tlmPrinter"]
+    APP -. "events" .-> P
+```
 
 Two details of F Prime 4 on Zephyr:
 

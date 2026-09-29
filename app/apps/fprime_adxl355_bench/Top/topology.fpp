@@ -6,6 +6,8 @@ module Adxl355Te0715 {
     instance client
     instance cmdDisp
     instance commander
+    instance rateDriver
+    instance rateGroup
     instance sensor
     instance spi
     instance textLogger
@@ -16,6 +18,12 @@ module Adxl355Te0715 {
     telemetry connections instance tlmPrinter
     text event connections instance textLogger
     time connections instance zephyrTime
+
+    connections RateGroup {
+      rateDriver.CycleOut -> rateGroup.CycleIn
+      rateGroup.RateGroupMemberOut[0] -> sensor.schedIn
+      rateGroup.RateGroupMemberOut[1] -> app.schedIn
+    }
 
     connections Application {
       client.acquireFrame -> app.acquireFrame

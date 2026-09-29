@@ -10,6 +10,34 @@ module Adxl355Te0715 {
     constant STACK_SIZE = 16 * 1024
   }
 
+  @ 10 Hz schedule: publishes the manager's and the application's fault edges
+  @ (their schedIn ports), below the frame timing thread's priority
+  instance rateGroup: Svc.ActiveRateGroup base id 0x10001000 \
+    queue size Default.QUEUE_SIZE \
+    stack size Default.STACK_SIZE \
+    priority 43 \
+  {
+    phase Fpp.ToCpp.Phases.configObjects """
+    Svc::ActiveRateGroup::ContextArray contexts(0U);
+    """
+
+    phase Fpp.ToCpp.Phases.configComponents """
+    rateGroup.configure(ConfigObjects::Adxl355Te0715_rateGroup::contexts);
+    """
+  }
+
+  @ Drives the rate group from a Zephyr kernel timer, every 100 ms
+  instance rateDriver: Zephyr.ZephyrRateDriver base id 0x10010000 \
+  {
+    phase Fpp.ToCpp.Phases.configComponents """
+    rateDriver.configure(100);
+    """
+
+    phase Fpp.ToCpp.Phases.startTasks """
+    rateDriver.start();
+    """
+  }
+
   @ Dispatches the manager and application commands sent from the shell (`adxl cmd`)
   instance cmdDisp: Svc.CommandDispatcher base id 0x10002000 \
     queue size Default.QUEUE_SIZE \

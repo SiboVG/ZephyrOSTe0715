@@ -8,7 +8,9 @@ The sensor runs on its internal clock. The flight design synchronizes seven sens
 to a 1.024 MHz clock and a synchronization pulse from the FPGA; on this bench a
 timing thread takes the FPGA's place and triggers the application's `acquireFrame`
 port from a kernel timer, so the application's acquisition path runs exactly as in
-flight, but without external synchronization.
+flight, but without external synchronization. A 10 Hz rate group calls the manager's
+and the application's `schedIn` ports, which publish the fault events their
+acquisition path queues.
 
 Mount the sensor board so it can rest flat and on each of its sides (for TC-20), for
 example on a small block with square faces.
@@ -108,9 +110,10 @@ clock is restored.
    other, so an occasional frame is stale: its share is recorded, not failed.
 5. With `adxl init 2 2000 0` (2 kHz), triggered at 4 kHz for 20000 frames: 35 % to
    65 % of the frames stale, and the same limits as step 4. Here every second frame
-   is a stale or recovery edge. The manager and the application report these edges
-   with events (throttled after 10 each) and telemetry on the acquisition thread, so
-   this step bounds the fault handling's cost within the period.
+   is a stale or recovery edge. The manager and the application queue these edges on
+   the acquisition path and publish them as events (throttled after 10 each) and
+   telemetry from the 10 Hz rate group, so this step bounds the cost of a fault edge on
+   the acquisition path.
 
 Record the acquisition times. They cover one sensor at 8.93 MHz, not the seven-sensor
 flight budget (ADXL-INT-004).

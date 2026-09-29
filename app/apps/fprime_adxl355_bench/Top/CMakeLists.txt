@@ -8,11 +8,13 @@ register_fprime_module(
         Adxl355_Application
         Adxl355_Manager
         Components_Client
+        Svc_ActiveRateGroup
         Svc_CmdDispatcher
         Svc_ActiveTextLogger
         TeBench_ShellCommander
         TeBench_Support
         TeBench_TlmPrinter
+        fprime-zephyr_Drv_ZephyrRateDriver
         fprime-zephyr_Drv_ZephyrSpiDriver
         fprime-zephyr_Svc_ZephyrTime
 )
