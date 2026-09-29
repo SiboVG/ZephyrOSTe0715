@@ -1,0 +1,600 @@
+diff --git a/app/apps/fprime_adxl355_bench/Top/CMakeLists.txt b/app/apps/fprime_adxl355_bench/Top/CMakeLists.txt
+index 1664047..709bd41 100644
+--- a/app/apps/fprime_adxl355_bench/Top/CMakeLists.txt
++++ b/app/apps/fprime_adxl355_bench/Top/CMakeLists.txt
+@@ -9,7 +9,7 @@ register_fprime_module(
+         Adxl355_Manager
+         Components_Client
+         Svc_CmdDispatcher
+-        Svc_PassiveConsoleTextLogger
++        Svc_ActiveTextLogger
+         TeBench_ShellCommander
+         TeBench_Support
+         TeBench_TlmPrinter
+diff --git a/app/apps/fprime_adxl355_bench/Top/instances.fpp b/app/apps/fprime_adxl355_bench/Top/instances.fpp
+index 48f9b8a..2f55713 100644
+--- a/app/apps/fprime_adxl355_bench/Top/instances.fpp
++++ b/app/apps/fprime_adxl355_bench/Top/instances.fpp
+@@ -2,6 +2,10 @@ module Adxl355Te0715 {
+ 
+   module Default {
+     constant QUEUE_SIZE = 10
++    @ Console printers: room for a burst of throttled events or telemetry
++    constant LOG_QUEUE_SIZE = 64
++    @ Console printers at the shell's priority (Zephyr 99), see prj.conf
++    constant CONSOLE_PRIORITY = 0
+     @ Must equal CONFIG_DYNAMIC_THREAD_STACK_SIZE
+     constant STACK_SIZE = 16 * 1024
+   }
+@@ -14,16 +18,23 @@ module Adxl355Te0715 {
+ 
+   instance zephyrTime: Zephyr.ZephyrTime base id 0x10011000
+ 
+-  @ Prints events on the Zephyr console
+-  instance textLogger: Svc.PassiveTextLogger base id 0x10012000
++  @ Prints events on the Zephyr console, from its own thread, so that emitting an
++  @ event never waits for the 115200 baud console
++  instance textLogger: Svc.ActiveTextLogger base id 0x10012000 \
++    queue size Default.LOG_QUEUE_SIZE \
++    stack size Default.STACK_SIZE \
++    priority Default.CONSOLE_PRIORITY
+ 
+-  @ Prints telemetry on the Zephyr console
+-  instance tlmPrinter: TeBench.TlmPrinter base id 0x10013000
++  @ Prints telemetry on the Zephyr console, also from its own thread
++  instance tlmPrinter: TeBench.TlmPrinter base id 0x10013000 \
++    queue size Default.LOG_QUEUE_SIZE \
++    stack size Default.STACK_SIZE \
++    priority Default.CONSOLE_PRIORITY
+ 
+   @ Sends shell-built commands to cmdDisp
+   instance commander: TeBench.ShellCommander base id 0x10014000
+ 
+-  @ SPI1, ADXL355 on cs-gpios[0]; clock and mode from Kconfig, changed with `adxl spi`
++  @ SPI1, ADXL355 on the chip select SS0; clock and mode from Kconfig, changed with `adxl spi`
+   instance spi: Zephyr.ZephyrSpiDriver base id 0x10020000 \
+   {
+     phase Fpp.ToCpp.Phases.configComponents """
+diff --git a/app/apps/fprime_adxl355_bench/bench_cmds.cpp b/app/apps/fprime_adxl355_bench/bench_cmds.cpp
+index 075ba37..82463fe 100644
+--- a/app/apps/fprime_adxl355_bench/bench_cmds.cpp
++++ b/app/apps/fprime_adxl355_bench/bench_cmds.cpp
+@@ -332,9 +332,9 @@ void timingThread(void* p1, void* p2, void* p3) {
+             const U64 triggers = g_triggers.fetch_add(1U) + 1U;
+             const U64 limit = g_frameLimit.load();
+             if ((limit != 0U) && (triggers >= limit)) {
++                // No console output from this thread: `adxl stream status` reports the end
+                 g_streaming.store(false);
+                 k_timer_stop(&g_frameTimer);
+-                printk("ADXL_STREAM_DONE triggers=%llu\n", static_cast<unsigned long long>(triggers));
+             }
+         }
+     }
+@@ -364,8 +364,9 @@ extern "C" void adxl_bench_register_telemetry(void) {
+     using M = ManagerIds;
+     using A = AppIds;
+     using P = TeBench::TlmPrinter;
+-    const FwChanIdType m = sensor.getIdBase();
+-    const FwChanIdType a = app.getIdBase();
++    // The topology's base IDs: setup() assigns them only after this registration
++    const FwChanIdType m = Adxl355Te0715::BaseIds::Adxl355Te0715_sensor;
++    const FwChanIdType a = Adxl355Te0715::BaseIds::Adxl355Te0715_app;
+     (void)tlmPrinter.add(m + M::CHANNELID_INITIALIZED, "sensor.Initialized", P::formatUnsigned<U8>);
+     (void)tlmPrinter.add(m + M::CHANNELID_MEASURING, "sensor.Measuring", P::formatUnsigned<U8>);
+     (void)tlmPrinter.add(m + M::CHANNELID_LASTSTATUS, "sensor.LastStatus",
+@@ -950,6 +951,7 @@ extern "C" int adxl_cmd_tlm(const struct shell* sh, size_t argc, char** argv) {
+         return -EINVAL;
+     }
+     tlmPrinter.setEnabled(on);
+-    shell_print(sh, "ADXL_TLM printing=%s unprinted=%u", on ? "on" : "off", tlmPrinter.unprintedCount());
++    shell_print(sh, "ADXL_TLM printing=%s unprinted=%u dropped=%u", on ? "on" : "off", tlmPrinter.unprintedCount(),
++                tlmPrinter.droppedCount());
+     return 0;
+ }
+diff --git a/app/apps/fprime_adxl355_bench/prj.conf b/app/apps/fprime_adxl355_bench/prj.conf
+index c062d7b..62b166d 100644
+--- a/app/apps/fprime_adxl355_bench/prj.conf
++++ b/app/apps/fprime_adxl355_bench/prj.conf
+@@ -18,7 +18,7 @@ CONFIG_FILE_SYSTEM=y
+ # Every thread stack must be exactly this size (Top/instances.fpp STACK_SIZE)
+ CONFIG_DYNAMIC_THREAD_STACK_SIZE=16384
+ CONFIG_MAIN_STACK_SIZE=16384
+-# Active components (cmdDisp) and spares
++# Active components (cmdDisp, textLogger, tlmPrinter) and spares
+ CONFIG_DYNAMIC_THREAD_POOL_SIZE=6
+ # F Prime priority p runs at Zephyr priority 99 - p (patch 0003 of fprime-zephyr)
+ CONFIG_NUM_PREEMPT_PRIORITIES=100
+@@ -47,3 +47,10 @@ CONFIG_THREAD_NAME=y
+ # Timeouts in 50 us steps, so every ADXL355 output data rate (4 kHz down to 3.906 Hz)
+ # is a whole number of ticks for the frame timer (the kernel is tickless)
+ CONFIG_SYS_CLOCK_TICKS_PER_SEC=20000
++
++# One console line at a time: without time slicing, threads of equal priority never
++# cut into each other's lines (a 150-character line takes 13 ms at 115200 baud, a
++# time slice 20 ms), and a polled shell writes its lines synchronously like printk.
++# The console printers run at the shell's priority (Top/instances.fpp).
++CONFIG_TIMESLICING=n
++CONFIG_SHELL_BACKEND_SERIAL_INTERRUPT_DRIVEN=n
+diff --git a/app/apps/fprime_ina229_bench/Top/CMakeLists.txt b/app/apps/fprime_ina229_bench/Top/CMakeLists.txt
+index 38bffda..47d012d 100644
+--- a/app/apps/fprime_ina229_bench/Top/CMakeLists.txt
++++ b/app/apps/fprime_ina229_bench/Top/CMakeLists.txt
+@@ -9,7 +9,7 @@ register_fprime_module(
+         Ina229_Manager
+         Svc_ActiveRateGroup
+         Svc_CmdDispatcher
+-        Svc_PassiveConsoleTextLogger
++        Svc_ActiveTextLogger
+         TeBench_ShellCommander
+         TeBench_Support
+         TeBench_TlmPrinter
+diff --git a/app/apps/fprime_ina229_bench/Top/instances.fpp b/app/apps/fprime_ina229_bench/Top/instances.fpp
+index 1085f82..ab4bc4d 100644
+--- a/app/apps/fprime_ina229_bench/Top/instances.fpp
++++ b/app/apps/fprime_ina229_bench/Top/instances.fpp
+@@ -2,6 +2,10 @@ module Ina229Te0715 {
+ 
+   module Default {
+     constant QUEUE_SIZE = 10
++    @ Console printers: room for a burst of throttled events or telemetry
++    constant LOG_QUEUE_SIZE = 64
++    @ Console printers at the shell's priority (Zephyr 99), see prj.conf
++    constant CONSOLE_PRIORITY = 0
+     @ Must equal CONFIG_DYNAMIC_THREAD_STACK_SIZE
+     constant STACK_SIZE = 16 * 1024
+   }
+@@ -41,16 +45,23 @@ module Ina229Te0715 {
+ 
+   instance zephyrTime: Zephyr.ZephyrTime base id 0x10011000
+ 
+-  @ Prints events on the Zephyr console
+-  instance textLogger: Svc.PassiveTextLogger base id 0x10012000
++  @ Prints events on the Zephyr console, from its own thread, so that emitting an
++  @ event never waits for the 115200 baud console
++  instance textLogger: Svc.ActiveTextLogger base id 0x10012000 \
++    queue size Default.LOG_QUEUE_SIZE \
++    stack size Default.STACK_SIZE \
++    priority Default.CONSOLE_PRIORITY
+ 
+-  @ Prints telemetry on the Zephyr console
+-  instance tlmPrinter: TeBench.TlmPrinter base id 0x10013000
++  @ Prints telemetry on the Zephyr console, also from its own thread
++  instance tlmPrinter: TeBench.TlmPrinter base id 0x10013000 \
++    queue size Default.LOG_QUEUE_SIZE \
++    stack size Default.STACK_SIZE \
++    priority Default.CONSOLE_PRIORITY
+ 
+   @ Sends shell-built commands to cmdDisp
+   instance commander: TeBench.ShellCommander base id 0x10014000
+ 
+-  @ SPI1, INA229 on cs-gpios[0]; clock and mode from Kconfig, changed with `ina spi`
++  @ SPI1, INA229 on the chip select SS0; clock and mode from Kconfig, changed with `ina spi`
+   instance spi: Zephyr.ZephyrSpiDriver base id 0x10020000 \
+   {
+     phase Fpp.ToCpp.Phases.configComponents """
+diff --git a/app/apps/fprime_ina229_bench/bench_cmds.cpp b/app/apps/fprime_ina229_bench/bench_cmds.cpp
+index cb34d3c..f00d0f7 100644
+--- a/app/apps/fprime_ina229_bench/bench_cmds.cpp
++++ b/app/apps/fprime_ina229_bench/bench_cmds.cpp
+@@ -214,7 +214,8 @@ bool formatReading(Fw::TlmBuffer& value, char* text, FwSizeType size) {
+ extern "C" void ina_bench_register_telemetry(void) {
+     using Base = ManagerIds;
+     using Printer = TeBench::TlmPrinter;
+-    const FwChanIdType base = sensor.getIdBase();
++    // The topology's base ID: setup() assigns it only after this registration
++    const FwChanIdType base = Ina229Te0715::BaseIds::Ina229Te0715_sensor;
+     (void)tlmPrinter.add(base + Base::CHANNELID_INITIALIZED, "sensor.Initialized", Printer::formatUnsigned<U8>);
+     (void)tlmPrinter.add(base + Base::CHANNELID_LASTSTATUS, "sensor.LastStatus",
+                          Printer::formatSerializable<Ina229::DriverStatus>);
+@@ -551,6 +552,7 @@ extern "C" int ina_cmd_tlm(const struct shell* sh, size_t argc, char** argv) {
+         return -EINVAL;
+     }
+     tlmPrinter.setEnabled(on);
+-    shell_print(sh, "INA_TLM printing=%s unprinted=%u", on ? "on" : "off", tlmPrinter.unprintedCount());
++    shell_print(sh, "INA_TLM printing=%s unprinted=%u dropped=%u", on ? "on" : "off", tlmPrinter.unprintedCount(),
++                tlmPrinter.droppedCount());
+     return 0;
+ }
+diff --git a/app/apps/fprime_ina229_bench/prj.conf b/app/apps/fprime_ina229_bench/prj.conf
+index 9222f9c..a09a6d6 100644
+--- a/app/apps/fprime_ina229_bench/prj.conf
++++ b/app/apps/fprime_ina229_bench/prj.conf
+@@ -18,7 +18,7 @@ CONFIG_FILE_SYSTEM=y
+ # Every thread stack must be exactly this size (Top/instances.fpp STACK_SIZE)
+ CONFIG_DYNAMIC_THREAD_STACK_SIZE=16384
+ CONFIG_MAIN_STACK_SIZE=16384
+-# Active components (cmdDisp, rateGroup) and spares
++# Active components (cmdDisp, rateGroup, textLogger, tlmPrinter) and spares
+ CONFIG_DYNAMIC_THREAD_POOL_SIZE=6
+ # F Prime priority p runs at Zephyr priority 99 - p (patch 0003 of fprime-zephyr)
+ CONFIG_NUM_PREEMPT_PRIORITIES=100
+@@ -43,3 +43,10 @@ CONFIG_LOG_BACKEND_UART=y
+ CONFIG_KERNEL_SHELL=y
+ CONFIG_THREAD_MONITOR=y
+ CONFIG_THREAD_NAME=y
++
++# One console line at a time: without time slicing, threads of equal priority never
++# cut into each other's lines (a 150-character line takes 13 ms at 115200 baud, a
++# time slice 20 ms), and a polled shell writes its lines synchronously like printk.
++# The console printers run at the shell's priority (Top/instances.fpp).
++CONFIG_TIMESLICING=n
++CONFIG_SHELL_BACKEND_SERIAL_INTERRUPT_DRIVEN=n
+diff --git a/app/boards/te0701-spi1.overlay b/app/boards/te0701-spi1.overlay
+index 344c9bf..8f9dfd9 100644
+--- a/app/boards/te0701-spi1.overlay
++++ b/app/boards/te0701-spi1.overlay
+@@ -5,13 +5,13 @@
+  *   Pmod J1 pin 8  = MIO10 = MOSI (sensor SDI)
+  *   Pmod J1 pin 9  = MIO11 = MISO (sensor SDO)
+  *   Pmod J1 pin 10 = MIO12 = SCLK
+- *   Pmod J1 pin 7  = MIO13 = CS, active low (GPIO)
++ *   Pmod J1 pin 7  = MIO13 = SS0, the controller's own chip select, active low
+  *
+- * MIO12/13 are also CAN1 (te0701-can1.overlay): use one overlay or the other. MIO10/11
+- * also reach the TE0701 CPLD; see docs/tests/spi-sensors.md.
++ * The chip select is the controller's SS0 (native, slave 0), not a GPIO: see
++ * te0715-pinctrl.dtsi. MIO12/13 are also CAN1 (te0701-can1.overlay): use one overlay
++ * or the other. MIO10/11 also reach the TE0701 CPLD; see docs/tests/spi-sensors.md.
+  */
+ 
+ &spi1 {
+ 	status = "okay";
+-	cs-gpios = <&psgpio_bank0 13 GPIO_ACTIVE_LOW>;
+ };
+diff --git a/app/boards/trenz/te0715/board.c b/app/boards/trenz/te0715/board.c
+index 50bb766..207baac 100644
+--- a/app/boards/trenz/te0715/board.c
++++ b/app/boards/trenz/te0715/board.c
+@@ -223,7 +223,7 @@ static int te0715_spi_clock_init(void)
+ 	}
+ 
+ #if SPI1_OKAY
+-	/* MIO10..12 to SPI1 and MIO13 to GPIO (chip select), before the driver starts */
++	/* MIO10..13 to SPI1 (MOSI, MISO, SCLK, SS0), before the driver starts */
+ 	if (err == 0) {
+ 		err = pinctrl_apply_state(PINCTRL_DT_DEV_CONFIG_GET(DT_NODELABEL(spi1)),
+ 					  PINCTRL_STATE_DEFAULT);
+diff --git a/app/boards/trenz/te0715/te0715-pinctrl.dtsi b/app/boards/trenz/te0715/te0715-pinctrl.dtsi
+index 0436c91..c9690f8 100644
+--- a/app/boards/trenz/te0715/te0715-pinctrl.dtsi
++++ b/app/boards/trenz/te0715/te0715-pinctrl.dtsi
+@@ -46,8 +46,11 @@
+ 	};
+ 
+ 	/*
+-	 * SPI1 on MIO10 (MOSI), MIO11 (MISO) and MIO12 (SCLK), and MIO13 as the GPIO chip
+-	 * select (the SPI driver controls it through cs-gpios). The same pins as CAN1 on
++	 * SPI1 on MIO10 (MOSI), MIO11 (MISO) and MIO12 (SCLK), with its own slave select
++	 * SS0 on MIO13 as the chip select. SS0 must be on a pin: in master mode the
++	 * controller does not start a transfer while its SS0 input is low, and without
++	 * the pin that input comes from the PL, where it is low in the reference design.
++	 * A GPIO chip select on MIO13 therefore cannot work. The same pins as CAN1 on
+ 	 * MIO12/13: an application enables either spi1 or can1. MISO keeps its pull-up, so
+ 	 * an unconnected sensor reads as all ones rather than as floating data.
+ 	 */
+@@ -58,12 +61,12 @@
+ 		};
+ 
+ 		mux-cs {
+-			groups = "gpio0_13_grp";
+-			function = "gpio0";
++			groups = "spi1_0_ss0";
++			function = "spi1_ss";
+ 		};
+ 
+ 		conf {
+-			groups = "spi1_0_grp", "gpio0_13_grp";
++			groups = "spi1_0_grp", "spi1_0_ss0";
+ 			slew-rate = <IO_SPEED_SLOW>;
+ 			power-source = <IO_STANDARD_LVCMOS33>;
+ 			bias-pull-up;
+diff --git a/app/fprime-bench/TeBench/Support/BenchSpi.cpp b/app/fprime-bench/TeBench/Support/BenchSpi.cpp
+index 924c17b..346db5b 100644
+--- a/app/fprime-bench/TeBench/Support/BenchSpi.cpp
++++ b/app/fprime-bench/TeBench/Support/BenchSpi.cpp
+@@ -4,13 +4,14 @@
+ #include "fprime-zephyr/Drv/ZephyrSpiDriver/ZephyrSpiDriver.hpp"
+ 
+ #include <zephyr/devicetree.h>
+-#include <zephyr/drivers/gpio.h>
+ #include <zephyr/drivers/spi.h>
+ 
+ #define BENCH_SPI DT_NODELABEL(spi1)
+ 
+ BUILD_ASSERT(DT_NODE_HAS_STATUS_OKAY(BENCH_SPI), "the sensor benches need spi1 (te0701-spi1.overlay)");
+-BUILD_ASSERT(DT_PROP_LEN(BENCH_SPI, cs_gpios) >= 1, "spi1 needs a chip select in cs-gpios");
++// The controller's SS0 is the chip select; a GPIO chip select cannot work on this
++// board (see te0715-pinctrl.dtsi)
++BUILD_ASSERT(!DT_NODE_HAS_PROP(BENCH_SPI, cs_gpios), "the sensor benches use SPI1's own SS0 as chip select");
+ 
+ namespace TeBench {
+ namespace BenchSpi {
+@@ -58,10 +59,9 @@ void configure(Zephyr::ZephyrSpiDriver& driver, U32 requestedHz, U8 mode) {
+     config.frequency = requestedHz;
+     config.operation = SPI_OP_MODE_MASTER | SPI_WORD_SET(8) | SPI_TRANSFER_MSB |
+                        (((mode & 2U) != 0U) ? SPI_MODE_CPOL : 0U) | (((mode & 1U) != 0U) ? SPI_MODE_CPHA : 0U);
++    // Native chip select SS0 (slave 0), asserted by the driver over the whole transfer
+     config.slave = 0U;
+-    config.cs.gpio = GPIO_DT_SPEC_GET_BY_IDX(BENCH_SPI, cs_gpios, 0);
+-    config.cs.delay = 1U;
+-    config.cs.cs_is_gpio = true;
++    config.cs.cs_is_gpio = false;
+     driver.configure(DEVICE_DT_GET(BENCH_SPI), config);
+ }
+ 
+diff --git a/app/fprime-bench/TeBench/Support/BenchSpi.hpp b/app/fprime-bench/TeBench/Support/BenchSpi.hpp
+index a8a6d17..ec755d9 100644
+--- a/app/fprime-bench/TeBench/Support/BenchSpi.hpp
++++ b/app/fprime-bench/TeBench/Support/BenchSpi.hpp
+@@ -11,7 +11,8 @@ class ZephyrSpiDriver;
+ 
+ namespace TeBench {
+ 
+-//! The benches use one sensor on SPI1, selected by cs-gpios[0] (te0701-spi1.overlay).
++//! The benches use one sensor on SPI1, selected by the controller's SS0 on MIO13
++//! (te0701-spi1.overlay).
+ //! The Zynq controller divides SPI_REF_CLK by 4 to 256 (Xilinx xspips.h,
+ //! XSPIPS_CLK_PRESCALE_4..256); Zephyr's cdns,spi driver picks the fastest division
+ //! that does not exceed the request.
+@@ -29,8 +30,7 @@ U32 maximumSclkHz();
+ U32 actualSclkHz(U32 requestedHz);
+ 
+ //! Point the driver at SPI1: master, 8-bit words, MSB first, SPI mode 0..3 (bit 1
+-//! CPOL, bit 0 CPHA), GPIO chip select cs-gpios[0] with 1 us setup and hold. Call
+-//! only while no transfer is in progress.
++//! CPOL, bit 0 CPHA), chip select SS0. Call only while no transfer is in progress.
+ void configure(Zephyr::ZephyrSpiDriver& driver, U32 requestedHz, U8 mode);
+ 
+ }  // namespace BenchSpi
+diff --git a/app/fprime-bench/TeBench/TlmPrinter/TlmPrinter.cpp b/app/fprime-bench/TeBench/TlmPrinter/TlmPrinter.cpp
+index f771575..aed8274 100644
+--- a/app/fprime-bench/TeBench/TlmPrinter/TlmPrinter.cpp
++++ b/app/fprime-bench/TeBench/TlmPrinter/TlmPrinter.cpp
+@@ -24,6 +24,14 @@ bool TlmPrinter::formatF64(Fw::TlmBuffer& value, char* text, FwSizeType size) {
+     return true;
+ }
+ 
++void TlmPrinter::tlmIn_overflowHook(FwIndexType portNum, FwChanIdType id, Fw::Time& timeTag, Fw::TlmBuffer& val) {
++    (void)portNum;
++    (void)id;
++    (void)timeTag;
++    (void)val;
++    this->m_dropped.fetch_add(1U);
++}
++
+ void TlmPrinter::tlmIn_handler(FwIndexType portNum, FwChanIdType id, Fw::Time& timeTag, Fw::TlmBuffer& val) {
+     (void)portNum;
+     for (FwSizeType i = 0; i < this->m_count; i++) {
+diff --git a/app/fprime-bench/TeBench/TlmPrinter/TlmPrinter.fpp b/app/fprime-bench/TeBench/TlmPrinter/TlmPrinter.fpp
+index 25eca5f..e4ab9e9 100644
+--- a/app/fprime-bench/TeBench/TlmPrinter/TlmPrinter.fpp
++++ b/app/fprime-bench/TeBench/TlmPrinter/TlmPrinter.fpp
+@@ -4,10 +4,12 @@ module TeBench {
+   @ decoded by the formatter the deployment registers for each channel. The benches
+   @ have no ground link, so this is how the operator and the host scripts see
+   @ telemetry. Unregistered channels (such as a rate group's per-cycle RgMaxTime) are
+-  @ counted, not printed.
+-  passive component TlmPrinter {
++  @ counted, not printed. Printing runs on this component's own thread: a caller,
++  @ such as the ADXL355 frame timing thread, never waits for the console.
++  active component TlmPrinter {
+ 
+-    sync input port tlmIn: Fw.Tlm
++    @ Values that arrive while the queue is full are dropped and counted
++    async input port tlmIn: Fw.Tlm hook
+ 
+   }
+ 
+diff --git a/app/fprime-bench/TeBench/TlmPrinter/TlmPrinter.hpp b/app/fprime-bench/TeBench/TlmPrinter/TlmPrinter.hpp
+index 90a3d95..5e69455 100644
+--- a/app/fprime-bench/TeBench/TlmPrinter/TlmPrinter.hpp
++++ b/app/fprime-bench/TeBench/TlmPrinter/TlmPrinter.hpp
+@@ -28,6 +28,9 @@ class TlmPrinter final : public TlmPrinterComponentBase {
+     //! Values written to unregistered channels, or that did not decode (not printed)
+     U32 unprintedCount() const { return this->m_unprinted.load(); }
+ 
++    //! Values dropped because the queue was full
++    U32 droppedCount() const { return this->m_dropped.load(); }
++
+     template <typename T>
+     static bool formatUnsigned(Fw::TlmBuffer& value, char* text, FwSizeType size) {
+         T v = 0;
+@@ -65,6 +68,7 @@ class TlmPrinter final : public TlmPrinterComponentBase {
+ 
+   private:
+     void tlmIn_handler(FwIndexType portNum, FwChanIdType id, Fw::Time& timeTag, Fw::TlmBuffer& val) override;
++    void tlmIn_overflowHook(FwIndexType portNum, FwChanIdType id, Fw::Time& timeTag, Fw::TlmBuffer& val) override;
+ 
+     struct Entry {
+         FwChanIdType id;
+@@ -76,6 +80,7 @@ class TlmPrinter final : public TlmPrinterComponentBase {
+     FwSizeType m_count = 0;
+     std::atomic<bool> m_enabled{true};
+     std::atomic<U32> m_unprinted{0U};
++    std::atomic<U32> m_dropped{0U};
+ };
+ 
+ }  // namespace TeBench
+diff --git a/app/scripts/sensor_bench.py b/app/scripts/sensor_bench.py
+index 42c8efb..0c67c78 100755
+--- a/app/scripts/sensor_bench.py
++++ b/app/scripts/sensor_bench.py
+@@ -81,8 +81,10 @@ class Console:
+         return ANSI.sub('', data.decode(errors='replace')).replace('\r', '')
+ 
+     def wait_for(self, pattern, timeout, since=0):
+-        """The first line after since that matches pattern, or None after timeout seconds."""
+-        regex = re.compile(pattern, re.M)
++        """The first complete line after since that matches pattern, or None after timeout
++        seconds. A line counts once its newline has arrived, so a result line is never
++        read half-received."""
++        regex = re.compile(f'(?:{pattern})(?=\n)', re.M)
+         deadline = time.time() + timeout
+         while True:
+             found = regex.search(self.text(since))
+@@ -372,10 +374,14 @@ def adxl_read(con, count):
+ 
+ def stream(con, rate, frames, timeout):
+     """Trigger frames at rate until the timing thread reports them done; the counts"""
+-    since = con.mark()
+     started, _ = con.run(f'adxl stream start {rate} {frames}', r'ADXL_STREAM_STARTED .*|error.*')
+     if started and started.startswith('ADXL_STREAM_STARTED'):
+-        con.wait_for(r'ADXL_STREAM_DONE .*', timeout, since)
++        deadline = time.time() + timeout
++        while time.time() < deadline:
++            status, _ = con.run('adxl stream status', r'ADXL_STREAM .*')
++            if fields(status).get('streaming') == '0':
++                break
++            time.sleep(0.5)
+     line, _ = con.run('adxl stream stop', r'ADXL_STREAM_STOPPED .*')
+     return fields(line), line
+ 
+@@ -437,17 +443,22 @@ def adxl355(con, res, args):
+     f, line = stream(con, 2000, 4000, 30)
+     frames = number(f, 'frames', 0)
+     stale_share = number(f, 'stale', 0) / frames if frames else float('nan')
+-    res.check('TC-19.2', 'ODR 1 kHz, triggered at 2 kHz: about half the frames stale, none implausible',
+-              0.35 <= stale_share <= 0.65 and f.get('implausible') == '0' and f.get('other') == '0',
+-              f'stale share {stale_share:.3f}; {line}')
++    res.check('TC-19.2', 'ODR 1 kHz, triggered at 2 kHz: about half the frames stale, none implausible, '
++              'no missed tick', 0.35 <= stale_share <= 0.65 and f.get('implausible') == '0' and
++              f.get('other') == '0' and f.get('missed_ticks') == '0', f'stale share {stale_share:.3f}; {line}')
+     con.run('adxl init 2 4000 0', r'ADXL_INIT .*', timeout=20)
+     f, line = stream(con, 2000, 10000, 30)
+     res.check('TC-19.3', 'ODR 4 kHz, triggered at 2 kHz: 10000 complete frames',
+               f.get('complete') == '10000' and f.get('stale') == '0' and f.get('seq_gaps') == '0', line)
+     f, line = stream(con, 4000, 20000, 30)
+-    res.check('TC-19.4', 'ODR 4 kHz, triggered at 4 kHz: acquisition within the 250 us period, no trigger lost',
+-              number(f, 'acq_max_us', 1e9) < 250 and f.get('missed_ticks') == '0' and f.get('seq_gaps') == '0',
+-              line)
++    # Triggered at the output data rate, the timer and the sensor's own oscillator drift
++    # against each other, so an occasional stale frame is expected; it is recorded
++    res.check('TC-19.4', 'ODR 4 kHz, triggered at 4 kHz: acquisition within the 250 us period, no trigger lost, '
++              'nothing implausible', number(f, 'acq_max_us', 1e9) < 250 and f.get('missed_ticks') == '0' and
++              f.get('seq_gaps') == '0' and f.get('implausible') == '0' and f.get('other') == '0', line)
++    frames = number(f, 'frames', 0)
++    res.info('TC-19.4', f'stale frames at trigger rate = ODR (clock drift): {f.get("stale")} of {f.get("frames")} '
++                        f'({(number(f, "stale", 0) / frames * 100) if frames else float("nan"):.3f} %)')
+     con.run('adxl init 2 125 0', r'ADXL_INIT .*', timeout=20)
+ 
+     if args.interactive:
+diff --git a/app/tests/scripts/test_sensor_bench.py b/app/tests/scripts/test_sensor_bench.py
+index 7b1ba0e..3b7c015 100644
+--- a/app/tests/scripts/test_sensor_bench.py
++++ b/app/tests/scripts/test_sensor_bench.py
+@@ -96,6 +96,16 @@ def test_wait_for_only_sees_output_after_the_mark():
+     assert con.wait_for(r'INA_ID .*', 0) == 'INA_ID result=FAIL'
+ 
+ 
++def test_a_result_line_counts_only_once_complete():
++    # A result line read while it is still arriving would lose its last fields
++    con = FakeConsole(lambda line: '')
++    con.buf.extend(b'ADXL_SOAK n=20000 bad_value=0 spi_er')
++    assert con.wait_for(r'ADXL_SOAK n=.*', 0) is None
++    con.buf.extend(b'rors=0 result=PASS\r\n')
++    line = con.wait_for(r'ADXL_SOAK n=.*', 0)
++    assert sensor_bench.fields(line)['result'] == 'PASS'
++
++
+ def test_ina229_healthy_board_passes(tmp_path):
+     res = results(tmp_path)
+     con = FakeConsole(Ina229Board())
+@@ -180,7 +190,9 @@ class Adxl355Board:
+         if words[:3] == ['adxl', 'stream', 'start']:
+             self.synced = False
+             self.rate, self.frames = float(words[3]), int(words[4])
+-            return 'ADXL_STREAM_STARTED\nADXL_STREAM_DONE\n'
++            return 'ADXL_STREAM_STARTED\n'
++        if words[:3] == ['adxl', 'stream', 'status']:
++            return 'ADXL_STREAM triggers=1 frames=1 streaming=0\n'
+         if words[:3] == ['adxl', 'stream', 'stop']:
+             stale = int(self.frames * self.stale_share) if self.rate == 2000 and self.frames == 4000 else 0
+             return (f'ADXL_STREAM_STOPPED triggers={self.frames} frames={self.frames} '
+diff --git a/app/zephyr/patches.yml b/app/zephyr/patches.yml
+index 5f020b9..9b4018c 100644
+--- a/app/zephyr/patches.yml
++++ b/app/zephyr/patches.yml
+@@ -68,17 +68,17 @@ patches:
+       unchanged (lower value = higher priority) and every value above 14 was
+       clamped to 14, so all F Prime tasks ran at the lowest priority. Map p to
+       CONFIG_NUM_PREEMPT_PRIORITIES - 1 - p, keeping order and spacing.
+-  - path: zephyr/0001-spi-cdns-configure-cs-gpios.patch
+-    sha256sum: 8955b1a3abed5ffe00ddf8a21c9cd5d5aa031f635de3816a039f267043589dbe
++  - path: zephyr/0001-spi-cdns-map-the-register-block.patch
++    sha256sum: 084c6b8b226142c3471b3dd43e03398a0c628f43e802dec76aa379e43855084c
+     module: zephyr
+     author: Sibo Van Gool
+     email: sibo.vangool@hotmail.com
+-    date: 2026-09-27
+-    upstreamable: true
++    date: 2026-09-29
++    upstreamable: false
+     comments: |
+-      spi_cdns never set up the GPIOs listed in cs-gpios: it neither
+-      initialised the context's CS list (SPI_CONTEXT_CS_GPIOS_INITIALIZE)
+-      nor configured the pins (spi_context_cs_configure_all), which every
+-      other GPIO-CS capable SPI driver does. The chip select stayed an
+-      input, so a GPIO-selected device was never selected. Needed for the
+-      SPI1 sensor benches on the TE0715 (CS on MIO13).
++      Backport of upstream commit 1b7a2b68e0e0 (PR #115179, merged
++      2026-08-10): spi_cdns used the devicetree register address as a
++      virtual address without mapping it. On the TE0715 (Cortex-A9, MMU on)
++      the first SPI_CONF write in spi_cdns_init() took a translation fault
++      at 0xe0007000 and Zephyr halted at boot. Drop when the fork moves past
++      it.
+diff --git a/docs/tests/adxl355.md b/docs/tests/adxl355.md
+index 02a6bc0..8019525 100644
+--- a/docs/tests/adxl355.md
++++ b/docs/tests/adxl355.md
+@@ -88,8 +88,11 @@ With `adxl init 2 4000 0` (4 kHz):
+ 
+ 3. Triggered at 2 kHz for 10000 frames: all complete.
+ 4. Triggered at 4 kHz for 20000 frames: the longest acquisition stays below the
+-   250 µs period, no trigger is lost. Record the acquisition times; they cover one
+-   sensor at the SCLK in use, not the seven-sensor flight budget (ADXL-INT-004).
++   250 µs period, no trigger is lost, nothing is implausible. Triggered exactly at the
++   output data rate, the timer and the sensor's own oscillator drift against each
++   other, so an occasional frame is stale: its share is recorded, not failed. Record
++   the acquisition times; they cover one sensor at the SCLK in use, not the
++   seven-sensor flight budget (ADXL-INT-004).
+ 
+ ### TC-20 Six orientations (interactive)
+ 
+diff --git a/docs/verification/test-cases.md b/docs/verification/test-cases.md
+index 223cba7..63a4f86 100644
+--- a/docs/verification/test-cases.md
++++ b/docs/verification/test-cases.md
+@@ -197,7 +197,7 @@ Common preconditions for all test cases: the workspace built as in
+ | **Verifies** | `TE-ADXL-003` |
+ | **Preconditions** | TC-18 passed; the sensor at rest |
+ | **Procedure** | As in [ADXL355 bench, TC-19](../tests/adxl355.md#tc-19-the-synchronized-application): at 1 kHz output data rate, triggered at 500 Hz (2500 frames) and 2 kHz (4000 frames); at 4 kHz, triggered at 2 kHz (10000 frames) and 4 kHz (20000 frames) |
+-| **Pass criteria** | 500 Hz: 2500 complete frames, none stale, no sequence gap, no missed tick. 2 kHz at 1 kHz ODR: 35 % to 65 % stale, none implausible or with another error. 2 kHz at 4 kHz ODR: 10000 complete frames. 4 kHz: longest acquisition below 250 µs, no missed tick or sequence gap |
++| **Pass criteria** | 500 Hz: 2500 complete frames, none stale, no sequence gap, no missed tick. 2 kHz at 1 kHz ODR: 35 % to 65 % stale, none implausible or with another error, no missed tick. 2 kHz at 4 kHz ODR: 10000 complete frames. 4 kHz: longest acquisition below 250 µs, no missed tick or sequence gap, none implausible or with another error; the share of stale frames (the timer and the sensor's oscillator drift against each other) is recorded |
+ | **Evidence** | `sensor_bench.py adxl355` package |
+ 
+ ## TC-20 ADXL355 six orientations
+ M app/apps/fprime_adxl355_bench/Top/CMakeLists.txt
+ M app/apps/fprime_adxl355_bench/Top/instances.fpp
+ M app/apps/fprime_adxl355_bench/bench_cmds.cpp
+ M app/apps/fprime_adxl355_bench/prj.conf
+ M app/apps/fprime_ina229_bench/Top/CMakeLists.txt
+ M app/apps/fprime_ina229_bench/Top/instances.fpp
+ M app/apps/fprime_ina229_bench/bench_cmds.cpp
+ M app/apps/fprime_ina229_bench/prj.conf
+ M app/boards/te0701-spi1.overlay
+ M app/boards/trenz/te0715/board.c
+ M app/boards/trenz/te0715/te0715-pinctrl.dtsi
+ M app/fprime-bench/TeBench/Support/BenchSpi.cpp
+ M app/fprime-bench/TeBench/Support/BenchSpi.hpp
+ M app/fprime-bench/TeBench/TlmPrinter/TlmPrinter.cpp
+ M app/fprime-bench/TeBench/TlmPrinter/TlmPrinter.fpp
+ M app/fprime-bench/TeBench/TlmPrinter/TlmPrinter.hpp
+ M app/scripts/sensor_bench.py
+ M app/tests/scripts/test_sensor_bench.py
+ M app/zephyr/patches.yml
+D  app/zephyr/patches/zephyr/0001-spi-cdns-configure-cs-gpios.patch
+ M docs/tests/adxl355.md
+ M docs/verification/test-cases.md
+?? app/zephyr/patches/zephyr/
+?? docs/verification/evidence/2026-09-29-1925-adxl355/
+?? docs/verification/evidence/2026-09-29-2034-adxl355/

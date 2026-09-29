@@ -1,0 +1,166 @@
+app/apps/fprime_adxl355_bench/Top/instances.fpp |  2 +-
+ app/apps/fprime_ina229_bench/Top/instances.fpp  |  2 +-
+ app/boards/te0701-spi1.overlay                  |  8 ++++----
+ app/boards/trenz/te0715/board.c                 |  2 +-
+ app/boards/trenz/te0715/te0715-pinctrl.dtsi     | 13 ++++++++-----
+ app/fprime-bench/TeBench/Support/BenchSpi.cpp   | 10 +++++-----
+ app/fprime-bench/TeBench/Support/BenchSpi.hpp   |  6 +++---
+ app/zephyr/patches.yml                          | 20 ++++++++++----------
+ 8 files changed, 33 insertions(+), 30 deletions(-)
+
+--- Changes ---
+
+app/apps/fprime_adxl355_bench/Top/instances.fpp
+  @@ -23,7 +23,7 @@ module Adxl355Te0715 {
+  -  @ SPI1, ADXL355 on cs-gpios[0]; clock and mode from Kconfig, changed with `adxl spi`
+  +  @ SPI1, ADXL355 on the chip select SS0; clock and mode from Kconfig, changed with `adxl spi`
+     instance spi: Zephyr.ZephyrSpiDriver base id 0x10020000 \
+     {
+       phase Fpp.ToCpp.Phases.configComponents """
+  +1 -1
+
+app/apps/fprime_ina229_bench/Top/instances.fpp
+  @@ -50,7 +50,7 @@ module Ina229Te0715 {
+  -  @ SPI1, INA229 on cs-gpios[0]; clock and mode from Kconfig, changed with `ina spi`
+  +  @ SPI1, INA229 on the chip select SS0; clock and mode from Kconfig, changed with `ina spi`
+     instance spi: Zephyr.ZephyrSpiDriver base id 0x10020000 \
+     {
+       phase Fpp.ToCpp.Phases.configComponents """
+  +1 -1
+
+app/boards/te0701-spi1.overlay
+  @@ -5,13 +5,13 @@
+  - *   Pmod J1 pin 7  = MIO13 = CS, active low (GPIO)
+  + *   Pmod J1 pin 7  = MIO13 = SS0, the controller's own chip select, active low
+    *
+  - * MIO12/13 are also CAN1 (te0701-can1.overlay): use one overlay or the other. MIO10/11
+  - * also reach the TE0701 CPLD; see docs/tests/spi-sensors.md.
+  + * The chip select is the controller's SS0 (native, slave 0), not a GPIO: see
+  + * te0715-pinctrl.dtsi. MIO12/13 are also CAN1 (te0701-can1.overlay): use one overlay
+  + * or the other. MIO10/11 also reach the TE0701 CPLD; see docs/tests/spi-sensors.md.
+    */
+   
+   &spi1 {
+   	status = "okay";
+  -	cs-gpios = <&psgpio_bank0 13 GPIO_ACTIVE_LOW>;
+   };
+  +4 -4
+
+app/boards/trenz/te0715/board.c
+  @@ -223,7 +223,7 @@ static int te0715_spi_clock_init(void)
+  -	/* MIO10..12 to SPI1 and MIO13 to GPIO (chip select), before the driver starts */
+  +	/* MIO10..13 to SPI1 (MOSI, MISO, SCLK, SS0), before the driver starts */
+   	if (err == 0) {
+   		err = pinctrl_apply_state(PINCTRL_DT_DEV_CONFIG_GET(DT_NODELABEL(spi1)),
+   					  PINCTRL_STATE_DEFAULT);
+  +1 -1
+
+app/boards/trenz/te0715/te0715-pinctrl.dtsi
+  @@ -46,8 +46,11 @@
+  -	 * SPI1 on MIO10 (MOSI), MIO11 (MISO) and MIO12 (SCLK), and MIO13 as the GPIO chip
+  -	 * select (the SPI driver controls it through cs-gpios). The same pins as CAN1 on
+  +	 * SPI1 on MIO10 (MOSI), MIO11 (MISO) and MIO12 (SCLK), with its own slave select
+  +	 * SS0 on MIO13 as the chip select. SS0 must be on a pin: in master mode the
+  +	 * controller does not start a transfer while its SS0 input is low, and without
+  +	 * the pin that input comes from the PL, where it is low in the reference design.
+  +	 * A GPIO chip select on MIO13 therefore cannot work. The same pins as CAN1 on
+   	 * MIO12/13: an application enables either spi1 or can1. MISO keeps its pull-up, so
+   	 * an unconnected sensor reads as all ones rather than as floating data.
+   	 */
+  @@ -58,12 +61,12 @@
+  -			groups = "gpio0_13_grp";
+  -			function = "gpio0";
+  +			groups = "spi1_0_ss0";
+  +			function = "spi1_ss";
+   		};
+   
+   		conf {
+  -			groups = "spi1_0_grp", "gpio0_13_grp";
+  +			groups = "spi1_0_grp", "spi1_0_ss0";
+   			slew-rate = <IO_SPEED_SLOW>;
+   			power-source = <IO_STANDARD_LVCMOS33>;
+   			bias-pull-up;
+  +8 -5
+
+app/fprime-bench/TeBench/Support/BenchSpi.cpp
+  @@ -4,13 +4,14 @@
+  -#include <zephyr/drivers/gpio.h>
+   #include <zephyr/drivers/spi.h>
+   
+   #define BENCH_SPI DT_NODELABEL(spi1)
+   
+   BUILD_ASSERT(DT_NODE_HAS_STATUS_OKAY(BENCH_SPI), "the sensor benches need spi1 (te0701-spi1.overlay)");
+  -BUILD_ASSERT(DT_PROP_LEN(BENCH_SPI, cs_gpios) >= 1, "spi1 needs a chip select in cs-gpios");
+  +// The controller's SS0 is the chip select; a GPIO chip select cannot work on this
+  +// board (see te0715-pinctrl.dtsi)
+  +BUILD_ASSERT(!DT_NODE_HAS_PROP(BENCH_SPI, cs_gpios), "the sensor benches use SPI1's own SS0 as chip select");
+   
+   namespace TeBench {
+   namespace BenchSpi {
+  @@ -58,10 +59,9 @@ void configure(Zephyr::ZephyrSpiDriver& driver, U32 requestedHz, U8 mode) {
+  +    // Native chip select SS0 (slave 0), asserted by the driver over the whole transfer
+       config.slave = 0U;
+  -    config.cs.gpio = GPIO_DT_SPEC_GET_BY_IDX(BENCH_SPI, cs_gpios, 0);
+  -    config.cs.delay = 1U;
+  -    config.cs.cs_is_gpio = true;
+  +    config.cs.cs_is_gpio = false;
+       driver.configure(DEVICE_DT_GET(BENCH_SPI), config);
+   }
+   
+  +5 -5
+
+app/fprime-bench/TeBench/Support/BenchSpi.hpp
+  @@ -11,7 +11,8 @@ class ZephyrSpiDriver;
+  -//! The benches use one sensor on SPI1, selected by cs-gpios[0] (te0701-spi1.overlay).
+  +//! The benches use one sensor on SPI1, selected by the controller's SS0 on MIO13
+  +//! (te0701-spi1.overlay).
+   //! The Zynq controller divides SPI_REF_CLK by 4 to 256 (Xilinx xspips.h,
+   //! XSPIPS_CLK_PRESCALE_4..256); Zephyr's cdns,spi driver picks the fastest division
+   //! that does not exceed the request.
+  @@ -29,8 +30,7 @@ U32 maximumSclkHz();
+  -//! CPOL, bit 0 CPHA), GPIO chip select cs-gpios[0] with 1 us setup and hold. Call
+  -//! only while no transfer is in progress.
+  +//! CPOL, bit 0 CPHA), chip select SS0. Call only while no transfer is in progress.
+   void configure(Zephyr::ZephyrSpiDriver& driver, U32 requestedHz, U8 mode);
+   
+   }  // namespace BenchSpi
+  +3 -3
+
+app/zephyr/patches.yml
+  @@ -68,17 +68,17 @@ patches:
+  -  - path: zephyr/0001-spi-cdns-configure-cs-gpios.patch
+  -    sha256sum: 8955b1a3abed5ffe00ddf8a21c9cd5d5aa031f635de3816a039f267043589dbe
+  +  - path: zephyr/0001-spi-cdns-map-the-register-block.patch
+  +    sha256sum: 084c6b8b226142c3471b3dd43e03398a0c628f43e802dec76aa379e43855084c
+       module: zephyr
+       author: Sibo Van Gool
+       email: sibo.vangool@hotmail.com
+  -    date: 2026-09-27
+  -    upstreamable: true
+  +    date: 2026-09-29
+  +    upstreamable: false
+       comments: |
+  -      spi_cdns never set up the GPIOs listed in cs-gpios: it neither
+  -      initialised the context's CS list (SPI_CONTEXT_CS_GPIOS_INITIALIZE)
+  -      nor configured the pins (spi_context_cs_configure_all), which every
+  -      other GPIO-CS capable SPI driver does. The chip select stayed an
+  -      input, so a GPIO-selected device was never selected. Needed for the
+  -      SPI1 sensor benches on the TE0715 (CS on MIO13).
+  +      Backport of upstream commit 1b7a2b68e0e0 (PR #115179, merged
+  +      2026-08-10): spi_cdns used the devicetree register address as a
+  +      virtual address without mapping it. On the TE0715 (Cortex-A9, MMU on)
+  +      the first SPI_CONF write in spi_cdns_init() took a translation fault
+  +      at 0xe0007000 and Zephyr halted at boot. Drop when the fork moves past
+  +      it.
+  +10 -10
+ M app/apps/fprime_adxl355_bench/Top/instances.fpp
+ M app/apps/fprime_ina229_bench/Top/instances.fpp
+ M app/boards/te0701-spi1.overlay
+ M app/boards/trenz/te0715/board.c
+ M app/boards/trenz/te0715/te0715-pinctrl.dtsi
+ M app/fprime-bench/TeBench/Support/BenchSpi.cpp
+ M app/fprime-bench/TeBench/Support/BenchSpi.hpp
+ M app/zephyr/patches.yml
+D  app/zephyr/patches/zephyr/0001-spi-cdns-configure-cs-gpios.patch
+?? app/zephyr/patches/zephyr/
+?? docs/verification/evidence/2026-09-29-1925-adxl355/

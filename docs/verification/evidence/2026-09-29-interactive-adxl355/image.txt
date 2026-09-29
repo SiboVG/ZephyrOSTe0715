@@ -1,0 +1,10 @@
+image: the one loaded for 2026-09-29-2034-adxl355 (see its image.txt and uboot-load.log), still running:
+the board's uptime at 20:53:05 was 870 s, so it booted at about 20:38:35, when that image was loaded, and was not reset in between
+zephyr.bin sha256: ff1e14e6a141b163362448427649cb99e8cf56f803f3f8d7139a12046115257e
+zephyr.elf sha256: 9deddf7681dc703ab605e78e2fceaa0348503695d1f48ee54959fbf8c42accd6
+built: Sep 29 20:37:44 2026, fprime-util build on macOS 27 (arm64), Zephyr SDK 1.0.1
+bench: 227bd3c16936 + bench-uncommitted.diff (SPI1 native SS0 chip select, Zephyr patch 0001 MMIO backport, cs-gpios patch dropped, active event and telemetry printers, telemetry IDs from BaseIds, sensor_bench.py waits for complete lines; console: no time slicing, polled shell output, printers at the shell's priority, no output from the frame timing thread)
+fprime-adxl355: a0d2a5259849; dirty only by the unrelated uncommitted Sandbox/ and macos-docker.sh deletions
+zephyr: 70b56a29cd74 + west patches (app/zephyr/patches.yml)
+wiring: EVAL-ADXL355Z on Pmod J1 (P2-2 CS pin 7, P2-6 MOSI pin 8, P2-5 MISO pin 9, P2-4 SCLK pin 10, P1-1/P1-3 3.3 V pin 6, P1-5 GND pin 12)
+sources: no change under app/ since 2026-09-29-2034-adxl355/bench-uncommitted.diff was captured; later working-tree changes were documentation only

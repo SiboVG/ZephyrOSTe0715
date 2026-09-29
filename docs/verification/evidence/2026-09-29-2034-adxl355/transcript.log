@@ -1,0 +1,749 @@
+
+[1;32muart:~$ [madxl info
+ADXL_INFO bench=227bd3c16936-dirty library=a0d2a5259849-dirty spi_ref_hz=142857142 requested_hz=1200000 sclk_hz=1116071 mode=0 cs=MIO13 odr_code=5 streaming=0
+[1;32muart:~$ [madxl id
+ADXL_ID devid_ad=0xad devid_mst=0x1d partid=0xed revid=0x01 spi=SPI_OK result=PASS
+[1;32muart:~$ [madxl spi 600000 0
+ADXL_SPI requested_hz=600000 sclk_hz=558035 mode=0
+[1;32muart:~$ [madxl soak 20000
+ADXL_SOAK n=20000 bad_value=0 spi_errors=0 min_us=49 mean_us=64 max_us=88 sclk_hz=558035 mode=0 result=PASS
+[1;32muart:~$ [madxl spi 1200000 0
+ADXL_SPI requested_hz=1200000 sclk_hz=1116071 mode=0
+[1;32muart:~$ [madxl soak 20000
+ADXL_SOAK n=20000 bad_value=0 spi_errors=0 min_us=28 mean_us=35 max_us=50 sclk_hz=1116071 mode=0 result=PASS
+[1;32muart:~$ [madxl spi 2300000 0
+ADXL_SPI requested_hz=2300000 sclk_hz=2232142 mode=0
+[1;32muart:~$ [madxl soak 20000
+ADXL_SOAK n=20000 bad_value=0 spi_errors=0 min_us=17 mean_us=21 max_us=33 sclk_hz=2232142 mode=0 result=PASS
+[1;32muart:~$ [madxl spi 4500000 0
+ADXL_SPI requested_hz=4500000 sclk_hz=4464285 mode=0
+[1;32muart:~$ [madxl soak 20000
+ADXL_SOAK n=20000 bad_value=0 spi_errors=0 min_us=12 mean_us=14 max_us=23 sclk_hz=4464285 mode=0 result=PASS
+[1;32muart:~$ [madxl spi 9000000 0
+ADXL_SPI requested_hz=9000000 sclk_hz=8928571 mode=0
+[1;32muart:~$ [madxl soak 20000
+ADXL_SOAK n=20000 bad_value=0 spi_errors=0 min_us=9 mean_us=10 max_us=19 sclk_hz=8928571 mode=0 result=PASS
+[1;32muart:~$ [madxl spi 1200000 0
+ADXL_SPI requested_hz=1200000 sclk_hz=1116071 mode=0
+[1;32muart:~$ [madxl init 2 125 0
+ADXL_INIT status=OK ms=1 odr_hz=125.000
+[1;32muart:~$ [m[Os::Console] EVENT: (268632064) (0:13,796650) ACTIVITY_HI: (Adxl355Te0715.sensor) InitializationComplete : ADXL355 initialized; revision 0x1
+TLM sensor.LastStatus = OK (0) (13.796700)
+TLM sensor.Initialized = 1 (13.796700)
+TLM sensor.Measuring = 1 (13.796750)
+TLM sensor.SelfTest = 0 (13.796750)
+adxl temp 3
+ADXL_TEMP status=OK raw=1878 celsius=25.773
+ADXL_TEMP status=OK raw=1877 celsius=25.884
+ADXL_TEMP status=OK raw=1879 celsius=25.663
+[1;32muart:~$ [madxl read 200 0
+ADXL_READ_DONE ok=200 failures=0 mean_x_g=0.336685 mean_y_g=0.694139 mean_z_g=0.647519 std_x_mg=0.5114 std_y_mg=1.0073 std_z_mg=0.5479 magnitude_g=1.007208 odr_hz=125.000
+[1;32muart:~$ [madxl selftest 64
+[Os::Console] EVENT: (268632067) (0:16,285150) ACTIVITY_HI: (Adxl355Te0715.sensor) SelfTestState : ADXL355 self-test mode 1 force 0
+[Os::Console] EVENT: (268443649) (0:16,285300) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030009 dispatched to port 2
+[Os::Console] EVENT: (268443650) (0:16,285350) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10030009 completed
+TLM sensor.LastStatus = OK (0) (16.285200)
+TLM sensor.Initialized = 1 (16.285250)
+TLM sensor.Measuring = 1 (16.285250)
+TLM sensor.SelfTest = 1 (16.285250)
+ADXL_CMD selftest response=OK
+TLM sensor.LastStatus = STALE_DATA (13) (16.600450)
+[Os::Console] EVENT: (268632066) (0:16,600500) WARNING_HI: (Adxl355Te0715.sensor) OperationFailed : ADXL355 operation READ_SAMPLE (3) failed with STALE_DATA (13)
+TLM sensor.LastStatus = OK (0) (16.613850)
+[Os::Console] EVENT: (268632067) (0:17,158950) ACTIVITY_HI: (Adxl355Te0715.sensor) SelfTestState : ADXL355 self-test mode 1 force 1
+[Os::Console] EVENT: (268443649) (0:17,159050) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030009 dispatched to port 2
+[Os::Console] EVENT: (268443650) (0:17,159100) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10030009 completed
+TLM sensor.LastStatus = OK (0) (17.159000)
+TLM sensor.Initialized = 1 (17.159000)
+TLM sensor.Measuring = 1 (17.159050)
+TLM sensor.SelfTest = 3 (17.159050)
+ADXL_CMD selftest response=OK
+TLM sensor.LastStatus = STALE_DATA (13) (17.473050)
+[Os::Console] EVENT: (268632066) (0:17,473100) WARNING_HI: (Adxl355Te0715.sensor) OperationFailed : ADXL355 operation READ_SAMPLE (3) failed with STALE_DATA (13)
+TLM sensor.LastStatus = OK (0) (17.486450)
+[Os::Console] EVENT: (268632067) (0:18,31500) ACTIVITY_HI: (Adxl355Te0715.sensor) SelfTestState : ADXL355 self-test mode 0 force 0
+[Os::Console] EVENT: (268443649) (0:18,31600) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030009 dispatched to port 2
+[Os::Console] EVENT: (268443650) (0:18,31650) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10030009 completed
+TLM sensor.LastStatus = OK (0) (18.031550)
+TLM sensor.Initialized = 1 (18.031550)
+TLM sensor.Measuring = 1 (18.031600)
+TLM sensor.SelfTest = 0 (18.031600)
+ADXL_CMD selftest response=OK
+ADXL_SELFTEST samples=64 dx_g=0.3309 dy_g=0.3230 dz_g=1.3648 x=PASS y=PASS z=PASS cleared=1 result=PASS
+[1;32muart:~$ [madxl drdy 20
+ADXL_DRDY n=20 ready_first=20 cleared_second=20 reserved_set=0 spi_errors=0 result=PASS
+[1;32muart:~$ [madxl timing 200
+ADXL_TIMING ok_n=200 ok_min_us=114 ok_mean_us=114 ok_max_us=124 stale_n=0 stale_max_us=0 failed_n=0 sclk_hz=1116071
+[1;32muart:~$ [madxl cmd snapshot
+TLM sensor.RawX = 84947 (20.505150)
+TLM sensor.RawY = 179395 (20.505200)
+TLM sensor.RawZ = 164796 (20.505200)
+TLM sensor.AccelerationX = 3.25408397 (20.505200)
+TLM sensor.AccelerationY = 6.87212491 (20.505200)
+TLM sensor.AccelerationZ = 6.31287771 (20.505250)
+TLM sensor.TemperatureCelsius = 25.5524862 (20.505300)
+TLM sensor.StatusRegister = 7 (20.505350)
+TLM sensor.SamplesRead = 593 (20.505350)
+TLM sensor.Errors = 2 (20.505350)
+TLM sensor.LastStatus = OK (0) (20.505400)
+TLM sensor.Initialized = 1 (20.505400)
+TLM sensor.Measuring = 1 (20.505400)
+TLM sensor.SelfTest = 0 (20.505400)
+[Os::Console] EVENT: (268443649) (0:20,505450) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeDispatched : Opcode 0x1003000b dispatched to port 2
+[Os::Console] EVENT: (268443650) (0:20,505500) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeCompleted : Opcode 0x1003000b completed
+ADXL_CMD snapshot response=OK
+[1;32muart:~$ [madxl cmd range 16
+[1;31mmanager: init-synced <range> <odr> <hpf>, start, stop, range <r>, filter <odr> <hpf>, sync <mode> <extclk>, offsets <x> <y> <z>, activity <mask> <threshold> <count>, interrupts <map> <active_high>, selftest <st1> <st2>, fifo-wm <n>, snapshot, clear-throttle; application: app-init <range> <odr> <hpf>, app-init-internal <range> <odr> <hpf>, app-count <n>, app-enable <0|1>, app-report, app-clear-throttle
+[m[1;32muart:~$ [madxl cmd app-report
+ADXL_CMD app-report response=OK
+[1;32muart:~$ [mTLM app.Frames = 0 (20.975100)
+TLM app.PartialFrames = 0 (20.975150)
+TLM app.LastValidMask = 1 (20.975150)
+TLM app.SensorCount = 1 (20.975150)
+TLM app.Enabled = 0 (20.975150)
+TLM app.InitializedMask = 0 (20.975200)
+TLM app.SkippedTriggers = 0 (20.975200)
+[Os::Console] EVENT: (268443649) (0:20,975200) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10031003 dispatched to port 0
+[Os::Console] EVENT: (268443650) (0:20,975250) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10031003 completed
+adxl cmd init-synced 2 1000 0
+[Os::Console] EVENT: (268632064) (0:21,186700) ACTIVITY_HI: (Adxl355Te0715.sensor) InitializationComplete : ADXL355 initialized; revision 0x1
+[Os::Console] EVENT: (268443649) (0:21,186800) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030000 dispatched to port 2
+[Os::Console] EVENT: (268443650) (0:21,186850) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10030000 completed
+TLM sensor.LastStatus = OK (0) (21.186750)
+TLM sensor.Initialized = 1 (21.186750)
+TLM sensor.Measuring = 1 (21.186800)
+TLM sensor.SelfTest = 0 (21.186800)
+ADXL_CMD init-synced response=OK
+[1;32muart:~$ [madxl read 1 0
+TLM sensor.LastStatus = STALE_DATA (13) (21.395200)
+[Os::Console] EVENT: (268632066) (0:21,395200) WARNING_HI: (Adxl355Te0715.sensor) OperationFailed : ADXL355 operation READ_SAMPLE (3) failed with STALE_DATA (13)
+ADXL_ROW,21409,STALE_DATA
+ADXL_READ_DONE ok=0 failures=1 mean_x_g=0.000000 mean_y_g=0.000000 mean_z_g=0.000000 std_x_mg=0.0000 std_y_mg=0.0000 std_z_mg=0.0000 magnitude_g=0.000000 odr_hz=1000.000
+[1;32muart:~$ [madxl init 2 1000 0
+ADXL_INIT status=OK ms=1 odr_hz=1000.000
+[1;32muart:~$ [m[Os::Console] EVENT: (268632064) (0:21,606600) ACTIVITY_HI: (Adxl355Te0715.sensor) InitializationComplete : ADXL355 initialized; revision 0x1
+TLM sensor.LastStatus = OK (0) (21.606650)
+TLM sensor.Initialized = 1 (21.606650)
+TLM sensor.Measuring = 1 (21.606700)
+TLM sensor.SelfTest = 0 (21.606700)
+adxl stream start 500 2500
+ADXL_CMD app-enable response=OK
+ADXL_STREAM_STARTED rate_hz=500.000 period_us=2000 frames=2500 print_every=0
+[1;32muart:~$ [m[Os::Console] EVENT: (268636161) (0:21,765150) ACTIVITY_LO: (Adxl355Te0715.app) AcquisitionStateChanged : ADXL355 synchronized acquisition enabled: 1
+[Os::Console] EVENT: (268443649) (0:21,765200) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10031002 dispatched to port 0
+[Os::Console] EVENT: (268443650) (0:21,765250) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10031002 completed
+adxl stream status
+ADXL_STREAM triggers=99 frames=99 complete=99 partial=0 stale=0 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=119 acq_mean_us=121 acq_max_us=139 period_us=2000 streaming=1
+[1;32muart:~$ [madxl stream status
+ADXL_STREAM triggers=459 frames=459 complete=459 partial=0 stale=0 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=119 acq_mean_us=120 acq_max_us=139 period_us=2000 streaming=1
+[1;32muart:~$ [madxl stream status
+ADXL_STREAM triggers=814 frames=814 complete=814 partial=0 stale=0 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=119 acq_mean_us=120 acq_max_us=139 period_us=2000 streaming=1
+[1;32muart:~$ [madxl stream status
+ADXL_STREAM triggers=1144 frames=1144 complete=1144 partial=0 stale=0 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=119 acq_mean_us=120 acq_max_us=139 period_us=2000 streaming=1
+[1;32muart:~$ [madxl stream status
+ADXL_STREAM triggers=1474 frames=1474 complete=1474 partial=0 stale=0 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=119 acq_mean_us=120 acq_max_us=139 period_us=2000 streaming=1
+[1;32muart:~$ [madxl stream status
+ADXL_STREAM triggers=1804 frames=1804 complete=1804 partial=0 stale=0 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=119 acq_mean_us=120 acq_max_us=139 period_us=2000 streaming=1
+[1;32muart:~$ [madxl stream status
+ADXL_STREAM triggers=2159 frames=2159 complete=2159 partial=0 stale=0 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=119 acq_mean_us=120 acq_max_us=139 period_us=2000 streaming=1
+[1;32muart:~$ [madxl stream status
+ADXL_STREAM triggers=2500 frames=2500 complete=2500 partial=0 stale=0 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=119 acq_mean_us=120 acq_max_us=139 period_us=2000 streaming=0
+[1;32muart:~$ [madxl stream stop
+ADXL_CMD app-enable response=OK
+ADXL_STREAM_STOPPED triggers=2500 frames=2500 complete=2500 partial=0 stale=0 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=119 acq_mean_us=120 acq_max_us=139 period_us=2000 streaming=0
+[1;32muart:~$ [m[Os::Console] EVENT: (268636161) (0:26,955100) ACTIVITY_LO: (Adxl355Te0715.app) AcquisitionStateChanged : ADXL355 synchronized acquisition enabled: 0
+[Os::Console] EVENT: (268443649) (0:26,955150) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10031002 dispatched to port 0
+[Os::Console] EVENT: (268443650) (0:26,955200) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10031002 completed
+adxl stream start 2000 4000
+ADXL_CMD app-enable response=OK
+ADXL_STREAM_STARTED rate_hz=2000.000 period_us=500 frames=4000 print_every=0
+[1;32muart:~$ [m[Os::Console] EVENT: (268636161) (0:27,175150) ACTIVITY_LO: (Adxl355Te0715.app) AcquisitionStateChanged : ADXL355 synchronized acquisition enabled: 1
+[Os::Console] EVENT: (268443649) (0:27,175200) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10031002 dispatched to port 0
+[Os::Console] EVENT: (268443650) (0:27,175250) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10031002 completed
+[Os::Console] EVENT: (268632066) (0:27,176450) WARNING_HI: (Adxl355Te0715.sensor) OperationFailed : ADXL355 operation READ_SAMPLE (3) failed with STALE_DATA (13)
+[Os::Console] EVENT: (268636164) (0:27,176500) WARNING_HI: (Adxl355Te0715.app) FrameIncomplete : ADXL355 frame 2501 incomplete; valid mask 0x0
+[Os::Console] EVENT: (268636165) (0:27,176950) ACTIVITY_HI: (Adxl355Te0715.app) FrameRecovered : ADXL355 frame 2502 restored all sensors
+[Os::Console] EVENT: (268632066) (0:27,177450) WARNING_HI: (Adxl355Te0715.sensor) OperationFailed : ADXL355 operation READ_SAMPLE (3) failed with STALE_DATA (13)
+[Os::Console] EVENT: (268636164) (0:27,177500) WARNING_HI: (Adxl355Te0715.app) FrameIncomplete : ADXL355 frame 2503 incomplete; valid mask 0x0
+[Os::Console] EVENT: (268636165) (0:27,177950) ACTIVITY_HI: (Adxl355Te0715.app) FrameRecovered : ADXL355 frame 2504 restored all sensors
+[Os::Console] EVENT: (268632066) (0:27,178450) WARNING_HI: (Adxl355Te0715.sensor) OperationFailed : ADXL355 operation READ_SAMPLE (3) failed with STALE_DATA (13)
+[Os::Console] EVENT: (268636164) (0:27,178500) WARNING_HI: (Adxl355Te0715.app) FrameIncomplete : ADXL355 frame 2505 incomplete; valid mask 0x0
+[Os::Console] EVENT: (268636165) (0:27,178950) ACTIVITY_HI: (Adxl355Te0715.app) FrameRecovered : ADXL355 frame 2506 restored all sensors
+[Os::Console] EVENT: (268632066) (0:27,179450) WARNING_HI: (Adxl355Te0715.sensor) OperationFailed : ADXL355 operation READ_SAMPLE (3) failed with STALE_DATA (13)
+[Os::Console] EVENT: (268636164) (0:27,179500) WARNING_HI: (Adxl355Te0715.app) FrameIncomplete : ADXL355 frame 2507 incomplete; valid mask 0x0
+[Os::Console] EVENT: (268636165) (0:27,179950) ACTIVITY_HI: (Adxl355Te0715.app) FrameRecovered : ADXL355 frame 2508 restored all sensors
+[Os::Console] EVENT: (268632066) (0:27,180450) WARNING_HI: (Adxl355Te0715.sensor) OperationFailed : ADXL355 operation READ_SAMPLE (3) failed with STALE_DATA (13)
+[Os::Console] EVENT: (268636164) (0:27,180500) WARNING_HI: (Adxl355Te0715.app) FrameIncomplete : ADXL355 frame 2509 incomplete; valid mask 0x0
+[Os::Console] EVENT: (268636165) (0:27,180950) ACTIVITY_HI: (Adxl355Te0715.app) FrameRecovered : ADXL355 frame 2510 restored all sensors
+[Os::Console] EVENT: (268632066) (0:27,181450) WARNING_HI: (Adxl355Te0715.sensor) OperationFailed : ADXL355 operation READ_SAMPLE (3) failed with STALE_DATA (13)
+[Os::Console] EVENT: (268636164) (0:27,181500) WARNING_HI: (Adxl355Te0715.app) FrameIncomplete : ADXL355 frame 2511 incomplete; valid mask 0x0
+[Os::Console] EVENT: (268636165) (0:27,181950) ACTIVITY_HI: (Adxl355Te0715.app) FrameRecovered : ADXL355 frame 2512 restored all sensors
+[Os::Console] EVENT: (268632066) (0:27,182450) WARNING_HI: (Adxl355Te0715.sensor) OperationFailed : ADXL355 operation READ_SAMPLE (3) failed with STALE_DATA (13)
+[Os::Console] EVENT: (268636164) (0:27,182500) WARNING_HI: (Adxl355Te0715.app) FrameIncomplete : ADXL355 frame 2513 incomplete; valid mask 0x0
+[Os::Console] EVENT: (268636165) (0:27,182950) ACTIVITY_HI: (Adxl355Te0715.app) FrameRecovered : ADXL355 frame 2514 restored all sensors
+[Os::Console] EVENT: (268632066) (0:27,183450) WARNING_HI: (Adxl355Te0715.sensor) OperationFailed : ADXL355 operation READ_SAMPLE (3) failed with STALE_DATA (13)
+[Os::Console] EVENT: (268636164) (0:27,183500) WARNING_HI: (Adxl355Te0715.app) FrameIncomplete : ADXL355 frame 2515 incomplete; valid mask 0x0
+[Os::Console] EVENT: (268636165) (0:27,183950) ACTIVITY_HI: (Adxl355Te0715.app) FrameRecovered : ADXL355 frame 2516 restored all sensors
+[Os::Console] EVENT: (268632066) (0:27,184450) WARNING_HI: (Adxl355Te0715.sensor) OperationFailed : ADXL355 operation READ_SAMPLE (3) failed with STALE_DATA (13)
+[Os::Console] EVENT: (268636164) (0:27,184500) WARNING_HI: (Adxl355Te0715.app) FrameIncomplete : ADXL355 frame 2517 incomplete; valid mask 0x0
+[Os::Console] EVENT: (268636165) (0:27,184950) ACTIVITY_HI: (Adxl355Te0715.app) FrameRecovered : ADXL355 frame 2518 restored all sensors
+[Os::Console] EVENT: (268632066) (0:27,185450) WARNING_HI: (Adxl355Te0715.sensor) OperationFailed : ADXL355 operation READ_SAMPLE (3) failed with STALE_DATA (13)
+[Os::Console] EVENT: (268636164) (0:27,185500) WARNING_HI: (Adxl355Te0715.app) FrameIncomplete : ADXL355 frame 2519 incomplete; valid mask 0x0
+[Os::Console] EVENT: (268636165) (0:27,185950) ACTIVITY_HI: (Adxl355Te0715.app) FrameRecovered : ADXL355 frame 2520 restored all sensors
+TLM sensor.LastStatus = STALE_DATA (13) (27.176400)
+TLM sensor.LastStatus = OK (0) (27.176900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.177400)
+TLM sensor.LastStatus = OK (0) (27.177900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.178400)
+TLM sensor.LastStatus = OK (0) (27.178900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.179400)
+TLM sensor.LastStatus = OK (0) (27.179900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.180400)
+TLM sensor.LastStatus = OK (0) (27.180900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.181400)
+TLM sensor.LastStatus = OK (0) (27.181900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.182400)
+TLM sensor.LastStatus = OK (0) (27.182900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.183400)
+TLM sensor.LastStatus = OK (0) (27.183900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.184400)
+TLM sensor.LastStatus = OK (0) (27.184900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.185400)
+TLM sensor.LastStatus = OK (0) (27.185900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.186400)
+TLM sensor.LastStatus = OK (0) (27.186900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.187400)
+TLM sensor.LastStatus = OK (0) (27.187900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.188400)
+TLM sensor.LastStatus = OK (0) (27.188900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.189400)
+TLM sensor.LastStatus = OK (0) (27.189900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.190400)
+TLM sensor.LastStatus = OK (0) (27.190900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.191400)
+TLM sensor.LastStatus = OK (0) (27.191900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.192400)
+TLM sensor.LastStatus = OK (0) (27.192900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.193400)
+TLM sensor.LastStatus = OK (0) (27.193900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.194400)
+TLM sensor.LastStatus = OK (0) (27.194900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.195400)
+TLM sensor.LastStatus = OK (0) (27.195900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.196400)
+TLM sensor.LastStatus = OK (0) (27.196900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.197400)
+TLM sensor.LastStatus = OK (0) (27.197900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.198400)
+TLM sensor.LastStatus = OK (0) (27.198900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.199400)
+TLM sensor.LastStatus = OK (0) (27.199900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.200400)
+TLM sensor.LastStatus = OK (0) (27.200900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.201400)
+TLM sensor.LastStatus = OK (0) (27.201900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.202400)
+TLM sensor.LastStatus = OK (0) (27.202900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.203400)
+TLM sensor.LastStatus = OK (0) (27.203900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.204400)
+TLM sensor.LastStatus = OK (0) (27.204900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.205400)
+TLM sensor.LastStatus = OK (0) (27.205900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.206400)
+TLM sensor.LastStatus = OK (0) (27.206900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.207400)
+TLM sensor.LastStatus = OK (0) (27.207900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.605900)
+TLM sensor.LastStatus = OK (0) (27.610400)
+TLM sensor.LastStatus = STALE_DATA (13) (27.614400)
+TLM sensor.LastStatus = OK (0) (27.618900)
+TLM sensor.LastStatus = OK (0) (27.622900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.627400)
+TLM sensor.LastStatus = OK (0) (27.630900)
+TLM sensor.LastStatus = OK (0) (27.635900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.639400)
+TLM sensor.LastStatus = OK (0) (27.643900)
+TLM sensor.LastStatus = OK (0) (27.647900)
+TLM sensor.LastStatus = OK (0) (27.652400)
+TLM sensor.LastStatus = OK (0) (27.656400)
+TLM sensor.LastStatus = STALE_DATA (13) (27.660900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.664900)
+TLM sensor.LastStatus = OK (0) (27.669400)
+TLM sensor.LastStatus = OK (0) (27.673400)
+TLM sensor.LastStatus = STALE_DATA (13) (27.677900)
+TLM sensor.LastStatus = OK (0) (27.681400)
+TLM sensor.LastStatus = STALE_DATA (13) (27.686400)
+TLM sensor.LastStatus = OK (0) (27.689900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.694400)
+TLM sensor.LastStatus = STALE_DATA (13) (27.698400)
+TLM sensor.LastStatus = OK (0) (27.702900)
+TLM sensor.LastStatus = OK (0) (27.706900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.711400)
+TLM sensor.LastStatus = STALE_DATA (13) (27.715400)
+TLM sensor.LastStatus = OK (0) (27.719900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.723900)
+TLM sensor.LastStatus = OK (0) (27.728400)
+TLM sensor.LastStatus = STALE_DATA (13) (27.731900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.736900)
+TLM sensor.LastStatus = OK (0) (27.740400)
+TLM sensor.LastStatus = STALE_DATA (13) (27.744900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.748900)
+TLM sensor.LastStatus = OK (0) (27.753400)
+TLM sensor.LastStatus = STALE_DATA (13) (27.757400)
+TLM sensor.LastStatus = OK (0) (27.761900)
+TLM sensor.LastStatus = OK (0) (27.765900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.770400)
+TLM sensor.LastStatus = STALE_DATA (13) (27.774400)
+TLM sensor.LastStatus = OK (0) (27.778900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.782400)
+TLM sensor.LastStatus = STALE_DATA (13) (27.787400)
+TLM sensor.LastStatus = OK (0) (27.790900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.795900)
+TLM sensor.LastStatus = OK (0) (27.799400)
+TLM sensor.LastStatus = STALE_DATA (13) (27.803900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.807900)
+TLM sensor.LastStatus = OK (0) (27.812400)
+TLM sensor.LastStatus = OK (0) (27.816400)
+TLM sensor.LastStatus = STALE_DATA (13) (27.820900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.824900)
+TLM sensor.LastStatus = OK (0) (27.829900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.833400)
+TLM sensor.LastStatus = OK (0) (27.837900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.841400)
+TLM sensor.LastStatus = STALE_DATA (13) (27.846400)
+TLM sensor.LastStatus = OK (0) (27.849900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.854400)
+TLM sensor.LastStatus = STALE_DATA (13) (27.858400)
+TLM sensor.LastStatus = OK (0) (27.862900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.866900)
+TLM sensor.LastStatus = OK (0) (27.871400)
+TLM sensor.LastStatus = OK (0) (27.875400)
+TLM sensor.LastStatus = STALE_DATA (13) (27.879900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.883900)
+TLM sensor.LastStatus = OK (0) (27.888400)
+TLM sensor.LastStatus = STALE_DATA (13) (27.891900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.895900)
+TLM sensor.LastStatus = OK (0) (27.900400)
+TLM sensor.LastStatus = STALE_DATA (13) (27.904400)
+TLM sensor.LastStatus = STALE_DATA (13) (27.908400)
+TLM sensor.LastStatus = OK (0) (27.912900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.916400)
+TLM sensor.LastStatus = STALE_DATA (13) (27.920400)
+TLM sensor.LastStatus = STALE_DATA (13) (27.924400)
+TLM sensor.LastStatus = OK (0) (27.927900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.932400)
+TLM sensor.LastStatus = STALE_DATA (13) (27.937900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.940900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.944900)
+TLM sensor.LastStatus = OK (0) (27.949400)
+TLM sensor.LastStatus = OK (0) (27.953400)
+TLM sensor.LastStatus = STALE_DATA (13) (27.957900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.961900)
+TLM sensor.LastStatus = OK (0) (27.966400)
+TLM sensor.LastStatus = STALE_DATA (13) (27.970900)
+TLM sensor.LastStatus = OK (0) (27.974900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.978400)
+TLM sensor.LastStatus = STALE_DATA (13) (27.983400)
+TLM sensor.LastStatus = OK (0) (27.987900)
+TLM sensor.LastStatus = STALE_DATA (13) (27.991400)
+TLM sensor.LastStatus = STALE_DATA (13) (27.996400)
+TLM sensor.LastStatus = OK (0) (27.999900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.004400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.009400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.012900)
+TLM sensor.LastStatus = OK (0) (28.017400)
+TLM sensor.LastStatus = OK (0) (28.022400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.025900)
+TLM sensor.LastStatus = OK (0) (28.030400)
+TLM sensor.LastStatus = OK (0) (28.034400)
+TLM sensor.LastStatus = OK (0) (28.038400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.042900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.047400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.051400)
+TLM sensor.LastStatus = OK (0) (28.055900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.060400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.064400)
+TLM sensor.LastStatus = OK (0) (28.068900)
+adxl stream status
+ADXL_STREAM triggers=2347 frames=2347 complete=1183 partial=1164 stale=1164 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=123 acq_mean_us=144 acq_max_us=255 period_us=500 streaming=1
+[1;32muart:~$ [mTLM sensor.LastStatus = OK (0) (28.072900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.077400)
+TLM sensor.LastStatus = OK (0) (28.081900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.085900)
+TLM sensor.LastStatus = OK (0) (28.089400)
+TLM sensor.LastStatus = OK (0) (28.094400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.098900)
+TLM sensor.LastStatus = OK (0) (28.102400)
+TLM sensor.LastStatus = OK (0) (28.107400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.110900)
+TLM sensor.LastStatus = OK (0) (28.115400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.120400)
+TLM sensor.LastStatus = OK (0) (28.123900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.128400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.133400)
+TLM sensor.LastStatus = OK (0) (28.136900)
+TLM sensor.LastStatus = OK (0) (28.141900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.145400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.149400)
+TLM sensor.LastStatus = OK (0) (28.153900)
+TLM sensor.LastStatus = OK (0) (28.158400)
+TLM sensor.LastStatus = OK (0) (28.162400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.166900)
+TLM sensor.LastStatus = OK (0) (28.171400)
+TLM sensor.LastStatus = OK (0) (28.175400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.179900)
+TLM sensor.LastStatus = OK (0) (28.184400)
+TLM sensor.LastStatus = OK (0) (28.188400)
+TLM sensor.LastStatus = OK (0) (28.192900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.197400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.202400)
+TLM sensor.LastStatus = OK (0) (28.205900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.210400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.215400)
+TLM sensor.LastStatus = OK (0) (28.219900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.224400)
+TLM sensor.LastStatus = OK (0) (28.228400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.231900)
+TLM sensor.LastStatus = OK (0) (28.236400)
+TLM sensor.LastStatus = OK (0) (28.241400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.244900)
+TLM sensor.LastStatus = OK (0) (28.249400)
+TLM sensor.LastStatus = OK (0) (28.253400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.257900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.262900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.266400)
+TLM sensor.LastStatus = OK (0) (28.270900)
+TLM sensor.LastStatus = OK (0) (28.275900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.279400)
+TLM sensor.LastStatus = OK (0) (28.283900)
+TLM sensor.LastStatus = OK (0) (28.288900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.293400)
+TLM sensor.LastStatus = OK (0) (28.296900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.300900)
+TLM sensor.LastStatus = OK (0) (28.305400)
+TLM sensor.LastStatus = OK (0) (28.309400)
+TLM sensor.LastStatus = OK (0) (28.313400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.316900)
+TLM sensor.LastStatus = OK (0) (28.321400)
+TLM sensor.LastStatus = OK (0) (28.326400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.330900)
+TLM sensor.LastStatus = OK (0) (28.334400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.339400)
+TLM sensor.LastStatus = OK (0) (28.343900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.347400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.372900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.376900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.380900)
+TLM sensor.LastStatus = OK (0) (28.385400)
+TLM sensor.LastStatus = OK (0) (28.389400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.392900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.397900)
+TLM sensor.LastStatus = OK (0) (28.401400)
+TLM sensor.LastStatus = OK (0) (28.405400)
+TLM sensor.LastStatus = OK (0) (28.409900)
+TLM sensor.LastStatus = OK (0) (28.413900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.418400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.422400)
+TLM sensor.LastStatus = OK (0) (28.426900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.431400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.435400)
+TLM sensor.LastStatus = OK (0) (28.438900)
+TLM sensor.LastStatus = OK (0) (28.443900)
+TLM sensor.LastStatus = OK (0) (28.448400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.451900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.455900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.459900)
+TLM sensor.LastStatus = OK (0) (28.464400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.467900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.471900)
+TLM sensor.LastStatus = OK (0) (28.476400)
+TLM sensor.LastStatus = OK (0) (28.480400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.484400)
+TLM sensor.LastStatus = OK (0) (28.487900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.492400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.497400)
+TLM sensor.LastStatus = OK (0) (28.500900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.505400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.510400)
+TLM sensor.LastStatus = OK (0) (28.513900)
+TLM sensor.LastStatus = OK (0) (28.518400)
+TLM sensor.LastStatus = OK (0) (28.522400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.526900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.530900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.534900)
+TLM sensor.LastStatus = OK (0) (28.539400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.542900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.546900)
+TLM sensor.LastStatus = OK (0) (28.551400)
+TLM sensor.LastStatus = OK (0) (28.555900)
+TLM sensor.LastStatus = OK (0) (28.560900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.564400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.568400)
+TLM sensor.LastStatus = OK (0) (28.572900)
+TLM sensor.LastStatus = OK (0) (28.576900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.580400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.585400)
+TLM sensor.LastStatus = OK (0) (28.588900)
+TLM sensor.LastStatus = OK (0) (28.593400)
+TLM sensor.LastStatus = OK (0) (28.597400)
+TLM sensor.LastStatus = OK (0) (28.601400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.604900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.609900)
+TLM sensor.LastStatus = OK (0) (28.613400)
+TLM sensor.LastStatus = OK (0) (28.617400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.621900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.626400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.630400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.634400)
+TLM sensor.LastStatus = OK (0) (28.638900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.643400)
+TLM sensor.LastStatus = OK (0) (28.647900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.652400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.656400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.660400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.664900)
+TLM sensor.LastStatus = OK (0) (28.669400)
+TLM sensor.LastStatus = OK (0) (28.673400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.676900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.680900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.684900)
+TLM sensor.LastStatus = OK (0) (28.689400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.693900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.698400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.702400)
+TLM sensor.LastStatus = OK (0) (28.706900)
+TLM sensor.LastStatus = OK (0) (28.710900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.714400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.718400)
+TLM sensor.LastStatus = OK (0) (28.722900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.727400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.732400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.735900)
+TLM sensor.LastStatus = OK (0) (28.740400)
+TLM sensor.LastStatus = OK (0) (28.745400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.748900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.752900)
+TLM sensor.LastStatus = OK (0) (28.757400)
+TLM sensor.LastStatus = OK (0) (28.761400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.765900)
+TLM sensor.LastStatus = OK (0) (28.770400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.774400)
+TLM sensor.LastStatus = OK (0) (28.778900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.783400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.787400)
+TLM sensor.LastStatus = OK (0) (28.790900)
+TLM sensor.LastStatus = OK (0) (28.794900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.799400)
+TLM sensor.LastStatus = OK (0) (28.803900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.808900)
+TLM sensor.LastStatus = OK (0) (28.812400)
+TLM sensor.LastStatus = OK (0) (28.817400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.821900)
+TLM sensor.LastStatus = OK (0) (28.825400)
+TLM sensor.LastStatus = OK (0) (28.829400)
+TLM sensor.LastStatus = OK (0) (28.833400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.837900)
+TLM sensor.LastStatus = OK (0) (28.842400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.846400)
+TLM sensor.LastStatus = OK (0) (28.849900)
+TLM sensor.LastStatus = OK (0) (28.854900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.859400)
+TLM sensor.LastStatus = OK (0) (28.862900)
+TLM sensor.LastStatus = OK (0) (28.866900)
+TLM sensor.LastStatus = OK (0) (28.870900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.874400)
+TLM sensor.LastStatus = OK (0) (28.878900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.883900)
+TLM sensor.LastStatus = OK (0) (28.887400)
+TLM sensor.LastStatus = OK (0) (28.891400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.895900)
+TLM sensor.LastStatus = OK (0) (28.900400)
+TLM sensor.LastStatus = OK (0) (28.905400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.909900)
+TLM sensor.LastStatus = OK (0) (28.913400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.918400)
+TLM sensor.LastStatus = OK (0) (28.921900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.926400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.931400)
+TLM sensor.LastStatus = OK (0) (28.935900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.940400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.944400)
+TLM sensor.LastStatus = OK (0) (28.947900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.952900)
+TLM sensor.LastStatus = OK (0) (28.957400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.961900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.965900)
+TLM sensor.LastStatus = OK (0) (28.970400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.974900)
+TLM sensor.LastStatus = OK (0) (28.979400)
+TLM sensor.LastStatus = OK (0) (28.983400)
+TLM sensor.LastStatus = STALE_DATA (13) (28.986900)
+TLM sensor.LastStatus = OK (0) (28.991900)
+TLM sensor.LastStatus = STALE_DATA (13) (28.996400)
+TLM sensor.LastStatus = OK (0) (28.999900)
+TLM sensor.LastStatus = OK (0) (29.004900)
+TLM sensor.LastStatus = STALE_DATA (13) (29.009400)
+TLM sensor.LastStatus = OK (0) (29.013900)
+TLM sensor.LastStatus = OK (0) (29.017900)
+TLM sensor.LastStatus = STALE_DATA (13) (29.021400)
+TLM sensor.LastStatus = OK (0) (29.026400)
+TLM sensor.LastStatus = STALE_DATA (13) (29.030900)
+TLM sensor.LastStatus = OK (0) (29.034400)
+TLM sensor.LastStatus = OK (0) (29.038400)
+TLM sensor.LastStatus = STALE_DATA (13) (29.042900)
+TLM sensor.LastStatus = STALE_DATA (13) (29.046900)
+TLM sensor.LastStatus = OK (0) (29.051400)
+TLM sensor.LastStatus = OK (0) (29.055400)
+TLM sensor.LastStatus = STALE_DATA (13) (29.059900)
+TLM sensor.LastStatus = STALE_DATA (13) (29.064400)
+TLM sensor.LastStatus = STALE_DATA (13) (29.068400)
+TLM sensor.LastStatus = OK (0) (29.071900)
+TLM sensor.LastStatus = OK (0) (29.076900)
+TLM sensor.LastStatus = STALE_DATA (13) (29.080400)
+TLM sensor.LastStatus = OK (0) (29.084900)
+TLM sensor.LastStatus = OK (0) (29.088900)
+TLM sensor.LastStatus = OK (0) (29.092900)
+TLM sensor.LastStatus = STALE_DATA (13) (29.097900)
+TLM sensor.LastStatus = OK (0) (29.101400)
+TLM sensor.LastStatus = STALE_DATA (13) (29.104900)
+TLM sensor.LastStatus = STALE_DATA (13) (29.108900)
+TLM sensor.LastStatus = OK (0) (29.113400)
+TLM sensor.LastStatus = OK (0) (29.117400)
+TLM sensor.LastStatus = STALE_DATA (13) (29.121900)
+TLM sensor.LastStatus = STALE_DATA (13) (29.125900)
+TLM sensor.LastStatus = OK (0) (29.129400)
+TLM sensor.LastStatus = STALE_DATA (13) (29.134400)
+TLM sensor.LastStatus = OK (0) (29.137900)
+TLM sensor.LastStatus = OK (0) (29.141900)
+TLM sensor.LastStatus = STALE_DATA (13) (29.145400)
+TLM sensor.LastStatus = OK (0) (29.149900)
+TLM sensor.LastStatus = OK (0) (29.153900)
+TLM sensor.LastStatus = STALE_DATA (13) (29.158400)
+TLM sensor.LastStatus = STALE_DATA (13) (29.162400)
+TLM sensor.LastStatus = STALE_DATA (13) (29.166400)
+TLM sensor.LastStatus = STALE_DATA (13) (29.170900)
+TLM sensor.LastStatus = OK (0) (29.174400)
+adxl stream status
+ADXL_STREAM triggers=4000 frames=4000 complete=2017 partial=1983 stale=1983 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=123 acq_mean_us=144 acq_max_us=255 period_us=500 streaming=0
+[1;32muart:~$ [madxl stream stop
+ADXL_CMD app-enable response=OK
+ADXL_STREAM_STOPPED triggers=4000 frames=4000 complete=2017 partial=1983 stale=1983 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=123 acq_mean_us=144 acq_max_us=255 period_us=500 streaming=0
+[1;32muart:~$ [m[Os::Console] EVENT: (268636161) (0:29,655100) ACTIVITY_LO: (Adxl355Te0715.app) AcquisitionStateChanged : ADXL355 synchronized acquisition enabled: 0
+[Os::Console] EVENT: (268443649) (0:29,655150) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10031002 dispatched to port 0
+[Os::Console] EVENT: (268443650) (0:29,655200) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10031002 completed
+adxl init 2 4000 0
+ADXL_INIT status=OK ms=1 odr_hz=4000.000
+[1;32muart:~$ [m[Os::Console] EVENT: (268632064) (0:29,866600) ACTIVITY_HI: (Adxl355Te0715.sensor) InitializationComplete : ADXL355 initialized; revision 0x1
+TLM sensor.LastStatus = OK (0) (29.866650)
+TLM sensor.Initialized = 1 (29.866650)
+TLM sensor.Measuring = 1 (29.866700)
+TLM sensor.SelfTest = 0 (29.866700)
+adxl stream start 2000 10000
+ADXL_CMD app-enable response=OK
+ADXL_STREAM_STARTED rate_hz=2000.000 period_us=500 frames=10000 print_every=0
+[1;32muart:~$ [m[Os::Console] EVENT: (268636161) (0:30,25150) ACTIVITY_LO: (Adxl355Te0715.app) AcquisitionStateChanged : ADXL355 synchronized acquisition enabled: 1
+[Os::Console] EVENT: (268443649) (0:30,25200) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10031002 dispatched to port 0
+[Os::Console] EVENT: (268443650) (0:30,25250) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10031002 completed
+adxl stream status
+ADXL_STREAM triggers=419 frames=419 complete=419 partial=0 stale=0 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=119 acq_mean_us=120 acq_max_us=136 period_us=500 streaming=1
+[1;32muart:~$ [madxl stream status
+ADXL_STREAM triggers=1859 frames=1859 complete=1859 partial=0 stale=0 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=119 acq_mean_us=120 acq_max_us=136 period_us=500 streaming=1
+[1;32muart:~$ [madxl stream status
+ADXL_STREAM triggers=3179 frames=3179 complete=3179 partial=0 stale=0 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=119 acq_mean_us=120 acq_max_us=136 period_us=500 streaming=1
+[1;32muart:~$ [madxl stream status
+ADXL_STREAM triggers=4619 frames=4619 complete=4619 partial=0 stale=0 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=119 acq_mean_us=120 acq_max_us=136 period_us=500 streaming=1
+[1;32muart:~$ [madxl stream status
+ADXL_STREAM triggers=6059 frames=6059 complete=6059 partial=0 stale=0 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=119 acq_mean_us=120 acq_max_us=136 period_us=500 streaming=1
+[1;32muart:~$ [madxl stream status
+ADXL_STREAM triggers=7479 frames=7479 complete=7479 partial=0 stale=0 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=119 acq_mean_us=120 acq_max_us=136 period_us=500 streaming=1
+[1;32muart:~$ [madxl stream status
+ADXL_STREAM triggers=8919 frames=8919 complete=8919 partial=0 stale=0 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=119 acq_mean_us=120 acq_max_us=136 period_us=500 streaming=1
+[1;32muart:~$ [madxl stream status
+ADXL_STREAM triggers=10000 frames=10000 complete=10000 partial=0 stale=0 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=119 acq_mean_us=120 acq_max_us=136 period_us=500 streaming=0
+[1;32muart:~$ [madxl stream stop
+ADXL_CMD app-enable response=OK
+ADXL_STREAM_STOPPED triggers=10000 frames=10000 complete=10000 partial=0 stale=0 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=119 acq_mean_us=120 acq_max_us=136 period_us=500 streaming=0
+[1;32muart:~$ [m[Os::Console] EVENT: (268636161) (0:35,315050) ACTIVITY_LO: (Adxl355Te0715.app) AcquisitionStateChanged : ADXL355 synchronized acquisition enabled: 0
+[Os::Console] EVENT: (268443649) (0:35,315100) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10031002 dispatched to port 0
+[Os::Console] EVENT: (268443650) (0:35,315150) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10031002 completed
+adxl stream start 4000 20000
+ADXL_CMD app-enable response=OK
+ADXL_STREAM_STARTED rate_hz=4000.000 period_us=250 frames=20000 print_every=0
+[1;32muart:~$ [m[Os::Console] EVENT: (268636161) (0:35,525150) ACTIVITY_LO: (Adxl355Te0715.app) AcquisitionStateChanged : ADXL355 synchronized acquisition enabled: 1
+[Os::Console] EVENT: (268443649) (0:35,525200) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10031002 dispatched to port 0
+[Os::Console] EVENT: (268443650) (0:35,525250) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10031002 completed
+adxl stream status
+ADXL_STREAM triggers=838 frames=838 complete=838 partial=0 stale=0 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=119 acq_mean_us=120 acq_max_us=136 period_us=250 streaming=1
+[1;32muart:~$ [mTLM sensor.LastStatus = STALE_DATA (13) (35.900150)
+[Os::Console] EVENT: (268632066) (0:35,900200) WARNING_HI: (Adxl355Te0715.sensor) OperationFailed : ADXL355 operation READ_SAMPLE (3) failed with STALE_DATA (13)
+[Os::Console] EVENT: (268636164) (0:35,900250) WARNING_HI: (Adxl355Te0715.app) FrameIncomplete : ADXL355 frame 17998 incomplete; valid mask 0x0
+[Os::Console] EVENT: (268636165) (0:35,900450) ACTIVITY_HI: (Adxl355Te0715.app) FrameRecovered : ADXL355 frame 17999 restored all sensors
+TLM sensor.LastStatus = OK (0) (35.900450)
+adxl stream status
+ADXL_STREAM triggers=3478 frames=3478 complete=3477 partial=1 stale=1 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=119 acq_mean_us=120 acq_max_us=263 period_us=250 streaming=1
+[1;32muart:~$ [madxl stream status
+ADXL_STREAM triggers=6358 frames=6358 complete=6357 partial=1 stale=1 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=119 acq_mean_us=120 acq_max_us=263 period_us=250 streaming=1
+[1;32muart:~$ [mTLM sensor.LastStatus = STALE_DATA (13) (37.130900)
+TLM sensor.LastStatus = OK (0) (37.131200)
+[Os::Console] EVENT: (268632066) (0:37,130900) WARNING_HI: (Adxl355Te0715.sensor) OperationFailed : ADXL355 operation READ_SAMPLE (3) failed with STALE_DATA (13)
+[Os::Console] EVENT: (268636164) (0:37,131000) WARNING_HI: (Adxl355Te0715.app) FrameIncomplete : ADXL355 frame 22921 incomplete; valid mask 0x0
+[Os::Console] EVENT: (268636165) (0:37,131200) ACTIVITY_HI: (Adxl355Te0715.app) FrameRecovered : ADXL355 frame 22922 restored all sensors
+TLM sensor.LastStatus = STALE_DATA (13) (37.493150)
+[Os::Console] EVENT: (268632066) (0:37,493150) WARNING_HI: (Adxl355Te0715.sensor) OperationFailed : ADXL355 operation READ_SAMPLE (3) failed with STALE_DATA (13)
+[Os::Console] EVENT: (268636164) (0:37,493250) WARNING_HI: (Adxl355Te0715.app) FrameIncomplete : ADXL355 frame 24370 incomplete; valid mask 0x0
+[Os::Console] EVENT: (268636165) (0:37,493450) ACTIVITY_HI: (Adxl355Te0715.app) FrameRecovered : ADXL355 frame 24371 restored all sensors
+TLM sensor.LastStatus = OK (0) (37.493450)
+TLM sensor.LastStatus = STALE_DATA (13) (37.565650)
+[Os::Console] EVENT: (268632066) (0:37,565650) WARNING_HI: (Adxl355Te0715.sensor) OperationFailed : ADXL355 operation READ_SAMPLE (3) failed with STALE_DATA (13)
+[Os::Console] EVENT: (268636164) (0:37,565750) WARNING_HI: (Adxl355Te0715.app) FrameIncomplete : ADXL355 frame 24660 incomplete; valid mask 0x0
+[Os::Console] EVENT: (268636165) (0:37,565950) ACTIVITY_HI: (Adxl355Te0715.app) FrameRecovered : ADXL355 frame 24661 restored all sensors
+TLM sensor.LastStatus = OK (0) (37.565950)
+adxl stream status
+ADXL_STREAM triggers=9198 frames=9198 complete=9194 partial=4 stale=4 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=119 acq_mean_us=120 acq_max_us=263 period_us=250 streaming=1
+[1;32muart:~$ [mTLM sensor.LastStatus = STALE_DATA (13) (37.837150)
+TLM sensor.LastStatus = OK (0) (37.837450)
+[Os::Console] EVENT: (268632066) (0:37,837200) WARNING_HI: (Adxl355Te0715.sensor) OperationFailed : ADXL355 operation READ_SAMPLE (3) failed with STALE_DATA (13)
+[Os::Console] EVENT: (268636164) (0:37,837250) WARNING_HI: (Adxl355Te0715.app) FrameIncomplete : ADXL355 frame 25746 incomplete; valid mask 0x0
+[Os::Console] EVENT: (268636165) (0:37,837450) ACTIVITY_HI: (Adxl355Te0715.app) FrameRecovered : ADXL355 frame 25747 restored all sensors
+TLM sensor.LastStatus = STALE_DATA (13) (38.145150)
+[Os::Console] EVENT: (268632066) (0:38,145150) WARNING_HI: (Adxl355Te0715.sensor) OperationFailed : ADXL355 operation READ_SAMPLE (3) failed with STALE_DATA (13)
+[Os::Console] EVENT: (268636164) (0:38,145250) WARNING_HI: (Adxl355Te0715.app) FrameIncomplete : ADXL355 frame 26978 incomplete; valid mask 0x0
+[Os::Console] EVENT: (268636165) (0:38,145450) ACTIVITY_HI: (Adxl355Te0715.app) FrameRecovered : ADXL355 frame 26979 restored all sensors
+TLM sensor.LastStatus = OK (0) (38.145450)
+adxl stream status
+ADXL_STREAM triggers=11878 frames=11878 complete=11872 partial=6 stale=6 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=119 acq_mean_us=120 acq_max_us=263 period_us=250 streaming=1
+[1;32muart:~$ [mTLM sensor.LastStatus = STALE_DATA (13) (38.507150)
+TLM sensor.LastStatus = OK (0) (38.507450)
+[Os::Console] EVENT: (268632066) (0:38,507200) WARNING_HI: (Adxl355Te0715.sensor) OperationFailed : ADXL355 operation READ_SAMPLE (3) failed with STALE_DATA (13)
+[Os::Console] EVENT: (268636164) (0:38,507250) WARNING_HI: (Adxl355Te0715.app) FrameIncomplete : ADXL355 frame 28426 incomplete; valid mask 0x0
+[Os::Console] EVENT: (268636165) (0:38,507450) ACTIVITY_HI: (Adxl355Te0715.app) FrameRecovered : ADXL355 frame 28427 restored all sensors
+TLM sensor.LastStatus = STALE_DATA (13) (39.105150)
+[Os::Console] EVENT: (268632066) (0:39,105150) WARNING_HI: (Adxl355Te0715.sensor) OperationFailed : ADXL355 operation READ_SAMPLE (3) failed with STALE_DATA (13)
+[Os::Console] EVENT: (268636164) (0:39,105250) WARNING_HI: (Adxl355Te0715.app) FrameIncomplete : ADXL355 frame 30818 incomplete; valid mask 0x0
+[Os::Console] EVENT: (268636165) (0:39,105450) ACTIVITY_HI: (Adxl355Te0715.app) FrameRecovered : ADXL355 frame 30819 restored all sensors
+TLM sensor.LastStatus = OK (0) (39.105450)
+adxl stream status
+ADXL_STREAM triggers=14718 frames=14718 complete=14710 partial=8 stale=8 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=119 acq_mean_us=120 acq_max_us=264 period_us=250 streaming=1
+[1;32muart:~$ [mTLM sensor.LastStatus = STALE_DATA (13) (39.666400)
+[Os::Console] EVENT: (268632066) (0:39,666400) WARNING_HI: (Adxl355Te0715.sensor) OperationFailed : ADXL355 operation READ_SAMPLE (3) failed with STALE_DATA (13)
+[Os::Console] EVENT: (268636164) (0:39,666500) WARNING_HI: (Adxl355Te0715.app) FrameIncomplete : ADXL355 frame 33063 incomplete; valid mask 0x0
+[Os::Console] EVENT: (268636165) (0:39,666700) ACTIVITY_HI: (Adxl355Te0715.app) FrameRecovered : ADXL355 frame 33064 restored all sensors
+TLM sensor.LastStatus = OK (0) (39.666700)
+adxl stream status
+ADXL_STREAM triggers=17558 frames=17558 complete=17549 partial=9 stale=9 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=119 acq_mean_us=120 acq_max_us=264 period_us=250 streaming=1
+[1;32muart:~$ [madxl stream status
+ADXL_STREAM triggers=20000 frames=20000 complete=19991 partial=9 stale=9 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=119 acq_mean_us=120 acq_max_us=264 period_us=250 streaming=0
+[1;32muart:~$ [madxl stream stop
+ADXL_CMD app-enable response=OK
+ADXL_STREAM_STOPPED triggers=20000 frames=20000 complete=19991 partial=9 stale=9 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=119 acq_mean_us=120 acq_max_us=264 period_us=250 streaming=0
+[1;32muart:~$ [m[Os::Console] EVENT: (268636161) (0:40,795100) ACTIVITY_LO: (Adxl355Te0715.app) AcquisitionStateChanged : ADXL355 synchronized acquisition enabled: 0
+[Os::Console] EVENT: (268443649) (0:40,795150) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10031002 dispatched to port 0
+[Os::Console] EVENT: (268443650) (0:40,795200) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10031002 completed
+adxl init 2 125 0
+ADXL_INIT status=OK ms=1 odr_hz=125.000
+[1;32muart:~$ [m[Os::Console] EVENT: (268632064) (0:41,6600) ACTIVITY_HI: (Adxl355Te0715.sensor) InitializationComplete : ADXL355 initialized; revision 0x1
+TLM sensor.LastStatus = OK (0) (41.006650)
+TLM sensor.Initialized = 1 (41.006650)
+TLM sensor.Measuring = 1 (41.006700)
+TLM sensor.SelfTest = 0 (41.006700)

@@ -1,0 +1,107 @@
+
+uart:~$ 
+## disable IRQs
+devmem 0xe000700c 32 0x7f
+Mapped 0xe000700c to 0x7b200c
+
+Using data width 32
+Writing value 0x7f
+uart:~$ 
+## reset SPI1 (CPU_1x and ref)
+devmem 0xf800021c 32 0xa
+Mapped 0xf800021c to 0x7b121c
+
+Using data width 32
+Writing value 0xa
+uart:~$ 
+## release reset
+devmem 0xf800021c 32 0x0
+Mapped 0xf800021c to 0x7b021c
+
+Using data width 32
+Writing value 0x0
+uart:~$ 
+## CONF after reset
+devmem 0xe0007000 32
+Mapped 0xe0007000 to 0x7af000
+
+Using data width 32
+Read value 0x20000
+uart:~$ 
+## ISR after reset
+devmem 0xe0007004 32
+Mapped 0xe0007004 to 0x7ae004
+
+Using data width 32
+Read value 0x4
+uart:~$ 
+## CONF master, /128, manual CS, none selected
+devmem 0xe0007000 32 0x7c31
+Mapped 0xe0007000 to 0x7ad000
+
+Using data width 32
+Writing value 0x7c31
+uart:~$ 
+## EN=1
+devmem 0xe0007014 32 0x1
+Mapped 0xe0007014 to 0x7ac014
+
+Using data width 32
+Writing value 0x1
+uart:~$ 
+## ISR enabled, FIFO empty
+devmem 0xe0007004 32
+Mapped 0xe0007004 to 0x7ab004
+
+Using data width 32
+Read value 0x4
+uart:~$ 
+## TX one byte
+devmem 0xe000701c 32 0x01
+Mapped 0xe000701c to 0x7aa01c
+
+Using data width 32
+Writing value 0x1
+uart:~$ 
+## ISR after TX
+devmem 0xe0007004 32
+Mapped 0xe0007004 to 0x7a9004
+
+Using data width 32
+Read value 0x14
+uart:~$ 
+## ISR again
+devmem 0xe0007004 32
+Mapped 0xe0007004 to 0x7a8004
+
+Using data width 32
+Read value 0x14
+uart:~$ 
+## select SS0
+devmem 0xe0007000 32 0x7831
+Mapped 0xe0007000 to 0x7a7000
+
+Using data width 32
+Writing value 0x7831
+uart:~$ 
+## TX one byte
+devmem 0xe000701c 32 0x01
+Mapped 0xe000701c to 0x7a601c
+
+Using data width 32
+Writing value 0x1
+uart:~$ 
+## ISR after TX with SS0
+devmem 0xe0007004 32
+Mapped 0xe0007004 to 0x7a5004
+
+Using data width 32
+Read value 0x14
+uart:~$ 
+## RXD
+devmem 0xe0007020 32
+Mapped 0xe0007020 to 0x7a4020
+
+Using data width 32
+Read value 0xff
+uart:~$ 

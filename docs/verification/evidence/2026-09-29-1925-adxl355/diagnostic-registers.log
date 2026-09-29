@@ -1,0 +1,269 @@
+
+uart:~$ 
+==== before any transfer
+## SLCR APER_CLK_CTRL
+devmem 0xf800012c 32
+Mapped 0xf800012c to 0x7fa12c
+
+Using data width 32
+Read value 0x1dfc44d
+uart:~$ ## SLCR SPI_CLK_CTRL
+devmem 0xf8000158 32
+Mapped 0xf8000158 to 0x7f9158
+
+Using data width 32
+Read value 0x702
+uart:~$ ## SLCR SPI_RST_CTRL
+devmem 0xf800021c 32
+Mapped 0xf800021c to 0x7f821c
+
+Using data width 32
+Read value 0x0
+uart:~$ ## SLCR IO_PLL_CTRL
+devmem 0xf8000108 32
+Mapped 0xf8000108 to 0x7f7108
+
+Using data width 32
+Read value 0x1e008
+uart:~$ ## SLCR CLK_621_TRUE
+devmem 0xf80001c4 32
+Mapped 0xf80001c4 to 0x7f61c4
+
+Using data width 32
+Read value 0x1
+uart:~$ ## MIO_PIN_10
+devmem 0xf8000728 32
+Mapped 0xf8000728 to 0x7f5728
+
+Using data width 32
+Read value 0x16a0
+uart:~$ ## MIO_PIN_11
+devmem 0xf800072c 32
+Mapped 0xf800072c to 0x7f472c
+
+Using data width 32
+Read value 0x16a0
+uart:~$ ## MIO_PIN_12
+devmem 0xf8000730 32
+Mapped 0xf8000730 to 0x7f3730
+
+Using data width 32
+Read value 0x16a0
+uart:~$ ## MIO_PIN_13
+devmem 0xf8000734 32
+Mapped 0xf8000734 to 0x7f2734
+
+Using data width 32
+Read value 0x1600
+uart:~$ ## SPI1 CONF
+devmem 0xe0007000 32
+Mapped 0xe0007000 to 0x7f1000
+
+Using data width 32
+Read value 0x7d01
+uart:~$ ## SPI1 ISR
+devmem 0xe0007004 32
+Mapped 0xe0007004 to 0x7f0004
+
+Using data width 32
+Read value 0x4
+uart:~$ ## SPI1 IMR
+devmem 0xe0007010 32
+Mapped 0xe0007010 to 0x7ef010
+
+Using data width 32
+Read value 0x0
+uart:~$ ## SPI1 EN
+devmem 0xe0007014 32
+Mapped 0xe0007014 to 0x7ee014
+
+Using data width 32
+Read value 0x1
+uart:~$ ## SPI1 DELAY
+devmem 0xe0007018 32
+Mapped 0xe0007018 to 0x7ed018
+
+Using data width 32
+Read value 0x0
+uart:~$ ## SPI1 TX_THRES
+devmem 0xe0007028 32
+Mapped 0xe0007028 to 0x7ec028
+
+Using data width 32
+Read value 0x1
+uart:~$ ## SPI1 RX_THRES
+devmem 0xe000702c 32
+Mapped 0xe000702c to 0x7eb02c
+
+Using data width 32
+Read value 0x1
+uart:~$ ## SPI1 MOD_ID
+devmem 0xe00070fc 32
+Mapped 0xe00070fc to 0x7ea0fc
+
+Using data width 32
+Read value 0x90106
+uart:~$ ## GICD_ISENABLER2
+devmem 0xf8f01108 32
+Mapped 0xf8f01108 to 0x7e9108
+
+Using data width 32
+Read value 0x20000
+uart:~$ ## GICD_ISPENDR2
+devmem 0xf8f01208 32
+Mapped 0xf8f01208 to 0x7e8208
+
+Using data width 32
+Read value 0x0
+uart:~$ ## GICD_ISACTIVER2
+devmem 0xf8f01308 32
+Mapped 0xf8f01308 to 0x7e7308
+
+Using data width 32
+Read value 0x0
+uart:~$ ## GICD_ICFGR5
+devmem 0xf8f01c14 32
+Mapped 0xf8f01c14 to 0x7e6c14
+
+Using data width 32
+Read value 0x55555555
+uart:~$ ## GICD_ITARGETSR20
+devmem 0xf8f01850 32
+Mapped 0xf8f01850 to 0x7e5850
+
+Using data width 32
+Read value 0x1010101
+uart:~$ ## GICD_IPRIORITYR20
+devmem 0xf8f01450 32
+Mapped 0xf8f01450 to 0x7e4450
+
+Using data width 32
+Read value 0xa000
+uart:~$ ## GPIO DIRM_0
+devmem 0xe000a204 32
+Mapped 0xe000a204 to 0x7e3204
+
+Using data width 32
+Read value 0x2000
+uart:~$ ## GPIO OEN_0
+devmem 0xe000a208 32
+Mapped 0xe000a208 to 0x7e2208
+
+Using data width 32
+Read value 0x2000
+uart:~$ ## GPIO DATA_0_RO
+devmem 0xe000a060 32
+Mapped 0xe000a060 to 0x7e1060
+
+Using data width 32
+Read value 0x2201
+uart:~$ 
+==== adxl id
+adxl id
+[00:00:40.313,000] <err> spi_cadence: Timeout waiting for transfer complete
+ADXL_ID devid_ad=0x00 devid_mst=0x00 partid=0x00 revid=0x00 spi=SPI_OTHER_ERR result=FAIL
+uart:~$ 
+==== after the failed transfer
+## SPI1 CONF
+devmem 0xe0007000 32
+Mapped 0xe0007000 to 0x7e0000
+
+Using data width 32
+Read value 0x7c31
+uart:~$ ## SPI1 ISR
+devmem 0xe0007004 32
+Mapped 0xe0007004 to 0x7df004
+
+Using data width 32
+Read value 0x0
+uart:~$ ## SPI1 IMR
+devmem 0xe0007010 32
+Mapped 0xe0007010 to 0x7de010
+
+Using data width 32
+Read value 0x45
+uart:~$ ## SPI1 EN
+devmem 0xe0007014 32
+Mapped 0xe0007014 to 0x7dd014
+
+Using data width 32
+Read value 0x1
+uart:~$ ## SPI1 DELAY
+devmem 0xe0007018 32
+Mapped 0xe0007018 to 0x7dc018
+
+Using data width 32
+Read value 0x0
+uart:~$ ## SPI1 TX_THRES
+devmem 0xe0007028 32
+Mapped 0xe0007028 to 0x7db028
+
+Using data width 32
+Read value 0x1
+uart:~$ ## SPI1 RX_THRES
+devmem 0xe000702c 32
+Mapped 0xe000702c to 0x7da02c
+
+Using data width 32
+Read value 0x1
+uart:~$ ## SPI1 MOD_ID
+devmem 0xe00070fc 32
+Mapped 0xe00070fc to 0x7d90fc
+
+Using data width 32
+Read value 0x90106
+uart:~$ ## GICD_ISENABLER2
+devmem 0xf8f01108 32
+Mapped 0xf8f01108 to 0x7d8108
+
+Using data width 32
+Read value 0x20000
+uart:~$ ## GICD_ISPENDR2
+devmem 0xf8f01208 32
+Mapped 0xf8f01208 to 0x7d7208
+
+Using data width 32
+Read value 0x0
+uart:~$ ## GICD_ISACTIVER2
+devmem 0xf8f01308 32
+Mapped 0xf8f01308 to 0x7d6308
+
+Using data width 32
+Read value 0x0
+uart:~$ ## GICD_ICFGR5
+devmem 0xf8f01c14 32
+Mapped 0xf8f01c14 to 0x7d5c14
+
+Using data width 32
+Read value 0x55555555
+uart:~$ ## GICD_ITARGETSR20
+devmem 0xf8f01850 32
+Mapped 0xf8f01850 to 0x7d4850
+
+Using data width 32
+Read value 0x1010101
+uart:~$ ## GICD_IPRIORITYR20
+devmem 0xf8f01450 32
+Mapped 0xf8f01450 to 0x7d3450
+
+Using data width 32
+Read value 0xa000
+uart:~$ ## GPIO DIRM_0
+devmem 0xe000a204 32
+Mapped 0xe000a204 to 0x7d2204
+
+Using data width 32
+Read value 0x2000
+uart:~$ ## GPIO OEN_0
+devmem 0xe000a208 32
+Mapped 0xe000a208 to 0x7d1208
+
+Using data width 32
+Read value 0x2000
+uart:~$ ## GPIO DATA_0_RO
+devmem 0xe000a060 32
+Mapped 0xe000a060 to 0x7d0060
+
+Using data width 32
+Read value 0x2201
+uart:~$ 

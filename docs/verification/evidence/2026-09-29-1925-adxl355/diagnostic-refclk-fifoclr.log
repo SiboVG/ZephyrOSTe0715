@@ -1,0 +1,154 @@
+
+uart:~$ 
+## A: init value with REF_CLK (bit 8) set, then the transfer configuration
+devmem 0xe000700c 32 0x7f
+Mapped 0xe000700c to 0x7a300c
+
+Using data width 32
+Writing value 0x7f
+uart:~$ devmem 0xf800021c 32 0xa
+Mapped 0xf800021c to 0x7a221c
+
+Using data width 32
+Writing value 0xa
+uart:~$ devmem 0xf800021c 32 0x0
+Mapped 0xf800021c to 0x7a121c
+
+Using data width 32
+Writing value 0x0
+uart:~$ devmem 0xe0007000 32 0x7d01
+Mapped 0xe0007000 to 0x7a0000
+
+Using data width 32
+Writing value 0x7d01
+uart:~$ devmem 0xe0007014 32 0x1
+Mapped 0xe0007014 to 0x79f014
+
+Using data width 32
+Writing value 0x1
+uart:~$ devmem 0xe0007014 32 0x0
+Mapped 0xe0007014 to 0x79e014
+
+Using data width 32
+Writing value 0x0
+uart:~$ devmem 0xe0007000 32 0x7c31
+Mapped 0xe0007000 to 0x79d000
+
+Using data width 32
+Writing value 0x7c31
+uart:~$ devmem 0xe0007014 32 0x1
+Mapped 0xe0007014 to 0x79c014
+
+Using data width 32
+Writing value 0x1
+uart:~$ 
+## TX one byte, then ISR (0x14 = shifted and received)
+devmem 0xe000701c 32 0x01
+Mapped 0xe000701c to 0x79b01c
+
+Using data width 32
+Writing value 0x1
+uart:~$ devmem 0xe0007004 32
+Mapped 0xe0007004 to 0x79a004
+
+Using data width 32
+Read value 0x14
+uart:~$ devmem 0xe0007000 32
+Mapped 0xe0007000 to 0x799000
+
+Using data width 32
+Read value 0x7c31
+uart:~$ 
+## B: transfer configuration with bits 19/20 (FIFO clear) written
+devmem 0xe000700c 32 0x7f
+Mapped 0xe000700c to 0x79800c
+
+Using data width 32
+Writing value 0x7f
+uart:~$ devmem 0xf800021c 32 0xa
+Mapped 0xf800021c to 0x79721c
+
+Using data width 32
+Writing value 0xa
+uart:~$ devmem 0xf800021c 32 0x0
+Mapped 0xf800021c to 0x79621c
+
+Using data width 32
+Writing value 0x0
+uart:~$ devmem 0xe0007000 32 0x7c31
+Mapped 0xe0007000 to 0x795000
+
+Using data width 32
+Writing value 0x7c31
+uart:~$ devmem 0xe0007000 32 0x187c31
+Mapped 0xe0007000 to 0x794000
+
+Using data width 32
+Writing value 0x187c31
+uart:~$ devmem 0xe0007014 32 0x1
+Mapped 0xe0007014 to 0x793014
+
+Using data width 32
+Writing value 0x1
+uart:~$ 
+## TX one byte, then ISR (0x14 = shifted and received)
+devmem 0xe000701c 32 0x01
+Mapped 0xe000701c to 0x79201c
+
+Using data width 32
+Writing value 0x1
+uart:~$ devmem 0xe0007004 32
+Mapped 0xe0007004 to 0x791004
+
+Using data width 32
+Read value 0x14
+uart:~$ devmem 0xe0007000 32
+Mapped 0xe0007000 to 0x790000
+
+Using data width 32
+Read value 0x7c31
+uart:~$ 
+## C: control, transfer configuration only
+devmem 0xe000700c 32 0x7f
+Mapped 0xe000700c to 0x78f00c
+
+Using data width 32
+Writing value 0x7f
+uart:~$ devmem 0xf800021c 32 0xa
+Mapped 0xf800021c to 0x78e21c
+
+Using data width 32
+Writing value 0xa
+uart:~$ devmem 0xf800021c 32 0x0
+Mapped 0xf800021c to 0x78d21c
+
+Using data width 32
+Writing value 0x0
+uart:~$ devmem 0xe0007000 32 0x7c31
+Mapped 0xe0007000 to 0x78c000
+
+Using data width 32
+Writing value 0x7c31
+uart:~$ devmem 0xe0007014 32 0x1
+Mapped 0xe0007014 to 0x78b014
+
+Using data width 32
+Writing value 0x1
+uart:~$ 
+## TX one byte, then ISR (0x14 = shifted and received)
+devmem 0xe000701c 32 0x01
+Mapped 0xe000701c to 0x78a01c
+
+Using data width 32
+Writing value 0x1
+uart:~$ devmem 0xe0007004 32
+Mapped 0xe0007004 to 0x789004
+
+Using data width 32
+Read value 0x14
+uart:~$ devmem 0xe0007000 32
+Mapped 0xe0007000 to 0x788000
+
+Using data width 32
+Read value 0x7c31
+uart:~$ 

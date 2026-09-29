@@ -1,0 +1,9 @@
+image loaded into RAM with U-Boot loadx (uboot-load-3-native-ss0.log), crc32 checked on the board
+zephyr.bin sha256: a247773db19b42ad5cdd6d53f69cf1342e1cec022bcbdc36a2edb491e6e924ed
+zephyr.elf sha256: d10aad3144c4d1f991c199f829c902e1b5ef9b459dc531a661804ec25520df0c
+built: Sep 29 19:44:34 2026, fprime-util build on macOS 27 (arm64), Zephyr SDK 1.0.1
+bench: 227bd3c16936 + bench-uncommitted.diff (SPI1 native SS0 chip select, Zephyr patch 0001 MMIO backport, cs-gpios patch dropped)
+fprime-adxl355: a0d2a5259849; dirty only by the unrelated uncommitted Sandbox/ and macos-docker.sh deletions
+zephyr: 70b56a29cd74 + west patches (app/zephyr/patches.yml)
+loaded before this run: uboot-load-1-mmu-fault.log (driver without the MMIO fix: data abort), uboot-load-1b-gpio-cs.log (MMIO fix, GPIO chip select: every transfer timed out, as the diagnostic image shows in diagnostic-registers.log), uboot-load-2-diagnostic.log (DEVMEM_SHELL build, register diagnostics), uboot-load-3-native-ss0.log (this image)
+wiring: EVAL-ADXL355Z on Pmod J1 (P2-2 CS pin 7, P2-6 MOSI pin 8, P2-5 MISO pin 9, P2-4 SCLK pin 10, P1-1/P1-3 3.3 V pin 6, P1-5 GND pin 12); the first native-SS0 attempt read all ones, the operator then checked the set-up (what was found: see the as-run record) and the identity read passed without reloading the image

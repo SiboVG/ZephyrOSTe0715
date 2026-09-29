@@ -1,0 +1,35 @@
+
+uart:~$ adxl spi 9000000 0
+ADXL_SPI requested_hz=9000000 sclk_hz=8928571 mode=0
+uart:~$ adxl init 2 4000 0
+ADXL_INIT status=OK ms=1 odr_hz=4000.000
+uart:~$ [Os::Console] EVENT: (268632064) (0:80,696300) ACTIVITY_HI: (Adxl355Te0715.sensor) InitializationComplete : ADXL355 initialized; revision 0x1
+TLM sensor.LastStatus = OK (0) (80.696350)
+TLM sensor.Initialized = 1 (80.696400)
+TLM sensor.Measuring = 1 (80.696400)
+TLM sensor.SelfTest = 0 (80.696400)
+adxl timing 200
+ADXL_TIMING ok_n=200 ok_min_us=26 ok_mean_us=26 ok_max_us=40 stale_n=0 stale_max_us=0 failed_n=0 sclk_hz=8928571
+uart:~$ adxl stream start 4000 20000
+ADXL_CMD app-enable response=OK
+ADXL_STREAM_STARTED rate_hz=4000.000 period_us=250 frames=20000 print_every=0
+uart:~$ [Os::Console] EVENT: (268636161) (0:85,115150) ACTIVITY_LO: (Adxl355Te0715.app) AcquisitionStateChanged : ADXL355 synchronized acquisition enabled: 1
+[Os::Console] EVENT: (268443649) (0:85,115200) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10031002 dispatched to port 0
+[Os::Console] EVENT: (268443650) (0:85,115250) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10031002 completed
+adxl stream status
+ADXL_STREAM triggers=20000 frames=20000 complete=20000 partial=0 stale=0 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=31 acq_mean_us=32 acq_max_us=51 period_us=250 streaming=0
+uart:~$ adxl stream stop
+ADXL_CMD app-enable response=OK
+ADXL_STREAM_STOPPED triggers=20000 frames=20000 complete=20000 partial=0 stale=0 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=31 acq_mean_us=32 acq_max_us=51 period_us=250 streaming=0
+uart:~$ [Os::Console] EVENT: (268636161) (0:93,335100) ACTIVITY_LO: (Adxl355Te0715.app) AcquisitionStateChanged : ADXL355 synchronized acquisition enabled: 0
+[Os::Console] EVENT: (268443649) (0:93,335150) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10031002 dispatched to port 0
+[Os::Console] EVENT: (268443650) (0:93,335200) COMMAND: (Adxl355Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10031002 completed
+adxl spi 1200000 0
+ADXL_SPI requested_hz=1200000 sclk_hz=1116071 mode=0
+uart:~$ adxl init 2 125 0
+ADXL_INIT status=OK ms=1 odr_hz=125.000
+uart:~$ [Os::Console] EVENT: (268632064) (0:95,756600) ACTIVITY_HI: (Adxl355Te0715.sensor) InitializationComplete : ADXL355 initialized; revision 0x1
+TLM sensor.LastStatus = OK (0) (95.756650)
+TLM sensor.Initialized = 1 (95.756650)
+TLM sensor.Measuring = 1 (95.756700)
+TLM sensor.SelfTest = 0 (95.756700)

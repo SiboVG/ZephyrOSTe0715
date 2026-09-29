@@ -1,0 +1,134 @@
+
+uart:~$ 
+## D: MIO13 as GPIO (SS0 input from the PL side)
+devmem 0xf8000734 32 0x1600
+Mapped 0xf8000734 to 0x787734
+
+Using data width 32
+Writing value 0x1600
+uart:~$ devmem 0xe000700c 32 0x7f
+Mapped 0xe000700c to 0x78600c
+
+Using data width 32
+Writing value 0x7f
+uart:~$ devmem 0xf800021c 32 0xa
+Mapped 0xf800021c to 0x78521c
+
+Using data width 32
+Writing value 0xa
+uart:~$ devmem 0xf800021c 32 0x0
+Mapped 0xf800021c to 0x78421c
+
+Using data width 32
+Writing value 0x0
+uart:~$ devmem 0xe0007000 32 0x7c31
+Mapped 0xe0007000 to 0x783000
+
+Using data width 32
+Writing value 0x7c31
+uart:~$ devmem 0xe0007014 32 0x1
+Mapped 0xe0007014 to 0x782014
+
+Using data width 32
+Writing value 0x1
+uart:~$ 
+## D: TX one byte, then ISR (0x14 = shifted and received), CONF, EN
+devmem 0xe000701c 32 0x01
+Mapped 0xe000701c to 0x78101c
+
+Using data width 32
+Writing value 0x1
+uart:~$ devmem 0xe0007004 32
+Mapped 0xe0007004 to 0x780004
+
+Using data width 32
+Read value 0x0
+uart:~$ devmem 0xe0007000 32
+Mapped 0xe0007000 to 0x77f000
+
+Using data width 32
+Read value 0x7c31
+uart:~$ devmem 0xe0007014 32
+Mapped 0xe0007014 to 0x77e014
+
+Using data width 32
+Read value 0x1
+uart:~$ 
+## E: MIO13 back to SPI1 SS0, controller left as D ended
+devmem 0xf8000734 32 0x16a0
+Mapped 0xf8000734 to 0x77d734
+
+Using data width 32
+Writing value 0x16a0
+uart:~$ 
+## E: TX one byte, then ISR (0x14 = shifted and received), CONF, EN
+devmem 0xe000701c 32 0x01
+Mapped 0xe000701c to 0x77c01c
+
+Using data width 32
+Writing value 0x1
+uart:~$ devmem 0xe0007004 32
+Mapped 0xe0007004 to 0x77b004
+
+Using data width 32
+Read value 0x14
+uart:~$ devmem 0xe0007000 32
+Mapped 0xe0007000 to 0x77a000
+
+Using data width 32
+Read value 0x7c31
+uart:~$ devmem 0xe0007014 32
+Mapped 0xe0007014 to 0x779014
+
+Using data width 32
+Read value 0x1
+uart:~$ 
+## F: after a reset, MIO13 still SS0
+devmem 0xe000700c 32 0x7f
+Mapped 0xe000700c to 0x77800c
+
+Using data width 32
+Writing value 0x7f
+uart:~$ devmem 0xf800021c 32 0xa
+Mapped 0xf800021c to 0x77721c
+
+Using data width 32
+Writing value 0xa
+uart:~$ devmem 0xf800021c 32 0x0
+Mapped 0xf800021c to 0x77621c
+
+Using data width 32
+Writing value 0x0
+uart:~$ devmem 0xe0007000 32 0x7c31
+Mapped 0xe0007000 to 0x775000
+
+Using data width 32
+Writing value 0x7c31
+uart:~$ devmem 0xe0007014 32 0x1
+Mapped 0xe0007014 to 0x774014
+
+Using data width 32
+Writing value 0x1
+uart:~$ 
+## F: TX one byte, then ISR (0x14 = shifted and received), CONF, EN
+devmem 0xe000701c 32 0x01
+Mapped 0xe000701c to 0x77301c
+
+Using data width 32
+Writing value 0x1
+uart:~$ devmem 0xe0007004 32
+Mapped 0xe0007004 to 0x772004
+
+Using data width 32
+Read value 0x14
+uart:~$ devmem 0xe0007000 32
+Mapped 0xe0007000 to 0x771000
+
+Using data width 32
+Read value 0x7c31
+uart:~$ devmem 0xe0007014 32
+Mapped 0xe0007014 to 0x770014
+
+Using data width 32
+Read value 0x1
+uart:~$ 

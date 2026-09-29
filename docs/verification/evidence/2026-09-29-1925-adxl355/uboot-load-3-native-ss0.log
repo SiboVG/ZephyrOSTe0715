@@ -1,0 +1,66 @@
+
+[1;32muart:~$ [mkernel reboot colä
+
+U-Boot 2022.01 (Apr 04 2022 - 07:53:54 +0000)
+
+CPU:   Zynq 7z030
+Silicon: v3.1
+DRAM:  ECC disabled 1 GiB
+Flash: 0 Bytes
+NAND:  0 MiB
+MMC:   mmc@e0100000: 0
+Loading Environment from FAT... *** Error - No Valid Environment Area found
+*** Warning - bad env area, using default environment
+
+In:    serial@e0000000
+Out:   serial@e0000000
+Err:   serial@e0000000
+Net:   
+ZYNQ GEM: e000b000, mdio bus e000b000, phyaddr 0, interface rgmii-id
+zynq_gem ethernet@e000b000: Failed to read eth PHY id, err: -2
+eth0: ethernet@e000b000
+Hit any key to stop autoboot:  2  0 
+Zynq> 
+Zynq> loadx 0x0
+## Ready for binary (xmodem) download to 0x00000000 at 115200 bps...
+C
+[host] xmodem send ok: 270916 bytes in 29.4 s
+## Total Size      = 0x00042244 = 270916 Bytes
+## Start Addr      = 0x00000000
+Zynq> crc32 0x0 0x42244
+crc32 for 00000000 ... 00042243 ==> 8b5e6455
+Zynq> 
+[host] crc32 local 0x8b5e6455, board 0x8b5e6455
+icache off
+Zynq> dcache off
+Zynq> go 0x0
+## Starting application at 0x00000000 ...
+*** Booting Zephyr OS build 70b56a29cd74 ***
+[Os::Console] EVENT: (268443648) (0:0,15400) DIAGNOSTIC: (Adxl355Te0715.cmdDisp) OpCodeRegistered : Opcode 0x10031000 registered to port 0 slot 0
+[Os::Console] EVENT: (268443648) (0:0,26350) DIAGNOSTIC: (Adxl355Te0715.cmdDisp) OpCodeRegistered : Opcode 0x10031001 registered to port 0 slot 1
+[Os::Console] EVENT: (268443648) (0:0,39100) DIAGNOSTIC: (Adxl355Te0715.cmdDisp) OpCodeRegistered : Opcode 0x10031002 registered to port 0 slot 2
+[Os::Console] EVENT: (268443648) (0:0,51850) DIAGNOSTIC: (Adxl355Te0715.cmdDisp) OpCodeRegistered : Opcode 0x10031003 registered to port 0 slot 3
+[Os::Console] EVENT: (268443648) (0:0,64650) DIAGNOSTIC: (Adxl355Te0715.cmdDisp) OpCodeRegistered : Opcode 0x10031004 registered to port 0 slot 4
+[Os::Console] EVENT: (268443648) (0:0,77400) DIAGNOSTIC: (Adxl355Te0715.cmdDisp) OpCodeRegistered : Opcode 0x10031005 registered to port 0 slot 5
+[Os::Console] EVENT: (268443648) (0:0,90150) DIAGNOSTIC: (Adxl355Te0715.cmdDisp) OpCodeRegistered : Opcode 0x10002000 registered to port 1 slot 6
+[Os::Console] EVENT: (268443648) (0:0,102900) DIAGNOSTIC: (Adxl355Te0715.cmdDisp) OpCodeRegistered : Opcode 0x10002001 registered to port 1 slot 7
+[Os::Console] EVENT: (268443648) (0:0,115750) DIAGNOSTIC: (Adxl355Te0715.cmdDisp) OpCodeRegistered : Opcode 0x10002002 registered to port 1 slot 8
+[Os::Console] EVENT: (268443648) (0:0,128600) DIAGNOSTIC: (Adxl355Te0715.cmdDisp) OpCodeRegistered : Opcode 0x10002003 registered to port 1 slot 9
+[Os::Console] EVENT: (268443648) (0:0,141450) DIAGNOSTIC: (Adxl355Te0715.cmdDisp) OpCodeRegistered : Opcode 0x10030000 registered to port 2 slot 10
+[Os::Console] EVENT: (268443648) (0:0,154400) DIAGNOSTIC: (Adxl355Te0715.cmdDisp) OpCodeRegistered : Opcode 0x10030001 registered to port 2 slot 11
+[Os::Console] EVENT: (268443648) (0:0,167300) DIAGNOSTIC: (Adxl355Te0715.cmdDisp) OpCodeRegistered : Opcode 0x10030002 registered to port 2 slot 12
+[Os::Console] EVENT: (268443648) (0:0,180250) DIAGNOSTIC: (Adxl355Te0715.cmdDisp) OpCodeRegistered : Opcode 0x10030003 registered to port 2 slot 13
+[Os::Console] EVENT: (268443648) (0:0,193200) DIAGNOSTIC: (Adxl355Te0715.cmdDisp) OpCodeRegistered : Opcode 0x10030004 registered to port 2 slot 14
+[Os::Console] EVENT: (268443648) (0:0,206100) DIAGNOSTIC: (Adxl355Te0715.cmdDisp) OpCodeRegistered : Opcode 0x10030005 registered to port 2 slot 15
+[Os::Console] EVENT: (268443648) (0:0,219050) DIAGNOSTIC: (Adxl355Te0715.cmdDisp) OpCodeRegistered : Opcode 0x10030006 registered to port 2 slot 16
+[Os::Console] EVENT: (268443648) (0:0,232000) DIAGNOSTIC: (Adxl355Te0715.cmdDisp) OpCodeRegistered : Opcode 0x10030007 registered to port 2 slot 17
+[Os::Console] EVENT: (268443648) (0:0,244900) DIAGNOSTIC: (Adxl355Te0715.cmdDisp) OpCodeRegistered : Opcode 0x10030008 registered to port 2 slot 18
+[Os::Console] EVENT: (268443648) (0:0,257850) DIAGNOSTIC: (Adxl355Te0715.cmdDisp) OpCodeRegistered : Opcode 0x10030009 registered to port 2 slot 19
+[Os::Console] EVENT: (268443648) (0:0,270800) DIAGNOSTIC: (Adxl355Te0715.cmdDisp) OpCodeRegistered : Opcode 0x1003000a registered to port 2 slot 20
+[Os::Console] EVENT: (268443648) (0:0,283700) DIAGNOSTIC: (Adxl355Te0715.cmdDisp) OpCodeRegistered : Opcode 0x1003000b registered to port 2 slot 21
+[Os::Console] EVENT: (268443648) (0:0,296650) DIAGNOSTIC: (Adxl355Te0715.cmdDisp) OpCodeRegistered : Opcode 0x1003000c registered to port 2 slot 22
+ADXL355 bench on the TE0715: bench 227bd3c16936-dirty, fprime-adxl355 a0d2a5259849-dirty
+SPI1 on Pmod J1, CS MIO13: requested 1200000 Hz, SCLK 1116071 Hz, mode 0
+[ADXL355_BENCH_READY]
+[m
+[1;32muart:~$ [m

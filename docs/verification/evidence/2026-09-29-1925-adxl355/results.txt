@@ -1,0 +1,24 @@
+INFO  boot      ADXL_INFO bench=227bd3c16936-dirty library=a0d2a5259849-dirty spi_ref_hz=142857142 requested_hz=1200000 sclk_hz=1116071 mode=0 cs=MIO13 odr_code=5 streaming=0
+PASS  TC-17.1   identity over raw SPI (0xAD, 0x1D, 0xED): ADXL_ID devid_ad=0xad devid_mst=0x1d partid=0xed revid=0x01 spi=SPI_OK result=PASS
+PASS  TC-17.2   soak 20000 transfers at SCLK 558035 Hz, mode 0: bad_value=0 spi_errors=0 bad_lead=n/a transfer_us=51/65/90
+FAIL  TC-17.2   soak 20000 transfers at SCLK 1116071 Hz, mode 0: bad_value=None spi_errors=None bad_lead=n/a transfer_us=None/None/None
+PASS  TC-17.2   soak 20000 transfers at SCLK 2232142 Hz, mode 0: bad_value=0 spi_errors=0 bad_lead=n/a transfer_us=18/22/34
+PASS  TC-17.2   soak 20000 transfers at SCLK 4464285 Hz, mode 0: bad_value=0 spi_errors=0 bad_lead=n/a transfer_us=13/15/25
+PASS  TC-17.2   soak 20000 transfers at SCLK 8928571 Hz, mode 0: bad_value=0 spi_errors=0 bad_lead=n/a transfer_us=11/12/22
+PASS  TC-18.1   initialize through the manager port (+/-2 g, 125 Hz, internal clock): ADXL_INIT status=OK ms=8 odr_hz=125.000
+PASS  TC-18.2   temperature plausible (5 to 50 C, uncalibrated): [27.32, 27.21, 27.431]
+PASS  TC-18.3   200 fresh samples; |a| at rest within 0.79..1.21 g: ADXL_READ_DONE ok=200 failures=0 mean_x_g=0.335700 mean_y_g=0.696964 mean_z_g=0.645110 std_x_mg=0.5871 std_y_mg=0.7791 std_z_mg=0.5119 magnitude_g=1.007283 odr_hz=125.000
+INFO  TC-18     noise at 125 Hz ODR: 0.5871/0.7791/0.5119 mg rms
+PASS  TC-18.4   self-test response within data sheet Table 2 (X, Y 0.1..0.6 g; Z 0.5..3.0 g): ADXL_SELFTEST samples=64 dx_g=0.3308 dy_g=0.3233 dz_g=1.3645 x=PASS y=PASS z=PASS cleared=1 result=PASS
+PASS  TC-18.5   STATUS bits 7:5 read 0 and a STATUS read clears DATA_RDY: ADXL_DRDY n=20 ready_first=20 cleared_second=20 reserved_set=0 spi_errors=0 result=PASS
+PASS  TC-18.6   200 timed reads, none failed: ADXL_TIMING ok_n=200 ok_min_us=114 ok_mean_us=114 ok_max_us=126 stale_n=0 stale_max_us=0 failed_n=0 sclk_hz=1116071
+FAIL  TC-18.7   READ_SNAPSHOT command: response OK, acceleration telemetry: ADXL_CMD snapshot response=OK
+PASS  TC-18.8   an invalid range is refused: manager: init-synced <range>
+FAIL  TC-18.9   application REPORT: sensor count 1: ADXL_CMD app-report response=OK
+INFO  TC-18.10  INITIALIZE_SYNCED without an external clock: ADXL_CMD init-synced response=OK
+PASS  TC-18.10  no fresh sample without the external clock (STALE_DATA): ADXL_READ_DONE ok=0 failures=1 mean_x_g=0.000000 mean_y_g=0.000000 mean_z_g=0.000000 std_x_mg=0.0000 std_y_mg=0.0000 std_z_mg=0.0000 magnitude_g=0.000000 odr_hz=1000.000
+FAIL  TC-19.1   ODR 1 kHz, triggered at 500 Hz: 2500 complete frames, no stale or skipped data: ADXL_STREAM_STOPPED triggers=2500 frames=2500 complete=
+FAIL  TC-19.2   ODR 1 kHz, triggered at 2 kHz: about half the frames stale, none implausible: stale share 0.000; ADXL_STREAM_STOPPED triggers=4000 frames=4000 compl
+PASS  TC-19.3   ODR 4 kHz, triggered at 2 kHz: 10000 complete frames: ADXL_STREAM_STOPPED triggers=10000 frames=10000 complete=10000 partial=0 stale=0 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=120 acq_mean_us=121 acq_max_us=136 period_us=500 streaming=0
+FAIL  TC-19.4   ODR 4 kHz, triggered at 4 kHz: acquisition within the 250 us period, no trigger lost: ADXL_STREAM_STOPPED triggers=20000 frames=20000 complete=19994 partial=6 stale=6 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=859 acq_min_us=119 acq_mean_us=132 acq_max_us=26945 period_us=250 streaming=0
+DONE            14 passed, 6 failed

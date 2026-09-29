@@ -1,0 +1,3 @@
+# Evidence is kept byte for byte, so SHA256SUMS still matches after a checkout:
+# no line-ending conversion (core.autocrlf would turn CRLF console logs into LF).
+* -text

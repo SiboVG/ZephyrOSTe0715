@@ -1,0 +1,10 @@
+date: 2026-09-29T20:38:42+02:00
+host: menkalinan.ster.kuleuven.be macOS-27.0-arm64-arm-64bit
+command: app/scripts/sensor_bench.py adxl355 --attach --port /dev/cu.usbserial-25163300AA8C1 --out /Users/sibo/Desktop/CubeSpec/FlightSoftware/verification/benches/zephyr-te0715/docs/verification/evidence/2026-09-29-2034-adxl355
+app: 227bd3c16936-dirty
+fprime-adxl355: a0d2a5259849-dirty
+zephyr: 70b56a29c-dirty
+fprime: 35d4c0e
+fprime-zephyr: 6e2a411
+reference uncertainty: 0.1 %
+soak transfers per point: 20000

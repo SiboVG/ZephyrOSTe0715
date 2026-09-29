@@ -1,0 +1,32 @@
+
+uart:~$ devmem 0xe0007000 32
+Mapped 0xe0007000 to 0x7cf000
+
+Using data width 32
+Read value 0x7c31
+uart:~$ devmem 0xe0007004 32
+Mapped 0xe0007004 to 0x7ce004
+
+Using data width 32
+Read value 0x0
+uart:~$ devmem 0xe0007000 32 0x7831
+Mapped 0xe0007000 to 0x7cd000
+
+Using data width 32
+Writing value 0x7831
+uart:~$ devmem 0xe0007004 32
+Mapped 0xe0007004 to 0x7cc004
+
+Using data width 32
+Read value 0x0
+uart:~$ devmem 0xe0007000 32 0x7c31
+Mapped 0xe0007000 to 0x7cb000
+
+Using data width 32
+Writing value 0x7c31
+uart:~$ devmem 0xe0007004 32
+Mapped 0xe0007004 to 0x7ca004
+
+Using data width 32
+Read value 0x0
+uart:~$ 
