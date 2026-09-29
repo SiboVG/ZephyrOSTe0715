@@ -1,0 +1,24 @@
+=== STBY jumper: VDDIO (pins 1-2), back (2026-09-29T21:14:44+0200)
+
+uart:~$ kernel uptime
+Uptime: 2170445 ms
+uart:~$ adxl id
+ADXL_ID devid_ad=0xad devid_mst=0x1d partid=0xed revid=0x01 spi=SPI_OK result=PASS
+uart:~$ adxl reg 0x2d 1
+ADXL_REG addr=0x2d count=1 bytes=00  spi=SPI_OK
+uart:~$ adxl reg 0x04 1
+ADXL_REG addr=0x04 count=1 bytes=07  spi=SPI_OK
+uart:~$ adxl init 2 125 0
+ADXL_INIT status=OK ms=1 odr_hz=125.000
+uart:~$ [Os::Console] EVENT: (268632064) (0:2173,796600) ACTIVITY_HI: (Adxl355Te0715.sensor) InitializationComplete : ADXL355 initialized; revision 0x1
+TLM sensor.LastStatus = OK (0) (2173.796650)
+TLM sensor.Initialized = 1 (2173.796650)
+TLM sensor.Measuring = 1 (2173.796700)
+TLM sensor.SelfTest = 0 (2173.796700)
+adxl reg 0x2d 1
+ADXL_REG addr=0x2d count=1 bytes=00  spi=SPI_OK
+uart:~$ adxl read 20 0
+ADXL_READ_DONE ok=20 failures=0 mean_x_g=0.510286 mean_y_g=0.469136 mean_z_g=0.734996 std_x_mg=0.4850 std_y_mg=0.3154 std_z_mg=0.3979 magnitude_g=1.010296 odr_hz=125.000
+uart:~$ adxl temp
+ADXL_TEMP status=OK raw=1872 celsius=26.436
+uart:~$ 

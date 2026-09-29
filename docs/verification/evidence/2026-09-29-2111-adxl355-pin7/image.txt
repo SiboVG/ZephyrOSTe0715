@@ -1,0 +1,5 @@
+image: the one loaded for 2026-09-29-2034-adxl355 (see its image.txt), still running: uptime 2170 s at 21:14:44 CEST, boot at about 20:38:34, when that image was loaded
+zephyr.bin sha256: ff1e14e6a141b163362448427649cb99e8cf56f803f3f8d7139a12046115257e
+zephyr.elf sha256: 9deddf7681dc703ab605e78e2fceaa0348503695d1f48ee54959fbf8c42accd6
+procedure: the operator moved the EVAL-ADXL355Z's STBY jumper with the board powered; after each move the same shell commands ran (pin7-*.log): kernel uptime, adxl id, adxl reg 0x2d 1 (POWER_CTL), adxl reg 0x04 1 (STATUS), adxl init 2 125 0, adxl reg 0x2d 1, adxl read 20 0, adxl temp
+order: GND (pins 2-3) 21:11:43, open (no jumper) 21:13:39, VDDIO (pins 1-2) 21:14:44
