@@ -1,0 +1,10 @@
+date: 2026-09-29T23:36:26+02:00
+host: menkalinan.ster.kuleuven.be macOS-27.0-arm64-arm-64bit
+command: app/scripts/sensor_bench.py adxl355 --attach --port /dev/cu.usbserial-25163300AA8C1 --out docs/verification/evidence/2026-09-29-2335-adxl355
+app: 50d44eed74a5
+fprime-adxl355: 67bdcb0ecc15
+zephyr: 70b56a29c-dirty
+fprime: 35d4c0e
+fprime-zephyr: 6e2a411
+reference uncertainty: 0.1 %
+soak transfers per point: 20000

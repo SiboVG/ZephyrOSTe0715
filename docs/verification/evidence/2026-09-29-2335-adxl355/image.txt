@@ -1,0 +1,9 @@
+image: built for this run from committed sources and loaded into RAM through U-Boot (uboot-load.log: loadx, crc32 checked on the board, caches off, go 0x0); the SD card was not changed
+zephyr.bin sha256: d7d3b79d5e7b24d889188dd249179bc0f611c28423f2381a4182d4f57ce987d8
+zephyr.elf sha256: 2fa3cd4118c1c9f7f6d7b4e9afaf1c1241480f95ad63f68f275239f827620df1
+built: Sep 29 23:35:29 2026, fprime-util build on macOS 27 (arm64), Zephyr SDK 1.0.1
+bench: 50d44eed74a5 (clean): the 10 Hz rate group that calls the library's schedIn ports
+fprime-adxl355: 67bdcb0ecc15 (clean): fault edges queued on the acquisition path and published by schedIn; readTemperature plausibility (506615d)
+zephyr: 70b56a29cd74 + west patches (app/zephyr/patches.yml)
+wiring: as in 2026-09-29-interactive-adxl355, CS back on Pmod J1 pin 7 after the upstream cs-gpios test (CS on pin 2); STBY jumper on VDDIO (no effect, run 4)
+extra-noise-recheck.log: three more 200-sample reads right after the run, for the noise (see the as-run record)

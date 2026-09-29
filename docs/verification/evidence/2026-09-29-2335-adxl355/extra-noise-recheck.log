@@ -1,0 +1,9 @@
+adxl info
+ADXL_INFO bench=50d44eed74a5 library=67bdcb0ecc15 spi_ref_hz=142857142 requested_hz=1200000 sclk_hz=1116071 mode=0 cs=MIO13 odr_code=5 streaming=0
+[1;32muart:~$ [madxl read 200 0
+ADXL_READ_DONE ok=200 failures=0 mean_x_g=0.200030 mean_y_g=0.764552 mean_z_g=0.622894 std_x_mg=0.5822 std_y_mg=0.5924 std_z_mg=0.3913 magnitude_g=1.006255 odr_hz=125.000
+[1;32muart:~$ [madxl read 200 0
+ADXL_READ_DONE ok=200 failures=0 mean_x_g=0.199953 mean_y_g=0.764556 mean_z_g=0.622895 std_x_mg=1.6398 std_y_mg=1.6099 std_z_mg=1.2479 magnitude_g=1.006243 odr_hz=125.000
+[1;32muart:~$ [madxl read 200 0
+ADXL_READ_DONE ok=200 failures=0 mean_x_g=0.200008 mean_y_g=0.764551 mean_z_g=0.622927 std_x_mg=1.0737 std_y_mg=0.8590 std_z_mg=0.6034 magnitude_g=1.006270 odr_hz=125.000
+[1;32muart:~$ [m
