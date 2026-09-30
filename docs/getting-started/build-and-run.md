@@ -53,6 +53,19 @@ The results are in `build-fprime-automatic-zephyr/zephyr/`:
 | `zephyr.elf` | Load over JTAG: `xsdb ../../boards/trenz/te0715/support/xsdb.cfg build-fprime-automatic-zephyr/zephyr/zephyr.elf` |
 | `zephyr.bin` | Install on the SD card: see [Booting](../guide/boot.md) |
 
+Without xsdb (for example on macOS), load the image over the console instead:
+`app/scripts/uboot_load.py` reboots the running image with `kernel reboot cold`, stops
+U-Boot's autoboot, sends `zephyr.bin` with `loadx` (XMODEM, about 30 s for 300 KB),
+checks it with U-Boot's `crc32` and starts it as `boot.cmd` does. The SD card is not
+changed. It needs `pyserial` and `xmodem`:
+
+```bash
+app/scripts/uboot_load.py --port /dev/ttyUSB1 --bin <build>/zephyr/zephyr.bin \
+    --log load.log --until "[ADXL355_BENCH_READY]"
+```
+
+If the running image has no shell, add `--wait-reset 30` and press the reset button.
+
 !!! note "Sibling repositories"
     The F Prime application builds the `CspLibparam` component from
     `../CspLibparamFprimeTest` and the library from `../fprime-csp-libparam`,
