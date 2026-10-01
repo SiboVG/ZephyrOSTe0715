@@ -9,6 +9,10 @@ the automated checks over the serial shell. With --interactive it also runs the 
 that need the operator: reference measurements, fault injection and, for the ADXL355,
 the six orientations.
 
+adxl355-pl runs TC-22, the ADXL355 on the external clock and synchronization pulse of
+the cubespec-pl bitstream: --elf and --bit load both over JTAG with the CPU in its SD
+boot state (xsdb.cfg sd-state), so the timing is that of an SD boot.
+
 Writes to --out: transcript.log (everything the board printed), results.txt (one line
 per check: PASS, FAIL or INFO, the test-case step and the measured values) and
 environment.txt; then SHA256SUMS. Exit code 0 only if no check failed.
@@ -17,8 +21,10 @@ environment.txt; then SHA256SUMS. Exit code 0 only if no check failed.
       --out docs/verification/evidence/<date>-ina229
   app/scripts/sensor_bench.py adxl355 --elf <zephyr.elf> --interactive \\
       --out docs/verification/evidence/<date>-adxl355
+  app/scripts/sensor_bench.py adxl355-pl --elf <zephyr.elf> --bit <pp_te0701.bit> \\
+      --out docs/verification/evidence/<date>-adxl355-pl
 
-Test cases: docs/verification/test-cases.md (TC-13 to TC-21).
+Test cases: docs/verification/test-cases.md (TC-13 to TC-22).
 """
 
 import argparse
@@ -48,6 +54,8 @@ INA229_SPI_POINTS = [(600000, 1), (1200000, 1), (2300000, 1), (4500000, 1), (900
 ADXL355_SPI_POINTS = [(600000, 0), (1200000, 0), (2300000, 0), (4500000, 0), (9000000, 0)]
 DEFAULT_SPI = {'ina': (1200000, 1), 'adxl': (1200000, 0)}  # by shell command
 TC19_BUDGET_SPI = (9000000, 0)  # 8.93 MHz, the fastest SCLK within the ADXL355's 10 MHz
+PL_DIR = os.path.join(WORKSPACE, '..', 'cubespec-pl')
+FROZEN_REPEAT_LIMIT = 8  # fprime-adxl355 Device::FROZEN_REPEAT_LIMIT
 
 
 class Console:
@@ -537,10 +545,258 @@ def adxl355_faults(con, res):
 
 
 # ---------------------------------------------------------------------------------
+# ADXL355 on the PL's external clock and synchronization pulse (TC-22)
+# ---------------------------------------------------------------------------------
+
+def load_pl(xsdb, elf, bit, log_path):
+    """JTAG load of the image and the bitstream, CPU in the SD boot state. A download now
+    and then fails with "OCM is not enabled"; it is retried."""
+    with open(log_path, 'w') as log:
+        for attempt in range(1, 4):
+            result = subprocess.run(['timeout', '180', xsdb, XSDB_CFG, elf, bit, 'sd-state'],
+                                    capture_output=True, text=True)
+            log.write(f'--- attempt {attempt}: exit {result.returncode}\n{result.stdout}{result.stderr}\n')
+            if result.returncode == 0:
+                return attempt
+    return 0
+
+
+def pl_stream(con, frames, timeout, command='start-pl'):
+    """Frames triggered by the PL's sync interrupt (or the timer: command='start 4000')"""
+    started, _ = con.run(f'adxl stream {command} {frames}', r'ADXL_STREAM_STARTED .*|error.*')
+    if started and started.startswith('ADXL_STREAM_STARTED'):
+        deadline = time.time() + timeout
+        while time.time() < deadline:
+            status, _ = con.run('adxl stream status', r'ADXL_STREAM .*')
+            if fields(status).get('streaming') == '0':
+                break
+            time.sleep(0.5)
+    line, _ = con.run('adxl stream stop', r'ADXL_STREAM_STOPPED .*')
+    return fields(line), line
+
+
+def clean_stream(f, frames):
+    """Every frame complete, none stale, frozen or implausible, nothing lost, within the period"""
+    return (f.get('frames') == str(frames) and f.get('complete') == str(frames) and f.get('stale') == '0' and
+            f.get('frozen') == '0' and f.get('implausible') == '0' and f.get('other') == '0' and
+            f.get('seq_gaps') == '0' and f.get('missed_ticks') == '0' and f.get('pl_overruns', '0') == '0' and
+            number(f, 'acq_max_us', 1e9) < 250)
+
+
+def magnitudes_plausible(f):
+    """|a| of every valid sample within the data sheet's at-rest band (TC-18.3), and the
+    spread of a sensor at rest: a corrupted sample lies far outside either"""
+    low, high = number(f, 'mag_min_g'), number(f, 'mag_max_g')
+    return 0.79 <= low <= high <= 1.21 and (high - low) < 0.020
+
+
+def phase(con, res, step, name):
+    line, _ = con.run('adxl phase 400', r'ADXL_PHASE .*', timeout=15)
+    f = fields(line)
+    res.check(step, name, f.get('result') == 'PASS', line)
+    return (number(f, 'phase_lo_us'), number(f, 'phase_hi_us')) if f.get('result') == 'PASS' else None
+
+
+def restart_timing(con, settle=1.0, pause=0.1):
+    """Stop the clock and the pulses and start them again in the flight order, then wait
+    more than one filter group delay"""
+    con.run('pl sync off', r'PL_SYNC .*')
+    con.run('pl clk off', r'PL_CLK .*')
+    time.sleep(pause)
+    con.run('pl clk on', r'PL_CLK .*')
+    con.run('pl sync on 256 8', r'PL_SYNC .*')
+    time.sleep(settle)
+
+
+def adxl355_pl(con, res, args):
+    if not ready(con, res, 'adxl', '[ADXL355_BENCH_READY]', args.attach):
+        return
+
+    # TC-22.1 The bitstream: identity, map, and the build it came from
+    line, _ = con.run('pl info', r'PL_INFO .*')
+    f = fields(line)
+    res.check('TC-22.1', 'cubespec-pl identifies itself (sysctrl magic, map, slots, time base, acc)',
+              f.get('result') == 'PASS', line)
+    head = git(PL_DIR, 'rev-parse', '--short=8', 'HEAD')
+    res.check('TC-22.1', f'bitstream built from the checked-out cubespec-pl ({head}), clean',
+              f.get('git') == f'0x{head}' and f.get('dirty') == '0', f'git={f.get("git")} dirty={f.get("dirty")}')
+    line, _ = con.run('adxl id', r'ADXL_ID .*')
+    res.check('TC-22.1', 'ADXL355 identity over raw SPI', fields(line).get('result') == 'PASS', line)
+
+    # TC-22.2 The PL time base runs from the PS clock's crystal
+    first, _ = con.run('pl time', r'PL_TIME .*')
+    time.sleep(10)
+    second, _ = con.run('pl time', r'PL_TIME .*')
+    a, b = fields(first), fields(second)
+    try:
+        pl = int(b['pl_us']) - int(a['pl_us'])
+        ps = (int(b['ps_us_before']) + int(b['ps_us_after']) - int(a['ps_us_before']) - int(a['ps_us_after'])) / 2
+        ppm = 1e6 * (pl - ps) / ps
+    except (KeyError, ValueError, ZeroDivisionError):
+        pl, ps, ppm = 0, 0, float('nan')
+    res.check('TC-22.2', 'PL time base against the PS clock over 10 s within 1 ppm', abs(ppm) <= 1.0,
+              f'PL {pl} us, PS {ps:.0f} us: {ppm:+.2f} ppm')
+
+    # TC-22.3 Start-up in the order of the ACC board design notes: initialize the sensor
+    # with EXT_CLK and EXT_SYNC set (INT2 and DRDY become inputs), start the clock, start
+    # the pulses, enable acquisition after more than one filter group delay
+    hz, mode = TC19_BUDGET_SPI
+    line, _ = con.run(f'adxl spi {hz} {mode}', r'ADXL_SPI .*')
+    sclk = fields(line).get('sclk_hz', '?')
+    line, _ = con.run('adxl cmd app-init 2 4000 0', r'ADXL_CMD app-init response=\w+', timeout=20)
+    res.check('TC-22.3', 'INITIALIZE_ALL (+/-2 g, 4 kHz, HPF off, external clock and sync) before the clock runs',
+              (line or '').endswith('=OK'), line)
+    clk, _ = con.run('pl clk on', r'PL_CLK .*')
+    sync, _ = con.run('pl sync on 256 8', r'PL_SYNC .*')
+    delay, _ = con.run('pl delay 50', r'PL_DELAY .*')
+    res.check('TC-22.3', 'EXT_CLK and SYNC (256 clocks = 250 us, 8 clocks wide) running; interrupt 50 us after '
+              'the sync instant', fields(clk).get('status') == '0x1' and fields(sync).get('period_us') == '250' and
+              fields(delay).get('us') == '50', f'{clk}; {sync}; {delay}')
+    time.sleep(0.5)
+
+    # TC-22.4 DATA_RDY clears on a STATUS read in the flight synchronization mode
+    line, _ = con.run('adxl drdy 200', r'ADXL_DRDY .*', timeout=30)
+    res.check('TC-22.4', 'with EXT_CLK and SYNC: STATUS bits 7:5 read 0 and a STATUS read clears DATA_RDY',
+              fields(line).get('result') == 'PASS', line)
+
+    # TC-22.5 4 kHz frames on the PL's sync interrupt
+    f, line = pl_stream(con, 20000, 30)
+    res.check('TC-22.5', f'20000 frames on the PL sync interrupt, SCLK {sclk} Hz: all complete, none stale, '
+              'frozen or implausible, no trigger lost, acquisition within the 250 us period', clean_stream(f, 20000),
+              line)
+    res.check('TC-22.5', '|a| of every sample within 0.79..1.21 g and spread below 20 mg (no corrupted first '
+              'samples)', magnitudes_plausible(f), f'{f.get("mag_min_g")} to {f.get("mag_max_g")} g')
+
+    # TC-22.6 Frame timestamps are sync instants of the PL time base
+    con.run('adxl tlm off', r'ADXL_TLM .*')
+    since = con.mark()
+    con.run('adxl stream start-pl 12 1', r'ADXL_STREAM_STARTED .*')
+    time.sleep(1.0)
+    con.run('adxl stream stop', r'ADXL_STREAM_STOPPED .*')
+    out = con.text(since)
+    times = [int(r[2]) for r in rows(out, 'ADXL_FRAME') if len(r) > 2 and r[2].isdigit()]
+    steps = sorted(set(b - a for a, b in zip(times, times[1:])))
+    # The console printer skips frames while it prints: steps are whole sync periods
+    res.check('TC-22.6', 'printed frames: sync times on the 250 us grid of the PL time base',
+              len(times) >= 10 and all(st > 0 and st % 250 == 0 for st in steps), f'{len(times)} frames, steps {steps}')
+
+    # TC-22.7 The sensor follows the pulses: where DATA_RDY sets in the period stays the
+    # same when the clock and pulses restart, although each restart moves the pulse train
+    # against the sensor's own sample timing
+    phases = []
+    p = phase(con, res, 'TC-22.7', 'phase of DATA_RDY in the SYNC period')
+    if p:
+        phases.append(p)
+    for k in range(3):
+        restart_timing(con, pause=0.1 + 0.037 * k)
+        p = phase(con, res, 'TC-22.7', f'phase after restart {k + 1} of the clock and pulses')
+        if p:
+            phases.append(p)
+        f, line = pl_stream(con, 4000, 10)
+        res.check('TC-22.7', f'after restart {k + 1}: 4000 clean frames, |a| plausible',
+                  clean_stream(f, 4000) and magnitudes_plausible(f), line)
+    # Unwrap next to the first measurement, then intersect the intervals
+    unwrapped = []
+    for lo, hi in phases:
+        while lo - phases[0][0] > 125:
+            lo, hi = lo - 250, hi - 250
+        while phases[0][0] - lo > 125:
+            lo, hi = lo + 250, hi + 250
+        unwrapped.append((lo, hi))
+    low = max(lo for lo, _ in unwrapped) if unwrapped else float('nan')
+    high = min(hi for _, hi in unwrapped) if unwrapped else float('nan')
+    res.check('TC-22.7', 'DATA_RDY phase the same before and after every restart (intervals overlap)',
+              len(unwrapped) == 4 and low <= high,
+              f'{[f"{lo:.3f}..{hi:.3f}" for lo, hi in unwrapped]} us; common {low:.3f}..{high:.3f} us')
+
+    # TC-22.8 How soon after the sync instant the new sample can be read
+    for us in (2, 5, 10, 20, 30):
+        con.run(f'pl delay {us}', r'PL_DELAY .*')
+        f, line = pl_stream(con, 4000, 10)
+        res.check('TC-22.8', f'interrupt {us} us after the sync instant: 4000 clean frames', clean_stream(f, 4000),
+                  line)
+    con.run('pl delay 50', r'PL_DELAY .*')
+
+    # TC-22.9 The clock stops with a sample unread: the sensor freezes with DATA_RDY set
+    # (a STATUS read no longer clears it), and the library reports FROZEN_DATA after
+    # FROZEN_REPEAT_LIMIT repeats; the timer keeps triggering, as a broken clock line would
+    con.run('pl sync off', r'PL_SYNC .*')
+    con.run('pl clk off', r'PL_CLK .*')
+    time.sleep(0.1)
+    line, _ = con.run('adxl drdy 50', r'ADXL_DRDY .*', timeout=30)
+    f = fields(line)
+    res.check('TC-22.9', 'without EXT_CLK, DATA_RDY stays set: no STATUS read clears it',
+              f.get('ready_first') == '50' and f.get('cleared_second') == '0', line)
+    f, line = pl_stream(con, 100, 10, command='start 4000')
+    res.check('TC-22.9', f'timer-triggered frames: the first {FROZEN_REPEAT_LIMIT} complete (the frozen sample and '
+              'its repeats up to the limit), then every frame FROZEN_DATA',
+              f.get('complete') == str(FROZEN_REPEAT_LIMIT) and f.get('frozen') == str(100 - FROZEN_REPEAT_LIMIT) and
+              f.get('stale') == '0' and f.get('implausible') == '0' and f.get('other') == '0', line)
+
+    # TC-22.10 The clock returns: fresh samples again, without reinitialization
+    con.run('pl clk on', r'PL_CLK .*')
+    con.run('pl sync on 256 8', r'PL_SYNC .*')
+    time.sleep(1.0)
+    line, _ = con.run('adxl drdy 200', r'ADXL_DRDY .*', timeout=30)
+    res.check('TC-22.10', 'DATA_RDY clears on a STATUS read again', fields(line).get('result') == 'PASS', line)
+    f, line = pl_stream(con, 4000, 10)
+    res.check('TC-22.10', '4000 clean frames on the PL sync interrupt, |a| plausible',
+              clean_stream(f, 4000) and magnitudes_plausible(f), line)
+
+    # TC-22.11 The clock stops during timer-triggered acquisition: whether the sensor
+    # freezes with DATA_RDY set or clear depends on where in the period the clock stops;
+    # either way no frame after it is complete, only stale or frozen
+    con.run('adxl stream start 4000 8000', r'ADXL_STREAM_STARTED .*|error.*')
+    time.sleep(0.5)
+    con.run('pl clk off', r'PL_CLK .*')
+    deadline = time.time() + 10
+    while time.time() < deadline:
+        status, _ = con.run('adxl stream status', r'ADXL_STREAM .*')
+        if fields(status).get('streaming') == '0':
+            break
+        time.sleep(0.5)
+    line, _ = con.run('adxl stream stop', r'ADXL_STREAM_STOPPED .*')
+    f = fields(line)
+    partial = number(f, 'partial', -1)
+    res.check('TC-22.11', 'clock stopped during a timer-triggered stream: frames after it partial, each stale or '
+              'frozen, none implausible', partial > 0 and partial == number(f, 'stale', 0) + number(f, 'frozen', 0)
+              and f.get('implausible') == '0' and f.get('other') == '0', line)
+
+    # TC-22.12 The pulses stop during PL-triggered acquisition: no more triggers, the
+    # waits time out, and the frames before are complete
+    con.run('pl clk on', r'PL_CLK .*')
+    con.run('pl sync on 256 8', r'PL_SYNC .*')
+    time.sleep(1.0)
+    con.run('adxl stream start-pl 20000', r'ADXL_STREAM_STARTED .*|error.*')
+    time.sleep(0.5)
+    con.run('pl sync off', r'PL_SYNC .*')
+    time.sleep(1.0)
+    line, _ = con.run('adxl stream stop', r'ADXL_STREAM_STOPPED .*')
+    f = fields(line)
+    res.check('TC-22.12', 'pulses stopped during a PL-triggered stream: triggers stop, event waits time out, '
+              'every frame before complete', 0 < number(f, 'frames', 0) < 20000 and
+              number(f, 'pl_timeouts', 0) >= 5 and f.get('complete') == f.get('frames') and
+              f.get('implausible') == '0', line)
+
+    # Leave the bench as the other test cases expect it: internal clock, default SCLK
+    con.run('pl sync off', r'PL_SYNC .*')
+    con.run('pl clk off', r'PL_CLK .*')
+    hz, mode = DEFAULT_SPI['adxl']
+    con.run(f'adxl spi {hz} {mode}', r'ADXL_SPI .*')
+    line, _ = con.run('adxl init 2 125 0', r'ADXL_INIT .*', timeout=20)
+    res.info('end', f'internal clock restored: {line}')
+
+
+# ---------------------------------------------------------------------------------
 
 def git(path, *command):
     result = subprocess.run(['git', '-C', path, *command], capture_output=True, text=True)
     return result.stdout.strip() if result.returncode == 0 else 'unknown'
+
+
+def sha256(path):
+    with open(path, 'rb') as f:
+        return hashlib.sha256(f.read()).hexdigest()
 
 
 def environment(path, args):
@@ -556,8 +812,14 @@ def environment(path, args):
         f'fprime-zephyr: {git(os.path.join(WORKSPACE, "modules/fprime/fprime-zephyr"), "rev-parse", "--short", "HEAD")}',
     ]
     if args.elf:
-        with open(args.elf, 'rb') as f:
-            lines.append(f'zephyr.elf sha256: {hashlib.sha256(f.read()).hexdigest()}')
+        lines.append(f'zephyr.elf: {os.path.abspath(args.elf)}')
+        lines.append(f'zephyr.elf sha256: {sha256(args.elf)}')
+    if args.sensor == 'adxl355-pl':
+        lines.append(f'cubespec-pl: {git(PL_DIR, "describe", "--always", "--dirty", "--abbrev=12")}')
+        if args.bit:
+            lines.append(f'bitstream: {os.path.abspath(args.bit)}')
+            lines.append(f'bitstream sha256: {sha256(args.bit)}')
+        lines.append('load: xsdb.cfg <elf> <bit> sd-state (L2 cache on, ACTLR 0x41, as after an SD boot)')
     if args.sensor == 'ina229':
         lines.append(f'shunt: {args.shunt} ohm, max current {args.max_current} A, '
                      f'shunt tolerance {args.shunt_tolerance} %')
@@ -569,7 +831,7 @@ def environment(path, args):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('sensor', choices=['ina229', 'adxl355'])
+    parser.add_argument('sensor', choices=['ina229', 'adxl355', 'adxl355-pl'])
     boot = parser.add_mutually_exclusive_group(required=True)
     boot.add_argument('--elf', help='load this zephyr.elf over JTAG')
     boot.add_argument('--sd-boot', action='store_true', help='reset and boot the image on the SD card')
@@ -582,18 +844,27 @@ def main():
     parser.add_argument('--shunt-tolerance', type=float, default=1.0, help='INA229: shunt tolerance in %%')
     parser.add_argument('--ref-uncertainty', type=float, default=0.1,
                         help='reference instrument uncertainty in %% of reading (default 0.1)')
+    parser.add_argument('--bit', help='adxl355-pl: the cubespec-pl bitstream to load with --elf')
     parser.add_argument('--port', help='UART device')
     parser.add_argument('--xsdb', help='path to xsdb')
     args = parser.parse_args()
     if args.sensor == 'ina229' and (args.shunt is None or args.max_current is None):
         parser.error('ina229 needs --shunt and --max-current')
+    if args.sensor == 'adxl355-pl' and args.elf and not args.bit:
+        parser.error('adxl355-pl with --elf needs --bit')
 
     os.makedirs(args.out, exist_ok=True)
     environment(os.path.join(args.out, 'environment.txt'), args)
     con = Console(find_port(args.port), os.path.join(args.out, 'transcript.log'))
     res = Results(os.path.join(args.out, 'results.txt'))
     try:
-        if args.elf:
+        if args.elf and args.sensor == 'adxl355-pl':
+            attempt = load_pl(find_xsdb(args.xsdb), args.elf, args.bit, os.path.join(args.out, 'load.log'))
+            res.check('boot', 'load the image and the bitstream over JTAG, CPU in the SD boot state',
+                      attempt > 0, f'attempt {attempt}' if attempt else 'see load.log')
+            if not attempt:
+                return 1
+        elif args.elf:
             if not load(find_xsdb(args.xsdb), args.elf):
                 res.check('boot', f'load {args.elf} over JTAG', False)
                 return 1
@@ -605,6 +876,8 @@ def main():
             con.serial.write(b'\r')
         if args.sensor == 'ina229':
             ina229(con, res, args)
+        elif args.sensor == 'adxl355-pl':
+            adxl355_pl(con, res, args)
         else:
             adxl355(con, res, args)
     finally:

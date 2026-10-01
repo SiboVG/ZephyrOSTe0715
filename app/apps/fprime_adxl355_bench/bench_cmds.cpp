@@ -11,6 +11,7 @@
 #include "Top/Adxl355Te0715TopologyAc.hpp"
 #include "bench_api.h"
 #include "bench_revision.h"
+#include "pl.h"
 
 #include <atomic>
 #include <cmath>
@@ -288,8 +289,11 @@ bool setEnabled(const struct shell* sh, bool enabled) {
 }
 
 // ---------------------------------------------------------------------------------
-// Frame timing thread: stands in for the FPGA synchronization source
+// Frame timing thread: a kernel timer stands in for the FPGA synchronization source,
+// or the PL's acc core is that source (adxl stream start-pl)
 // ---------------------------------------------------------------------------------
+
+enum class Source : U8 { TIMER, PL };
 
 K_THREAD_STACK_DEFINE(g_timingStack, 8192);
 struct k_thread g_timingThread;
@@ -299,10 +303,50 @@ std::atomic<bool> g_streaming{false};
 std::atomic<U64> g_frameLimit{0U};
 std::atomic<U64> g_triggers{0U};
 std::atomic<U64> g_missedTicks{0U};
+//! 100 ms waits without a PL sync event: the pulse train stopped
+std::atomic<U64> g_eventTimeouts{0U};
 std::atomic<U32> g_acqMin{UINT32_MAX};
 std::atomic<U32> g_acqMax{0U};
 std::atomic<U64> g_acqSum{0U};
 U32 g_periodUs = 0U;
+std::atomic<Source> g_source{Source::TIMER};
+
+//! Waits for the next trigger and returns its synchronization time; false when the
+//! stream stops. With the PL, missed sync events show as gaps in the event count.
+bool nextTrigger(U64& syncUs, U32& lastCount) {
+    if (g_source.load() == Source::PL) {
+        Pl::SyncEvent event;
+        while (!Pl::waitEvent(event, K_MSEC(100))) {
+            if (!g_streaming.load()) {
+                return false;
+            }
+            g_eventTimeouts.fetch_add(1U);
+        }
+        if ((lastCount != 0U) && (event.count != lastCount + 1U)) {
+            g_missedTicks.fetch_add(event.count - lastCount - 1U);
+        }
+        lastCount = event.count;
+        syncUs = Pl::ticksToUs(event.ticks);
+        return g_streaming.load();
+    }
+    const U32 expiries = k_timer_status_sync(&g_frameTimer);
+    if (!g_streaming.load() || (expiries == 0U)) {
+        return false;  // stopped
+    }
+    if (expiries > 1U) {
+        g_missedTicks.fetch_add(expiries - 1U);
+    }
+    syncUs = k_cyc_to_us_floor64(k_cycle_get_64());
+    return true;
+}
+
+void stopTriggers() {
+    if (g_source.load() == Source::PL) {
+        Pl::stopEvents();
+    } else {
+        k_timer_stop(&g_frameTimer);
+    }
+}
 
 void timingThread(void* p1, void* p2, void* p3) {
     ARG_UNUSED(p1);
@@ -310,15 +354,12 @@ void timingThread(void* p1, void* p2, void* p3) {
     ARG_UNUSED(p3);
     while (true) {
         (void)k_sem_take(&g_streamStart, K_FOREVER);
+        U32 lastCount = 0U;
         while (g_streaming.load()) {
-            const U32 expiries = k_timer_status_sync(&g_frameTimer);
-            if (!g_streaming.load() || (expiries == 0U)) {
-                break;  // stopped
+            U64 syncUs = 0U;
+            if (!nextTrigger(syncUs, lastCount)) {
+                break;
             }
-            if (expiries > 1U) {
-                g_missedTicks.fetch_add(expiries - 1U);
-            }
-            const U64 syncUs = k_cyc_to_us_floor64(k_cycle_get_64());
             const U32 start = k_cycle_get_32();
             client.acquire(syncUs);
             const U32 us = k_cyc_to_us_floor32(k_cycle_get_32() - start);
@@ -334,7 +375,7 @@ void timingThread(void* p1, void* p2, void* p3) {
             if ((limit != 0U) && (triggers >= limit)) {
                 // No console output from this thread: `adxl stream status` reports the end
                 g_streaming.store(false);
-                k_timer_stop(&g_frameTimer);
+                stopTriggers();
             }
         }
     }
@@ -346,16 +387,18 @@ void printStreamStats(const struct shell* sh, const char* marker) {
     const U32 min = (triggers == 0U) ? 0U : g_acqMin.load();
     const U32 mean = (triggers == 0U) ? 0U : static_cast<U32>(g_acqSum.load() / triggers);
     shell_print(sh,
-                "%s triggers=%llu frames=%llu complete=%llu partial=%llu stale=%llu implausible=%llu busy=%llu "
-                "other=%llu seq_gaps=%llu missed_ticks=%llu acq_min_us=%u acq_mean_us=%u acq_max_us=%u period_us=%u "
-                "streaming=%d",
+                "%s triggers=%llu frames=%llu complete=%llu partial=%llu stale=%llu implausible=%llu frozen=%llu "
+                "busy=%llu other=%llu seq_gaps=%llu missed_ticks=%llu acq_min_us=%u acq_mean_us=%u acq_max_us=%u "
+                "period_us=%u mag_min_g=%.6f mag_max_g=%.6f streaming=%d source=%s pl_overruns=%u pl_timeouts=%llu",
                 marker, static_cast<unsigned long long>(triggers), static_cast<unsigned long long>(f.frames),
                 static_cast<unsigned long long>(f.complete), static_cast<unsigned long long>(f.partial),
                 static_cast<unsigned long long>(f.stale), static_cast<unsigned long long>(f.implausible),
-                static_cast<unsigned long long>(f.busy), static_cast<unsigned long long>(f.otherErrors),
-                static_cast<unsigned long long>(f.sequenceGaps),
+                static_cast<unsigned long long>(f.frozen), static_cast<unsigned long long>(f.busy),
+                static_cast<unsigned long long>(f.otherErrors), static_cast<unsigned long long>(f.sequenceGaps),
                 static_cast<unsigned long long>(g_missedTicks.load()), min, mean, g_acqMax.load(), g_periodUs,
-                g_streaming.load() ? 1 : 0);
+                f.magnitudeMinMicroG / 1e6, f.magnitudeMaxMicroG / 1e6, g_streaming.load() ? 1 : 0,
+                (g_source.load() == Source::PL) ? "pl" : "timer", (g_source.load() == Source::PL) ? Pl::overruns() : 0U,
+                static_cast<unsigned long long>(g_eventTimeouts.load()));
 }
 
 }  // namespace
@@ -553,6 +596,90 @@ extern "C" int adxl_cmd_drdy(const struct shell* sh, size_t argc, char** argv) {
     return pass ? 0 : -EIO;
 }
 
+extern "C" int adxl_cmd_phase(const struct shell* sh, size_t argc, char** argv) {
+    U32 count = 400U;
+    if ((argc > 1) && ((bench_parse_u32(argv[1], 10000U, &count) != 0) || (count == 0U))) {
+        shell_error(sh, "usage: adxl phase [observations 1..10000]");
+        return -EINVAL;
+    }
+    if (g_streaming.load()) {
+        shell_error(sh, "stop the stream first (adxl stream stop)");
+        return -EBUSY;
+    }
+    if (!Pl::timingRunning()) {
+        shell_error(sh, "start the PL's clock and pulses first (pl clk on, pl sync on)");
+        return -EINVAL;
+    }
+    // Where in the SYNC period the sensor sets DATA_RDY. STATUS is polled back to back,
+    // each poll bracketed by time base readings. A poll that finds DATA_RDY set saw it
+    // set after the previous poll started and before this one ended, so that interval,
+    // taken modulo the period from one sync instant, holds the phase. A sensor that
+    // follows the pulses gives the same phase in every interval; their intersection
+    // bounds it.
+    Pl::startEvents();
+    Pl::SyncEvent reference;
+    const bool haveReference = Pl::waitEvent(reference, K_MSEC(100));
+    Pl::stopEvents();
+    if (!haveReference) {
+        shell_error(sh, "no sync event within 100 ms");
+        return -EIO;
+    }
+    const I64 period = static_cast<I64>(Pl::syncPeriodTicks());
+    constexpr U8 STATUS = 0x04U;
+    I64 low = INT64_MIN;
+    I64 high = INT64_MAX;
+    I64 center = 0;
+    U32 seen = 0U, polls = 0U, longPolls = 0U, spiErrors = 0U;
+    U64 previousStart = Pl::nowTicks();
+    (void)rawRead(STATUS, 1U);  // clears DATA_RDY; a set bit here may predate the reference
+    const int64_t deadline = k_uptime_get() + 2000;
+    while ((seen < count) && (k_uptime_get() < deadline)) {
+        const U64 start = Pl::nowTicks();
+        const RawRead read = rawRead(STATUS, 1U);
+        const U64 end = Pl::nowTicks();
+        polls++;
+        const I64 length = static_cast<I64>(end - previousStart);
+        const U64 intervalStart = previousStart;
+        previousStart = start;
+        if (read.status != Drv::SpiStatus::SPI_OK) {
+            spiErrors++;
+            continue;
+        }
+        if ((read.rx[1] & 0x01U) == 0U) {
+            continue;
+        }
+        if (length >= period / 2) {
+            longPolls++;  // preempted: the interval holds too much of the period to bound it
+            continue;
+        }
+        I64 a = static_cast<I64>((intervalStart - reference.ticks) % static_cast<U64>(period));
+        if (seen == 0U) {
+            center = a + length / 2;
+        }
+        // Unwrap next to the first interval, so a phase near the period boundary stays one interval
+        while ((a + length / 2) - center > period / 2) {
+            a -= period;
+        }
+        while (center - (a + length / 2) > period / 2) {
+            a += period;
+        }
+        low = (a > low) ? a : low;
+        high = ((a + length) < high) ? (a + length) : high;
+        seen++;
+    }
+    const bool consistent = (seen > 0U) && (low <= high);
+    const I64 lowWrapped = consistent ? (((low % period) + period) % period) : 0;
+    const F64 ticksPerUs = static_cast<F64>(Pl::syncPeriodTicks()) / static_cast<F64>(Pl::syncPeriodUs());
+    const bool pass = consistent && (seen == count) && (spiErrors == 0U);
+    shell_print(sh,
+                "ADXL_PHASE n=%u polls=%u long_polls=%u spi_errors=%u phase_lo_us=%.3f phase_hi_us=%.3f "
+                "width_us=%.3f period_us=%u result=%s",
+                seen, polls, longPolls, spiErrors, lowWrapped / ticksPerUs,
+                (lowWrapped + (consistent ? (high - low) : 0)) / ticksPerUs,
+                consistent ? (high - low) / ticksPerUs : -1.0, Pl::syncPeriodUs(), pass ? "PASS" : "FAIL");
+    return pass ? 0 : -EIO;
+}
+
 extern "C" int adxl_cmd_init(const struct shell* sh, size_t argc, char** argv) {
     Adxl355::SensorRange range;
     U32 odr = 0U;
@@ -729,6 +856,44 @@ extern "C" int adxl_cmd_timing(const struct shell* sh, size_t argc, char** argv)
     return ((ok.count == count) && (failed.count == 0U)) ? 0 : -EIO;
 }
 
+namespace {
+
+//! Resets the counters, enables the application and starts the timing thread
+int beginStream(const struct shell* sh, Source source, U32 periodUs, U32 frames, U32 printEvery) {
+    if (g_streaming.load()) {
+        shell_error(sh, "already streaming");
+        return -EBUSY;
+    }
+    if (!setEnabled(sh, true)) {
+        return -EIO;
+    }
+    client.resetFrameStats(printEvery);
+    g_triggers.store(0U);
+    g_missedTicks.store(0U);
+    g_eventTimeouts.store(0U);
+    g_acqMin.store(UINT32_MAX);
+    g_acqMax.store(0U);
+    g_acqSum.store(0U);
+    g_frameLimit.store(frames);
+    g_periodUs = periodUs;
+    g_source.store(source);
+    if (printEvery != 0U) {
+        Adxl355Te0715::Client::printFrameHeader();
+    }
+    g_streaming.store(true);
+    if (source == Source::PL) {
+        Pl::startEvents();
+    } else {
+        k_timer_start(&g_frameTimer, K_USEC(periodUs), K_USEC(periodUs));
+    }
+    k_sem_give(&g_streamStart);
+    shell_print(sh, "ADXL_STREAM_STARTED rate_hz=%.3f period_us=%u frames=%u print_every=%u source=%s",
+                1.0e6 / periodUs, periodUs, frames, printEvery, (source == Source::PL) ? "pl" : "timer");
+    return 0;
+}
+
+}  // namespace
+
 extern "C" int adxl_cmd_stream_start(const struct shell* sh, size_t argc, char** argv) {
     double rate = 0.0;
     U32 frames = 0U;
@@ -746,37 +911,29 @@ extern "C" int adxl_cmd_stream_start(const struct shell* sh, size_t argc, char**
         shell_error(sh, "the period (%u us) must be a multiple of %u us", periodUs, tickUs);
         return -EINVAL;
     }
-    if (g_streaming.load()) {
-        shell_error(sh, "already streaming");
-        return -EBUSY;
+    return beginStream(sh, Source::TIMER, periodUs, frames, printEvery);
+}
+
+extern "C" int adxl_cmd_stream_start_pl(const struct shell* sh, size_t argc, char** argv) {
+    U32 frames = 0U;
+    U32 printEvery = 0U;
+    if (((argc > 1) && (bench_parse_u32(argv[1], 100000000U, &frames) != 0)) ||
+        ((argc > 2) && (bench_parse_u32(argv[2], 1000000U, &printEvery) != 0))) {
+        shell_error(sh, "usage: adxl stream start-pl [frames, 0 = until stop] [print_every]");
+        return -EINVAL;
     }
-    if (!setEnabled(sh, true)) {
-        return -EIO;
+    if (!Pl::timingRunning()) {
+        shell_error(sh, "start the PL clock and pulse train first (pl clk on, pl sync on)");
+        return -EPERM;
     }
-    client.resetFrameStats(printEvery);
-    g_triggers.store(0U);
-    g_missedTicks.store(0U);
-    g_acqMin.store(UINT32_MAX);
-    g_acqMax.store(0U);
-    g_acqSum.store(0U);
-    g_frameLimit.store(frames);
-    g_periodUs = periodUs;
-    if (printEvery != 0U) {
-        Adxl355Te0715::Client::printFrameHeader();
-    }
-    g_streaming.store(true);
-    k_timer_start(&g_frameTimer, K_USEC(periodUs), K_USEC(periodUs));
-    k_sem_give(&g_streamStart);
-    shell_print(sh, "ADXL_STREAM_STARTED rate_hz=%.3f period_us=%u frames=%u print_every=%u", 1.0e6 / periodUs,
-                periodUs, frames, printEvery);
-    return 0;
+    return beginStream(sh, Source::PL, Pl::syncPeriodUs(), frames, printEvery);
 }
 
 extern "C" int adxl_cmd_stream_stop(const struct shell* sh, size_t argc, char** argv) {
     (void)argc;
     (void)argv;
     g_streaming.store(false);
-    k_timer_stop(&g_frameTimer);
+    stopTriggers();
     // The application answers only after any frame in progress has finished
     const bool disabled = setEnabled(sh, false);
     printStreamStats(sh, "ADXL_STREAM_STOPPED");

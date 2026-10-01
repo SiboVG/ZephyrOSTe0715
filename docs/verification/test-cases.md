@@ -3,7 +3,7 @@
 Each test case states what it verifies, what it needs, how it is run and when it
 passes. The procedures are explained in the [test guides](../tests/index.md);
 `app/scripts/collect_results.sh` runs TC-01 to TC-08 in one go, and
-`app/scripts/sensor_bench.py` runs TC-13 to TC-21.
+`app/scripts/sensor_bench.py` runs TC-13 to TC-22.
 
 Common preconditions for all test cases: the workspace built as in
 [Getting started](../getting-started/index.md), and the TE0715 on the JTAG/UART cable.
@@ -219,3 +219,13 @@ Common preconditions for all test cases: the workspace built as in
 | **Procedure** | `sensor_bench.py adxl355 --interactive`: MISO disconnected (identity, reads, a 50-frame stream), reconnected (stream); CS disconnected (reads), reconnected (reads) |
 | **Pass criteria** | With MISO disconnected, `adxl id` fails, no sample is valid and all frames are partial; after reconnection all frames complete. With CS disconnected no sample is valid; after reconnection samples are valid again |
 | **Evidence** | `sensor_bench.py` package |
+
+## TC-22 ADXL355 on the PL's external clock and synchronization pulse
+
+| | |
+|---|---|
+| **Verifies** | `TE-ADXL-007`, `TE-ADXL-008`; `TE-ADXL-004` in the synchronized mode |
+| **Preconditions** | TC-17 passed; the sensor at rest; EXT_CLK and SYNC from TE0701 J15 through the 1.8 V to 3.3 V translator to the sensor's `INT2` and `DRDY` ([wiring](../tests/adxl355.md#wiring)); a `pp_te0701` bitstream built from committed cubespec-pl sources; the image and the bitstream loaded together with `xsdb.cfg ... sd-state` |
+| **Procedure** | `sensor_bench.py adxl355-pl --elf <zephyr.elf> --bit <pp_te0701.bit>`, as in [ADXL355 bench, TC-22](../tests/adxl355.md#tc-22-external-synchronization): bitstream identity and build, the PL time base against the PS clock, start-up, DATA_RDY clearing, 20000 frames on the PL's sync interrupt, frame timestamps, the DATA_RDY phase before and after three restarts of the clock and pulses, the interrupt delay, the clock stopped with a sample unread, the clock's return, the clock stopped during acquisition, the pulses stopped during acquisition |
+| **Pass criteria** | Steps 1 to 12 of the guide. In short: the bitstream is the checked-out cubespec-pl commit, built clean; the time base within 1 ppm of the PS clock; every frame of every PL-triggered stream complete, none stale, frozen or implausible, no trigger lost, acquisition below 250 µs, and \|a\| of every sample within 0.79 to 1.21 g with a spread below 20 mg; frame times on the 250 µs grid; the DATA_RDY phase intervals of all four measurements overlap; with the clock stopped, STATUS reads no longer clear DATA_RDY and only the first 8 frames (`FROZEN_REPEAT_LIMIT`) are complete, the rest `FROZEN_DATA`; after the clock returns, DATA_RDY clears and frames are complete; a clock stopped mid-stream leaves only stale or frozen frames; stopped pulses stop the triggers, and the event waits time out |
+| **Evidence** | `sensor_bench.py adxl355-pl` package |

@@ -45,6 +45,8 @@
 | csh 2.10.5 does not link with Ubuntu 24.04's meson 1.3.2 | Use a current meson from PyPI (see [csh against the board](tests/csp-libparam.md#5-csh-against-the-board)) |
 | csh's `list add` needs `-a 1 -m c` for the TE0715's parameters | Without them csh hides the parameters or cannot read them; `list download` is not affected |
 | `west patch apply` is not idempotent | Run `west patch clean && west patch apply` |
+| Images loaded over JTAG run 3 to 10 times slower than from the SD card | After `rst -processor` the L2 cache is off and ACTLR is 0; with ACTLR.SMP clear the Cortex-A9 does not cache Shareable memory. U-Boot sets both on an SD boot, Zephyr's `soc_reset_hook` does not. `xsdb.cfg <elf> <bit> sd-state` (or `-` for no bitstream) enables the L2 cache and sets ACTLR to 0x41 (SMP, FW) as U-Boot does; TC-22 loads that way. Without it the ADXL355 bench failed its three timing checks (evidence `2026-10-01-0016-adxl355-pl-gateware`: 18 of 21); with it, 21 of 21 (`2026-10-01-0022-adxl355-pl-gateware-smp-l2`). With ACTLR 0x41 but the L2 cache off, half the SPI soak transfers returned the previous transfer's bytes; not investigated, so set both |
+| `dow` over JTAG fails now and then with "OCM is not enabled at 0x00030000" | The SD boot the reset starts has run for about a second when xsdb halts the CPU, and its state varies. Retrying works; `sensor_bench.py adxl355-pl` tries three times |
 
 ## Pre-existing test failures elsewhere
 
