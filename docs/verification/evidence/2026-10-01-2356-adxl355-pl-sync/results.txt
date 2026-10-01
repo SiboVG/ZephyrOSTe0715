@@ -1,0 +1,19 @@
+PASS  load       xsdb load.tcl (ACTLR 0x41, L2 on), attempt 1
+PASS  boot       ready marker
+PASS  pl-info    PL_INFO magic=0x43534757 id=0x00010100 target=1 carrier=1 map=0.2 slots=0x00000007 git=0xedefe1cb dirty=1 build_time=1790889702 tb_id=0x00020100 tb_hz=128000000 acc_id=0x00030100 header_map=0.2 result=PASS
+INFO  info       ADXL_INFO bench=8bba2bf3ce37-dirty library=fdf02ef148ed spi_ref_hz=142857142 requested_hz=1200000 sclk_hz=1116071 mode=0 cs=MIO13 odr_code=5 streaming=0
+INFO  time       PL 10199589 us against PS 10199590 us over 10 s: -0.0 ppm; PL_TIME pl_ticks=1614261941 pl_us=12611421 ps_us_before=11701262 ps_us_after=11701263
+PASS  init       INITIALIZE_ALL(G2, HZ_4000, OFF): ADXL_CMD app-init response=OK
+INFO  clk        PL_CLK clk_en=1 status=0x1
+INFO  sync       PL_SYNC sync_en=1 period_clocks=256 width_clocks=8 period_us=250
+INFO  delay      PL_DELAY ticks=6400 us=50
+PASS  start      ADXL_STREAM_STARTED rate_hz=4000.000 period_us=250 frames=20000 print_every=0 source=pl
+FAIL  4kHz       20000 frames on the PL sync, all complete, none stale, no gap: ADXL_STREAM_STOPPED triggers=20000 frames=20000 complete=481 partial=19519 stale=19519 implausible=0 busy=0 other=0 seq_gaps=0 missed_ticks=0 acq_min_us=37 acq_mean_us=37 acq_max_us=70 period_us=250 streaming=0 source=pl pl_overruns=0
+PASS  spacing    12 printed frames, sync_us steps [6500, 6750, 7000, 7250] (multiples of 250), |a| 0.0000 to 1.1760 g
+INFO  delay2     IRQ_DELAY 2 us: complete=98 stale=3902 missed=0
+INFO  delay5     IRQ_DELAY 5 us: complete=98 stale=3902 missed=0
+INFO  delay10    IRQ_DELAY 10 us: complete=103 stale=3897 missed=0
+INFO  delay20    IRQ_DELAY 20 us: complete=103 stale=3897 missed=0
+INFO  delay30    IRQ_DELAY 30 us: complete=103 stale=3897 missed=0
+FAIL  noclk      without EXT_CLK no fresh sample: ADXL_READ_DONE ok=3 failures=0 mean_x_g=0.717445 mean_y_g=0.728824 mean_z_g=0.574402 std_x_mg=0.0000 std_y_mg=0.0000 std_z_mg=0.0000 magnitude_g=1.172967 odr_hz=4000.000
+DONE 2 failed

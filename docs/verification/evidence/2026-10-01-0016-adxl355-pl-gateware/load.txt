@@ -1,0 +1,13 @@
+How this run's image was loaded (written by hand; sensor_bench.py --attach does not record it).
+
+Host: Ubuntu 24.04 x86_64, Digilent cable 25163300AA8C (JTAG interface 0, console /dev/ttyUSB1).
+Image: app/apps/fprime_adxl355_bench built 2026-10-01 00:12 CEST on this host (Zephyr SDK 1.0.1, tools from the Sandbox workspace .venv) at bench 8bba2bf with the west patches applied (west patch clean && west patch apply: 7 patches), fprime-adxl355 fdf02ef. zephyr.elf sha256 9e0368d9749846285fb2f090c6893fe75d653583fbd891a63c83fb54b6618073, zephyr.bin sha256 7082a6aefa151ce92753b798ae96628ce8959b5d80791e533ebd96555e05d374.
+PL: cubespec-pl (SiboVG/cubespec-pl, then uncommitted; first commit 64e5bc7 has the same sources) pp_te0701.bit sha256 c61a75517d2cc2865a8234eaf762b80dae80fd4c307603b6f903d7959d1ae593 (uncommitted tree: GIT_HASH 0, BUILD_FLAGS.DIRTY 1; content hashes in cubespec-pl docs/evidence/2026-10-01-pl-hil-001/sources.sha256). The bench's ps7_init.tcl, identical to the gateware's generated one apart from line endings.
+Run: app/scripts/sensor_bench.py adxl355 --attach --port /dev/ttyUSB1 (automated steps, TC-17 to TC-19).
+Load: xsdb app/boards/trenz/te0715/support/xsdb.cfg zephyr.elf pp_te0701.bit (unchanged bench script). ACTLR not set by anything, so 0 (rst -processor); L2 state not recorded for this load.
+
+Result: 18 passed, 3 failed (TC-18.4, TC-19.4, TC-19.5). Every transfer about 3 to 10 times slower than in run 6.
+
+Control, same session, not a sensor_bench run (console excerpt): the same image loaded over JTAG the same way but without pp_te0701.bit gave adxl soak 2000 at 8.93 MHz: min/mean/max 96/104/425 us, adxl timing 200 at 8.93 MHz: 202/207/519 us; this load reported L2_CONTROL 0 before start. With pp_te0701.bit: 96/103/426 us. The slowdown does not depend on the bitstream.
+
+Cause: xsdb read ACTLR = 0x00000000 on the running image (SCTLR with I and C set). With ACTLR.SMP clear the Cortex-A9 does not cache Shareable memory. On the SD boot the FSBL and U-Boot are expected to leave ACTLR.SMP set (the Xilinx boot code sets it; not read back on an SD boot here) and do enable the L2 cache (seen as L2_CONTROL 1 on one JTAG load that halted after them); Zephyr's soc_reset_hook sets neither. See the next run (…-smp-l2).
