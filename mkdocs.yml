@@ -104,6 +104,7 @@ nav:
       - As-run record 2026-09-24: verification/as-run-2026-09-24.md
       - FlatSat as-run record 2026-09-24: verification/as-run-flatsat-2026-09-24.md
       - ADXL355 bench as-run record 2026-09-29: verification/as-run-adxl355-2026-09-29.md
+      - ADXL355 on the PL clock and pulse, as-run record 2026-10-02: verification/as-run-adxl355-pl-2026-10-02.md
       - FlatSat as-run record template: verification/flatsat-record-template.md
       - Sensor bench as-run record template: verification/sensor-record-template.md
   - Known issues: known-issues.md
