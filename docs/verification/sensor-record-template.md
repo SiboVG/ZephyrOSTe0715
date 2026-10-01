@@ -11,7 +11,7 @@ step; this record adds what the script cannot know.
 
 | Field | Entry |
 |---|---|
-| Test cases | TC-13 to TC-16 (INA229) / TC-17 to TC-21 (ADXL355) |
+| Test cases | TC-13 to TC-16 (INA229) / TC-17 to TC-21 (ADXL355) / TC-22 (ADXL355 on the PL) |
 | Procedure | `docs/tests/ina229.md` / `docs/tests/adxl355.md`, revision / date: |
 | Date, start time (UTC) | |
 | Operator | |
@@ -34,6 +34,8 @@ step; this record adds what the script cannot know.
 | INA229 only: load circuit | supply voltage, load, current: |
 | INA229 only: reference instruments | model, serial, calibration date, uncertainty used: |
 | ADXL355 only: mounting | block / fixture, surface levelled? |
+| TC-22 only: bitstream | cubespec-pl commit, `pp_te0701.bit` sha256 (from `environment.txt`), `pl info` `git` and `dirty`: |
+| TC-22 only: clock and pulse wiring | J15 to the level translator to `INT2` / `DRDY` as in the guide? series resistors: |
 | Ambient temperature | |
 
 ## Results
@@ -51,6 +53,8 @@ Result: **P** pass, **F** fail, **NR** not run (give the reason). Copy the verdi
 | TC-19 | 1-4 | Application streams; acquisition time at 4 kHz (max) | | |
 | TC-20 | all | Six orientations; offsets and sensitivities | | |
 | TC-21 | 1-4 | ADXL355 faults | | |
+| TC-22 | 1-8 | External clock and pulse: frames, timestamps, DATA_RDY phase, interrupt delay | | longest acquisition, phase interval: |
+| TC-22 | 9-12 | Clock and pulses stopped and restarted | | |
 | – | – | Unexpected events or telemetry in `transcript.log` | | |
 
 ## Findings for the libraries

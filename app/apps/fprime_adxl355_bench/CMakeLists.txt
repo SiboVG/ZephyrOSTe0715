@@ -13,13 +13,23 @@ if(NOT EXISTS "${ADXL355_LIBRARY_PATH}/library.cmake")
     message(FATAL_ERROR "fprime-adxl355 not found next to the workspace (${ADXL355_LIBRARY_PATH})")
 endif()
 
+# cubespec-pl (the PL design) next to the workspace, like fprime-adxl355: its register
+# headers and devicetree fragment for the `pl` commands and the PL sync source
+get_filename_component(CUBESPEC_PL_PATH "${CMAKE_CURRENT_LIST_DIR}/../../../../cubespec-pl" REALPATH)
+if(NOT EXISTS "${CUBESPEC_PL_PATH}/sw/include/pp_regs.h")
+    message(FATAL_ERROR "cubespec-pl not found next to the workspace (${CUBESPEC_PL_PATH})")
+endif()
+
 # Zephyr first: it selects the cross toolchain before project()
 if(NOT BUILD_TESTING)
     list(APPEND EXTRA_DTC_OVERLAY_FILE "${CMAKE_CURRENT_LIST_DIR}/../../boards/te0701-spi1.overlay")
+    list(APPEND DTS_ROOT "${CUBESPEC_PL_PATH}/sw")
+    list(APPEND EXTRA_DTC_OVERLAY_FILE "${CMAKE_CURRENT_LIST_DIR}/pl.overlay")
     find_package(Zephyr REQUIRED HINTS "${CMAKE_CURRENT_LIST_DIR}/../../../zephyr")
 endif()
 
 project(Adxl355Te0715 LANGUAGES C CXX)
+include_directories("${CUBESPEC_PL_PATH}/sw/include")
 
 # Zephyr skips CMake's compiler feature detection; the standard is selected by
 # CONFIG_STD_CPP17 (as in apps/fprime_csp_bench)
@@ -40,6 +50,7 @@ register_fprime_zephyr_deployment(
     SOURCES
         "${CMAKE_CURRENT_LIST_DIR}/Main.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/bench_cmds.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/pl.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/shell_cmds.c"
     DEPENDS
         Top

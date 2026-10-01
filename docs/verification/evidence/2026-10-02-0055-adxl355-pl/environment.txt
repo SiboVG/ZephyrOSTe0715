@@ -1,0 +1,16 @@
+date: 2026-10-02T00:55:42+02:00
+host: sibo-van-gool-MS-7E59 Linux-7.0.0-34-generic-x86_64-with-glibc2.39
+command: app/scripts/sensor_bench.py adxl355-pl --elf app/apps/fprime_adxl355_bench/build-fprime-automatic-zephyr/zephyr/zephyr.elf --bit ../../../pl/cubespec-pl/build/pp-te0701/out/pp_te0701.bit --port /dev/ttyUSB1 --xsdb /tools/Xilinx/Vitis/2022.1/bin/xsdb --out docs/verification/evidence/2026-10-02-0055-adxl355-pl
+app: 18737c445397
+fprime-adxl355: c6f67bbba91b
+zephyr: 70b56a29cd7-dirty
+fprime: v4.2.0-267-g35d4c0e881
+fprime-zephyr: 6e2a411
+zephyr.elf: /home/sibo-van-gool/Desktop/PhD/CubeSpec/FlightSoftware/ZephyrOS/cubespec-flight-software/verification/benches/zephyr-te0715/app/apps/fprime_adxl355_bench/build-fprime-automatic-zephyr/zephyr/zephyr.elf
+zephyr.elf sha256: 0da9f8ee644fe5b3c94a01f60cd7d99f9bbdda1469d12af6a7ae85516be57827
+cubespec-pl: 8857ed418f01
+bitstream: /home/sibo-van-gool/Desktop/PhD/CubeSpec/FlightSoftware/ZephyrOS/cubespec-flight-software/pl/cubespec-pl/build/pp-te0701/out/pp_te0701.bit
+bitstream sha256: 1625b9301f991fbbcd0684a5f1a58561329c757bf9b827ef7688a1f07d6c2a82
+load: xsdb.cfg <elf> <bit> sd-state (L2 cache on, ACTLR 0x41, as after an SD boot)
+reference uncertainty: 0.1 %
+soak transfers per point: 20000

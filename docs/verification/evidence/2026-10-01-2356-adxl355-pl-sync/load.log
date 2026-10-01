@@ -1,0 +1,13 @@
+attempting to launch hw_server
+
+****** Xilinx hw_server v2022.1.0
+  **** Build date : Apr 10 2022 at 06:24:21
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+
+INFO: hw_server application started
+INFO: Use Ctrl-C to exit hw_server application
+
+INFO: To connect to this hw_server instance use url: TCP:127.0.0.1:3121
+
+before: L2_CONTROL 0x00000000 L2_AUX 0x72360000 ARM_CLK_CTRL 0x1F000200 ARM_PLL 0x00028008
+start:  L2_CONTROL 0x00000001 sctlr: 08c50078  actlr: 00000041  cpacr: 00000000    scr: 00000000

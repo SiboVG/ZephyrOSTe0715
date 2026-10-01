@@ -1,0 +1,11 @@
+How this run's image was loaded (written by hand; sensor_bench.py --attach does not record it).
+
+Host: Ubuntu 24.04 x86_64, Digilent cable 25163300AA8C (JTAG interface 0, console /dev/ttyUSB1).
+Image: app/apps/fprime_adxl355_bench built 2026-10-01 00:12 CEST on this host (Zephyr SDK 1.0.1, tools from the Sandbox workspace .venv) at bench 8bba2bf with the west patches applied (west patch clean && west patch apply: 7 patches), fprime-adxl355 fdf02ef. zephyr.elf sha256 9e0368d9749846285fb2f090c6893fe75d653583fbd891a63c83fb54b6618073, zephyr.bin sha256 7082a6aefa151ce92753b798ae96628ce8959b5d80791e533ebd96555e05d374.
+PL: cubespec-pl (SiboVG/cubespec-pl, then uncommitted; first commit 64e5bc7 has the same sources) pp_te0701.bit sha256 c61a75517d2cc2865a8234eaf762b80dae80fd4c307603b6f903d7959d1ae593 (uncommitted tree: GIT_HASH 0, BUILD_FLAGS.DIRTY 1; content hashes in cubespec-pl docs/evidence/2026-10-01-pl-hil-001/sources.sha256). The bench's ps7_init.tcl, identical to the gateware's generated one apart from line endings.
+Run: app/scripts/sensor_bench.py adxl355 --attach --port /dev/ttyUSB1 (automated steps, TC-17 to TC-19).
+Load: xsdb load.tcl zephyr.elf pp_te0701.bit on 0x41 (load.tcl in this folder): the bench's xsdb.cfg sequence plus, before dow, the L2 cache invalidated and enabled as U-Boot does, and ACTLR set to 0x41 (SMP, FW) as the Xilinx boot code does. Reported before start: L2_CONTROL 0 -> 1, sctlr 08c50078, actlr 00000041.
+
+Result: 21 passed, 0 failed, as run 6 (2026-09-29-2335-adxl355). TC-19.4 acquisition 38/38/42 us (run 6: 32/33/49 us).
+
+Also seen in this session: with ACTLR 0x41 but L2 left off, adxl soak 2000 at 8.93 MHz failed 1000 of 2000 transfers (every 2-byte read of 0x01 returned the bytes of the preceding 4-byte read of 0x00: rx=ff ad 1d 00 00), at 13/14/27 us per transfer. Not investigated further.

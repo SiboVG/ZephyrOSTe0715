@@ -103,7 +103,9 @@ sampled on falling edges, data sheet SLYS023A 6.7), the ADXL355 mode 0.
 
 The benches are F Prime projects, like `apps/fprime_csp_bench`. The library is a
 checkout next to the workspace (see [The workspace](../getting-started/index.md)):
-`../fprime-ina229` or `../fprime-adxl355`.
+`../fprime-ina229` or `../fprime-adxl355`. The ADXL355 bench also needs
+[cubespec-pl](https://github.com/SiboVG/cubespec-pl) at `../cubespec-pl`, for the
+register header and devicetree fragment of the PL bitstream that TC-22 uses.
 
 ```bash
 cd app/apps/fprime_ina229_bench        # or fprime_adxl355_bench
@@ -119,7 +121,8 @@ and library revisions the image was built from; `-dirty` marks uncommitted chang
     In the CubeSpec FlightSoftware workspace the libraries live in `libraries/`. Link
     them next to the bench workspace once:
     `ln -s ../../libraries/fprime-ina229 verification/benches/fprime-ina229` and the
-    same for `fprime-adxl355`.
+    same for `fprime-adxl355`; the PL design is in `pl/`:
+    `ln -s ../../pl/cubespec-pl verification/benches/cubespec-pl`.
 
 ## Running the tests
 

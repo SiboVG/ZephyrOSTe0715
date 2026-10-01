@@ -4,6 +4,8 @@
 #include "Fw/Buffer/Buffer.hpp"
 #include "TeBench/Support/EnumName.hpp"
 
+#include <cmath>
+
 #include <zephyr/kernel.h>
 #include <zephyr/sys/printk.h>
 
@@ -56,13 +58,18 @@ void Client::resetFrameStats(U32 printEvery) {
     this->m_implausible.store(0U);
     this->m_busy.store(0U);
     this->m_otherErrors.store(0U);
+    this->m_frozen.store(0U);
+    this->m_magnitudeMin.store(UINT32_MAX);
+    this->m_magnitudeMax.store(0U);
     this->m_haveSequence = false;
 }
 
 Client::FrameStats Client::frameStats() const {
+    const U32 minimum = this->m_magnitudeMin.load();
     return FrameStats{this->m_frames.load(),       this->m_complete.load(), this->m_partial.load(),
                       this->m_sequenceGaps.load(), this->m_stale.load(),    this->m_implausible.load(),
-                      this->m_busy.load(),         this->m_otherErrors.load()};
+                      this->m_busy.load(),         this->m_otherErrors.load(), this->m_frozen.load(),
+                      (minimum == UINT32_MAX) ? 0U : minimum, this->m_magnitudeMax.load()};
 }
 
 void Client::printHeader() {
@@ -102,8 +109,25 @@ void Client::frameReady_handler(FwIndexType portNum, Adxl355::SampleFrame& frame
         this->m_implausible.fetch_add(1U);
     } else if (status == Adxl355::DriverStatus::BUSY) {
         this->m_busy.fetch_add(1U);
+    } else if (status == Adxl355::DriverStatus::FROZEN_DATA) {
+        this->m_frozen.fetch_add(1U);
     } else if (status != Adxl355::DriverStatus::OK) {
         this->m_otherErrors.fetch_add(1U);
+    }
+    // The range of |a| over every valid sample shows corrupted samples a count cannot
+    // (for example the first samples after the synchronization pulses start)
+    if (status == Adxl355::DriverStatus::OK) {
+        const Adxl355::AccelerationSample& a = frame.get_samples()[0];
+        const F64 x = a.get_xMetersPerSecondSquared();
+        const F64 y = a.get_yMetersPerSecondSquared();
+        const F64 z = a.get_zMetersPerSecondSquared();
+        const U32 microG = static_cast<U32>(std::sqrt(x * x + y * y + z * z) / STANDARD_GRAVITY * 1e6 + 0.5);
+        if (microG < this->m_magnitudeMin.load()) {
+            this->m_magnitudeMin.store(microG);
+        }
+        if (microG > this->m_magnitudeMax.load()) {
+            this->m_magnitudeMax.store(microG);
+        }
     }
 
     const U32 printEvery = this->m_printEvery.load();

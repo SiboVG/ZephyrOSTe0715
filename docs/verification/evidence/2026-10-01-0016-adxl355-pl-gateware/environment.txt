@@ -1,0 +1,10 @@
+date: 2026-10-01T00:16:00+02:00
+host: sibo-van-gool-MS-7E59 Linux-7.0.0-34-generic-x86_64-with-glibc2.39
+command: app/scripts/sensor_bench.py adxl355 --attach --port /dev/ttyUSB1 --out docs/verification/evidence/2026-10-01-0016-adxl355-pl-gateware
+app: 8bba2bf3ce37
+fprime-adxl355: fdf02ef148ed
+zephyr: 70b56a29cd7-dirty
+fprime: v4.2.0-267-g35d4c0e881
+fprime-zephyr: 6e2a411
+reference uncertainty: 0.1 %
+soak transfers per point: 20000

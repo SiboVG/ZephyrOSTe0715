@@ -33,6 +33,10 @@ class Client final : public ClientComponentBase {
         U64 implausible;
         U64 busy;
         U64 otherErrors;
+        U64 frozen;
+        //! Smallest and largest |a| of the valid samples, in micro-g (0 and 0 without any)
+        U32 magnitudeMinMicroG;
+        U32 magnitudeMaxMicroG;
     };
     void resetFrameStats(U32 printEvery);
     FrameStats frameStats() const;
@@ -54,6 +58,9 @@ class Client final : public ClientComponentBase {
     std::atomic<U64> m_implausible{0U};
     std::atomic<U64> m_busy{0U};
     std::atomic<U64> m_otherErrors{0U};
+    std::atomic<U64> m_frozen{0U};
+    std::atomic<U32> m_magnitudeMin{UINT32_MAX};
+    std::atomic<U32> m_magnitudeMax{0U};
     // Written only by the timing thread (frameReady), read after reset
     bool m_haveSequence = false;
     U64 m_lastSequence = 0U;

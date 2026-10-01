@@ -1,0 +1,106 @@
+# 1. External clock stopped after it ran: STATUS (0x04) DATA_RDY is bit 0
+> pl status
+  PL_ACC ctrl=0x0 status=0x0 period_clocks=256 width_clocks=8 delay_ticks=6400 event_count=72837 irq_status=0x3 irq_enable=0x0 overruns=0
+> adxl reg 0x04 1
+  ADXL_REG addr=0x04 count=1 bytes=01  spi=SPI_OK
+> adxl reg 0x04 1
+  ADXL_REG addr=0x04 count=1 bytes=01  spi=SPI_OK
+> adxl reg 0x04 1
+  ADXL_REG addr=0x04 count=1 bytes=01  spi=SPI_OK
+> adxl reg 0x08 3
+  ADXL_REG addr=0x08 count=3 bytes=22 40 70  spi=SPI_OK
+> adxl reg 0x08 3
+  ADXL_REG addr=0x08 count=3 bytes=22 40 70  spi=SPI_OK
+# 2. Clock running, no sync: does the sensor produce samples?
+> pl clk on
+  PL_CLK clk_en=1 status=0x1
+> adxl reg 0x04 1
+  ADXL_REG addr=0x04 count=1 bytes=07  spi=SPI_OK
+> adxl reg 0x04 1
+  ADXL_REG addr=0x04 count=1 bytes=07  spi=SPI_OK
+> adxl read 5 0
+  ADXL_READ_DONE ok=5 failures=0 mean_x_g=0.546635 mean_y_g=0.608415 mean_z_g=0.589748 std_x_mg=0.3553 std_y_mg=0.2184 std_z_mg=0.9272 magnitude_g=1.008356 odr_hz=4000.000
+> pl clk off
+  PL_CLK clk_en=0 status=0x0
+> adxl reg 0x04 1
+  ADXL_REG addr=0x04 count=1 bytes=07  spi=SPI_OK
+> adxl reg 0x04 1
+  ADXL_REG addr=0x04 count=1 bytes=01  spi=SPI_OK
+# 3. Clock stopped: does reading the data registers clear DATA_RDY?
+> pl clk off
+  PL_CLK clk_en=0 status=0x0
+> adxl reg 0x04 1
+  ADXL_REG addr=0x04 count=1 bytes=01  spi=SPI_OK
+> adxl reg 0x04 10
+  ADXL_REG addr=0x04 count=10 bytes=01 60 07 54 22 30 00 26 06 e0  spi=SPI_OK
+> adxl reg 0x04 1
+  ADXL_REG addr=0x04 count=1 bytes=01  spi=SPI_OK
+> adxl reg 0x08 9
+  ADXL_REG addr=0x08 count=9 bytes=22 30 00 26 06 e0 24 f2 40  spi=SPI_OK
+> adxl reg 0x04 1
+  ADXL_REG addr=0x04 count=1 bytes=01  spi=SPI_OK
+> adxl reg 0x11 1
+  ADXL_REG addr=0x11 count=1 bytes=22  spi=SPI_OK
+# 4. Clock running: TEMP and data change; then soft reset with the clock stopped
+> pl clk on
+  PL_CLK clk_en=1 status=0x1
+> adxl reg 0x06 2
+  ADXL_REG addr=0x06 count=2 bytes=07 54  spi=SPI_OK
+> adxl reg 0x06 2
+  ADXL_REG addr=0x06 count=2 bytes=07 55  spi=SPI_OK
+> pl clk off
+  PL_CLK clk_en=0 status=0x0
+# 5. Back-to-back reads with the clock and sync running: STATUS reads clear DATA_RDY
+> pl clk on
+  PL_CLK clk_en=1 status=0x1
+> pl sync on 256 8
+  PL_SYNC sync_en=1 period_clocks=256 width_clocks=8 period_us=250
+> adxl timing 400
+  ADXL_TIMING ok_n=400 ok_min_us=30 ok_mean_us=31 ok_max_us=34 stale_n=0 stale_max_us=0 failed_n=0 sclk_hz=8928571
+# 6. The same with both stopped
+> pl sync off
+  PL_SYNC sync_en=0 period_clocks=256 width_clocks=8 period_us=250
+> pl clk off
+  PL_CLK clk_en=0 status=0x0
+> adxl timing 50
+  ADXL_TIMING ok_n=50 ok_min_us=31 ok_mean_us=31 ok_max_us=33 stale_n=0 stale_max_us=0 failed_n=0 sclk_hz=8928571
+# 7. DATA_RDY clearing (two STATUS reads back to back) with EXT_CLK and SYNC running
+> pl clk on
+  PL_CLK clk_en=1 status=0x1
+> pl sync on 256 8
+  PL_SYNC sync_en=1 period_clocks=256 width_clocks=8 period_us=250
+> adxl drdy 200
+  ADXL_DRDY n=200 ready_first=200 cleared_second=200 reserved_set=0 spi_errors=0 result=PASS
+# 8. The same with SYNC stopped, EXT_CLK running
+> pl sync off
+  PL_SYNC sync_en=0 period_clocks=256 width_clocks=8 period_us=250
+> adxl drdy 200
+  ADXL_DRDY n=200 ready_first=200 cleared_second=200 reserved_set=0 spi_errors=0 result=PASS
+# 9. The same with both stopped
+> pl clk off
+  PL_CLK clk_en=0 status=0x0
+> adxl drdy 200
+  ADXL_DRDY n=200 ready_first=200 cleared_second=0 reserved_set=0 spi_errors=0 result=FAIL
+# 10. Clock back on: clearing works again
+> pl clk on
+  PL_CLK clk_en=1 status=0x1
+> adxl drdy 200
+  ADXL_DRDY n=200 ready_first=200 cleared_second=160 reserved_set=0 spi_errors=0 result=FAIL
+> pl clk off
+  PL_CLK clk_en=0 status=0x0
+# 11. Clock restarted after a stop, SYNC off: repeat after settling
+> pl clk on
+  PL_CLK clk_en=1 status=0x1
+> adxl drdy 200
+  ADXL_DRDY n=200 ready_first=200 cleared_second=178 reserved_set=0 spi_errors=0 result=FAIL
+> adxl drdy 200
+  ADXL_DRDY n=200 ready_first=200 cleared_second=200 reserved_set=0 spi_errors=0 result=PASS
+# 12. SYNC back on
+> pl sync on 256 8
+  PL_SYNC sync_en=1 period_clocks=256 width_clocks=8 period_us=250
+> adxl drdy 200
+  ADXL_DRDY n=200 ready_first=200 cleared_second=200 reserved_set=0 spi_errors=0 result=PASS
+> adxl drdy 200
+  ADXL_DRDY n=200 ready_first=200 cleared_second=200 reserved_set=0 spi_errors=0 result=PASS
+> adxl read 5 0
+  ADXL_READ_DONE ok=5 failures=0 mean_x_g=0.544020 mean_y_g=0.610281 mean_z_g=0.590347 std_x_mg=0.5416 std_y_mg=0.3227 std_z_mg=0.6312 magnitude_g=1.008420 odr_hz=4000.000
