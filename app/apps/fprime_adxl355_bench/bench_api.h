@@ -31,6 +31,7 @@ int adxl_cmd_reg(const struct shell *sh, size_t argc, char **argv);
 int adxl_cmd_soak(const struct shell *sh, size_t argc, char **argv);
 int adxl_cmd_drdy(const struct shell *sh, size_t argc, char **argv);
 int adxl_cmd_phase(const struct shell *sh, size_t argc, char **argv);
+int adxl_cmd_capture(const struct shell *sh, size_t argc, char **argv);
 int adxl_cmd_init(const struct shell *sh, size_t argc, char **argv);
 int adxl_cmd_measure(const struct shell *sh, size_t argc, char **argv);
 int adxl_cmd_read(const struct shell *sh, size_t argc, char **argv);

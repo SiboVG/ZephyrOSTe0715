@@ -9,6 +9,8 @@
  *   adxl soak <n>                     n raw identity reads, checked (link integrity)
  *   adxl drdy [n]                     STATUS reserved bits and DATA_RDY clearing
  *   adxl phase [n]                    where in the PL's SYNC period DATA_RDY sets
+ *   adxl capture on [n]|off|status|dump [first [count]]
+ *                                     store every frame of the following streams; print them
  *   adxl init [range] [odr] [hpf]     initialize (internal clock) through the manager
  *   adxl measure on|off               measurement mode through the manager
  *   adxl read [count] [rows]          fresh samples through the manager, with statistics
@@ -52,6 +54,10 @@ SHELL_STATIC_SUBCMD_SET_CREATE(adxl_cmds,
 		      adxl_cmd_drdy, 1, 1),
 	SHELL_CMD_ARG(phase, NULL, "[n]: where in the PL's SYNC period DATA_RDY sets, raw SPI",
 		      adxl_cmd_phase, 1, 1),
+	SHELL_CMD_ARG(capture, NULL,
+		      "on [frames]|off|status|dump [first [count]]: store every frame of the "
+		      "following streams, print them as CSV",
+		      adxl_cmd_capture, 1, 3),
 	SHELL_CMD_ARG(init, NULL, "[range 2|4|8] [odr_hz] [hpf 0..6]: initialize, internal clock",
 		      adxl_cmd_init, 1, 3),
 	SHELL_CMD_ARG(measure, NULL, "on|off: measurement mode", adxl_cmd_measure, 2, 0),

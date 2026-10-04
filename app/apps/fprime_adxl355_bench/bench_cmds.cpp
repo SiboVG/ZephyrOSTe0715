@@ -19,6 +19,7 @@
 
 #include <zephyr/kernel.h>
 #include <zephyr/shell/shell.h>
+#include <zephyr/sys/crc.h>
 #include <zephyr/sys/printk.h>
 
 namespace {
@@ -311,9 +312,21 @@ std::atomic<U64> g_acqSum{0U};
 U32 g_periodUs = 0U;
 std::atomic<Source> g_source{Source::TIMER};
 
-//! Waits for the next trigger and returns its synchronization time; false when the
-//! stream stops. With the PL, missed sync events show as gaps in the event count.
-bool nextTrigger(U64& syncUs, U32& lastCount) {
+// Frame capture (`adxl capture`): while armed, every frame of every stream is stored
+// until the limit, for figures (app/scripts/plot_tc22.py). About 3 MB of DDR.
+constexpr U32 CAPTURE_CAPACITY = 65536U;
+Adxl355Te0715::CaptureRecord g_capture[CAPTURE_CAPACITY];
+std::atomic<bool> g_captureArmed{false};
+std::atomic<U32> g_captureCount{0U};
+std::atomic<U32> g_captureLimit{0U};
+U16 g_captureStream = 0U;   // number of the running stream since arming
+U16 g_captureStreams = 0U;  // streams begun since arming; written by beginStream
+
+//! Waits for the next trigger and returns its synchronization time (and with the PL,
+//! the instant on the PL time base); false when the stream stops. With the PL, missed
+//! sync events show as gaps in the event count.
+bool nextTrigger(U64& syncUs, U64& syncTicks, U32& lastCount) {
+    syncTicks = 0U;
     if (g_source.load() == Source::PL) {
         Pl::SyncEvent event;
         while (!Pl::waitEvent(event, K_MSEC(100))) {
@@ -327,6 +340,7 @@ bool nextTrigger(U64& syncUs, U32& lastCount) {
         }
         lastCount = event.count;
         syncUs = Pl::ticksToUs(event.ticks);
+        syncTicks = event.ticks;
         return g_streaming.load();
     }
     const U32 expiries = k_timer_status_sync(&g_frameTimer);
@@ -338,6 +352,38 @@ bool nextTrigger(U64& syncUs, U32& lastCount) {
     }
     syncUs = k_cyc_to_us_floor64(k_cycle_get_64());
     return true;
+}
+
+//! The record for the next frame while the capture is armed and not full, else nullptr
+Adxl355Te0715::CaptureRecord* captureSlot() {
+    if (!g_captureArmed.load()) {
+        return nullptr;
+    }
+    const U32 index = g_captureCount.load();
+    if (index >= g_captureLimit.load()) {
+        return nullptr;
+    }
+    Adxl355Te0715::CaptureRecord& record = g_capture[index];
+    record = Adxl355Te0715::CaptureRecord{};
+    record.stream = g_captureStream;
+    return &record;
+}
+
+//! Completes a record after its frame: the times, then the count that publishes it
+void finishCapture(Adxl355Te0715::CaptureRecord& record, U64 syncUs, U64 syncTicks, U64 startTicks,
+                   U64 triggerCycles, U32 startCycles, U32 endCycles) {
+    record.syncUs = syncUs;
+    record.syncTicks = syncTicks;
+    if (syncTicks != 0U) {
+        const U64 endTicks = Pl::nowTicks();
+        record.startNs = static_cast<U32>(Pl::ticksToNs(startTicks - syncTicks));
+        record.endNs = static_cast<U32>(Pl::ticksToNs(endTicks - syncTicks));
+    } else {
+        const U32 trigger = static_cast<U32>(triggerCycles);
+        record.startNs = k_cyc_to_ns_floor32(startCycles - trigger);
+        record.endNs = k_cyc_to_ns_floor32(endCycles - trigger);
+    }
+    g_captureCount.fetch_add(1U);
 }
 
 void stopTriggers() {
@@ -357,12 +403,24 @@ void timingThread(void* p1, void* p2, void* p3) {
         U32 lastCount = 0U;
         while (g_streaming.load()) {
             U64 syncUs = 0U;
-            if (!nextTrigger(syncUs, lastCount)) {
+            U64 syncTicks = 0U;
+            if (!nextTrigger(syncUs, syncTicks, lastCount)) {
                 break;
             }
+            const U64 triggerCycles = k_cycle_get_64();
+            Adxl355Te0715::CaptureRecord* slot = captureSlot();
+            // With the PL, the capture times the acquisition on the PL time base, from
+            // the sync instant; these reads (about 1 us) stay outside the timed window
+            const U64 startTicks = ((slot != nullptr) && (syncTicks != 0U)) ? Pl::nowTicks() : 0U;
+            client.setCaptureSlot(slot);
             const U32 start = k_cycle_get_32();
             client.acquire(syncUs);
-            const U32 us = k_cyc_to_us_floor32(k_cycle_get_32() - start);
+            const U32 end = k_cycle_get_32();
+            client.setCaptureSlot(nullptr);
+            const U32 us = k_cyc_to_us_floor32(end - start);
+            if (slot != nullptr) {
+                finishCapture(*slot, syncUs, syncTicks, startTicks, triggerCycles, start, end);
+            }
             if (us < g_acqMin.load()) {
                 g_acqMin.store(us);
             }
@@ -871,6 +929,7 @@ int beginStream(const struct shell* sh, Source source, U32 periodUs, U32 frames,
     g_triggers.store(0U);
     g_missedTicks.store(0U);
     g_eventTimeouts.store(0U);
+    g_captureStream = g_captureStreams++;
     g_acqMin.store(UINT32_MAX);
     g_acqMax.store(0U);
     g_acqSum.store(0U);
@@ -944,6 +1003,78 @@ extern "C" int adxl_cmd_stream_status(const struct shell* sh, size_t argc, char*
     (void)argc;
     (void)argv;
     printStreamStats(sh, "ADXL_STREAM");
+    return 0;
+}
+
+namespace {
+
+void printCaptureStatus(const struct shell* sh) {
+    shell_print(sh, "ADXL_CAPTURE armed=%d count=%u limit=%u capacity=%u streams=%u", g_captureArmed.load() ? 1 : 0,
+                g_captureCount.load(), g_captureLimit.load(), CAPTURE_CAPACITY, g_captureStreams);
+}
+
+//! The stored frames as CSV lines, each followed by the CRC-32 (IEEE, as zlib's) of the
+//! text before it, so a line damaged on the console is detected rather than plotted
+void dumpCapture(const struct shell* sh, U32 first, U32 count) {
+    shell_print(sh,
+                "ADXL_CAPTURE_BEGIN first=%u count=%u fields=index,stream,sequence,sync_us,sync_ticks,start_ns,"
+                "end_ns,status,valid,raw_x,raw_y,raw_z,crc32",
+                first, count);
+    char line[192];
+    for (U32 i = first; i < first + count; i++) {
+        const Adxl355Te0715::CaptureRecord& r = g_capture[i];
+        const int length =
+            snprintk(line, sizeof(line), "ADXL_CAP,%u,%u,%u,%llu,%llu,%u,%u,%u,%u,%d,%d,%d", i, r.stream, r.sequence,
+                     static_cast<unsigned long long>(r.syncUs), static_cast<unsigned long long>(r.syncTicks),
+                     r.startNs, r.endNs, r.status, r.validMask, r.rawX, r.rawY, r.rawZ);
+        if ((length <= 0) || (static_cast<size_t>(length) >= sizeof(line))) {
+            continue;  // cannot happen with these field widths; a missing index shows it
+        }
+        shell_print(sh, "%s,%08x", line, crc32_ieee(reinterpret_cast<const uint8_t*>(line), static_cast<size_t>(length)));
+    }
+    shell_print(sh, "ADXL_CAPTURE_END first=%u count=%u", first, count);
+}
+
+}  // namespace
+
+extern "C" int adxl_cmd_capture(const struct shell* sh, size_t argc, char** argv) {
+    const char* action = (argc > 1) ? argv[1] : "status";
+    if ((strcmp(action, "on") == 0) || (strcmp(action, "dump") == 0)) {
+        if (g_streaming.load()) {
+            shell_error(sh, "stop the stream first (adxl stream stop)");
+            return -EBUSY;
+        }
+    }
+    if (strcmp(action, "on") == 0) {
+        U32 limit = CAPTURE_CAPACITY;
+        if ((argc > 2) && ((bench_parse_u32(argv[2], CAPTURE_CAPACITY, &limit) != 0) || (limit == 0U))) {
+            shell_error(sh, "usage: adxl capture on [frames 1..%u]", CAPTURE_CAPACITY);
+            return -EINVAL;
+        }
+        g_captureArmed.store(false);
+        g_captureCount.store(0U);
+        g_captureLimit.store(limit);
+        g_captureStreams = 0U;
+        g_captureArmed.store(true);
+    } else if (strcmp(action, "off") == 0) {
+        g_captureArmed.store(false);
+    } else if (strcmp(action, "dump") == 0) {
+        const U32 stored = g_captureCount.load();
+        U32 first = 0U;
+        U32 count = stored;
+        if (((argc > 2) && (bench_parse_u32(argv[2], CAPTURE_CAPACITY, &first) != 0)) ||
+            ((argc > 3) && (bench_parse_u32(argv[3], CAPTURE_CAPACITY, &count) != 0))) {
+            shell_error(sh, "usage: adxl capture dump [first [count]]");
+            return -EINVAL;
+        }
+        first = (first < stored) ? first : stored;
+        count = (count < (stored - first)) ? count : (stored - first);
+        dumpCapture(sh, first, count);
+    } else if (strcmp(action, "status") != 0) {
+        shell_error(sh, "usage: adxl capture on [frames]|off|status|dump [first [count]]");
+        return -EINVAL;
+    }
+    printCaptureStatus(sh);
     return 0;
 }
 

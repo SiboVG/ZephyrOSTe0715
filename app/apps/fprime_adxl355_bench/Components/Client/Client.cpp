@@ -72,6 +72,10 @@ Client::FrameStats Client::frameStats() const {
                       (minimum == UINT32_MAX) ? 0U : minimum, this->m_magnitudeMax.load()};
 }
 
+void Client::setCaptureSlot(CaptureRecord* slot) {
+    this->m_captureSlot = slot;
+}
+
 void Client::printHeader() {
     printk("ADXL_HEADER,time_ms,status,raw_x,raw_y,raw_z,x_g,y_g,z_g\n");
 }
@@ -103,6 +107,15 @@ void Client::frameReady_handler(FwIndexType portNum, Adxl355::SampleFrame& frame
     this->m_lastSequence = frame.get_sequence();
 
     const Adxl355::DriverStatus status = frame.get_sensorStatus()[0];
+    if (this->m_captureSlot != nullptr) {
+        const Adxl355::AccelerationSample& s = frame.get_samples()[0];
+        this->m_captureSlot->sequence = static_cast<U32>(frame.get_sequence());
+        this->m_captureSlot->status = static_cast<U8>(status.e);
+        this->m_captureSlot->validMask = frame.get_validMask();
+        this->m_captureSlot->rawX = s.get_rawX();
+        this->m_captureSlot->rawY = s.get_rawY();
+        this->m_captureSlot->rawZ = s.get_rawZ();
+    }
     if (status == Adxl355::DriverStatus::STALE_DATA) {
         this->m_stale.fetch_add(1U);
     } else if (status == Adxl355::DriverStatus::IMPLAUSIBLE_DATA) {

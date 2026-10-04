@@ -4,6 +4,7 @@
 
 #include <atomic>
 
+#include "Components/Client/CaptureRecord.hpp"
 #include "Components/Client/ClientComponentAc.hpp"
 
 namespace Adxl355Te0715 {
@@ -41,6 +42,10 @@ class Client final : public ClientComponentBase {
     void resetFrameStats(U32 printEvery);
     FrameStats frameStats() const;
 
+    //! The record the next frame is written to (`adxl capture`), or nullptr. Set and
+    //! cleared by the timing thread around acquire(), which publishes the frame.
+    void setCaptureSlot(CaptureRecord* slot);
+
     //! Prints one sample as a CSV row (ADXL_ROW)
     static void printRow(U32 timeMs, const char* status, const Adxl355::AccelerationSample& s);
     static void printHeader();
@@ -64,6 +69,7 @@ class Client final : public ClientComponentBase {
     // Written only by the timing thread (frameReady), read after reset
     bool m_haveSequence = false;
     U64 m_lastSequence = 0U;
+    CaptureRecord* m_captureSlot = nullptr;
 };
 
 }  // namespace Adxl355Te0715

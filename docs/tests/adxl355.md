@@ -46,6 +46,7 @@ V1P8ANA, V1P8DIG, MISO, CS, SCLK, MOSI); leave V1P8ANA and V1P8DIG unconnected.
 | `adxl timing [n]` | Duration of n successful manager reads, and of STALE_DATA answers |
 | `adxl stream start <rate_hz> [frames] [print_every]`, `adxl stream stop`, `adxl stream status` | Enable the application and trigger `acquireFrame` at rate_hz from the timing thread; the counts of complete, partial, stale, implausible and frozen frames, sequence gaps, missed timer ticks, the acquisition time per frame, and the smallest and largest \|a\| of the valid samples (`mag_min_g`, `mag_max_g`) |
 | `adxl stream start-pl [frames] [print_every]` | The same, triggered by the PL's sync interrupt; the frame time is the sync instant on the PL time base. Also counts missed sync events (`missed_ticks`, from gaps in `EVENT_COUNT`), `OVERRUN` interrupts (`pl_overruns`) and 100 ms waits without an event (`pl_timeouts`) |
+| `adxl capture on [frames]`, `off`, `status`, `dump [first [count]]` | Store every frame of the streams that follow, up to frames (at most 65536, about 3 MB of RAM): frame time, sync instant on the PL time base, read start and end after it, status, valid mask, raw X/Y/Z. `dump` prints them as CSV lines (`ADXL_CAP,...`), each ending in the CRC-32 of the text before it; the console carries about 11 kB/s, so 20000 frames take about 2.5 minutes |
 | `pl info` | The bitstream: sysctrl identification, address-map version, populated slots, build (`git`, `dirty`, `build_time`), the time base frequency and the acc core; `result=PASS` if it is the cubespec-pl pp target with the map version the bench was built against |
 | `pl clk on\|off`, `pl sync on [period [width]]\|off`, `pl delay <us>` | The acc core: EXT_CLK, the SYNC train (period and width in EXT_CLK periods, default 256 and 8: 250 µs) and the interrupt delay after each sync instant |
 | `pl status`, `pl time` | The acc registers; the PL time base, with the PS clock read just before and after |
@@ -228,6 +229,22 @@ answer.
 12. The clock and the pulses on again; `adxl stream start-pl 20000`, the pulses stopped
     after 0.5 s: the triggers stop, the event waits time out (`pl_timeouts`), and every
     frame before is complete.
+13. Phase scan, a characterization without pass criterion: the pulses on again, and 400
+    frames each with the interrupt 224 to 249 µs after the sync instant, so that the
+    read starts around the next instant. A read before the sensor sets DATA_RDY for that
+    instant finds the sample already read, and the frame is stale; a read after it,
+    fresh. The stale share per delay is recorded.
+
+With `--capture`, the board also stores every frame of steps 5, 9, 11, 12 and 13, and
+the script writes them to `capture-tc22-<step>.csv` in the evidence package after
+checking each line's CRC and that no index is missing (an extra check per capture). The
+dumps add about 6 minutes. `app/scripts/plot_tc22.py <package> --out <dir>` draws a
+package: always the DATA_RDY phase windows, every stream's status, acquisition time and
+\|a\| range, and the printed frames; with the capture also the samples and their noise
+spectrum, the timing of every frame (read start and duration after the sync instant,
+the spacing of the sync instants), the frames around the clock or pulses stopping, and
+the share of fresh frames against the read time in step 13, which places the DATA_RDY
+phase to a fraction of a microsecond.
 
 Afterwards the script restores the default SCLK and the internal clock. The
 acquisition times cover one sensor at 8.93 MHz, not the seven-sensor flight budget

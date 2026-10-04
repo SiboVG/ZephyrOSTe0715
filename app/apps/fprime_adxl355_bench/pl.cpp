@@ -172,6 +172,10 @@ uint64_t ticksToUs(uint64_t ticks) {
     return ticks / (clockHz() / 1000000U);
 }
 
+uint64_t ticksToNs(uint64_t ticks) {
+    return (ticks * 1000U) / (clockHz() / 1000000U);
+}
+
 uint32_t overruns() {
     return g_overruns.load();
 }

@@ -11,7 +11,9 @@ the six orientations.
 
 adxl355-pl runs TC-22, the ADXL355 on the external clock and synchronization pulse of
 the cubespec-pl bitstream: --elf and --bit load both over JTAG with the CPU in its SD
-boot state (xsdb.cfg sd-state), so the timing is that of an SD boot.
+boot state (xsdb.cfg sd-state), so the timing is that of an SD boot. With --capture it
+also stores every frame of steps 5, 9, 11, 12 and 13 on the board and writes them to
+capture-tc22-<step>.csv (app/scripts/plot_tc22.py draws them).
 
 Writes to --out: transcript.log (everything the board printed), results.txt (one line
 per check: PASS, FAIL or INFO, the test-case step and the measured values) and
@@ -30,6 +32,7 @@ Test cases: docs/verification/test-cases.md (TC-13 to TC-22).
 import argparse
 import datetime
 import hashlib
+import zlib
 import os
 import platform
 import re
@@ -608,6 +611,45 @@ def restart_timing(con, settle=1.0, pause=0.1):
     time.sleep(settle)
 
 
+CAPTURE_FIELDS = 'index,stream,sequence,sync_us,sync_ticks,start_ns,end_ns,status,valid,raw_x,raw_y,raw_z,crc32'
+
+
+def capture_on(con, frames):
+    line, _ = con.run(f'adxl capture on {frames}', r'ADXL_CAPTURE .*|error.*|usage.*')
+    return fields(line).get('armed') == '1'
+
+
+def capture_dump(con, res, step, out_dir):
+    """Print the stored frames, check each line's CRC and the indices, write the CSV.
+    The console carries about 11 kB/s, so 20000 frames take about 2.5 minutes."""
+    status, _ = con.run('adxl capture status', r'ADXL_CAPTURE .*')
+    count = int(fields(status).get('count', '0'))
+    since = con.mark()
+    con.serial.write(b'adxl capture dump\r')
+    end = con.wait_for(r'ADXL_CAPTURE_END .*', 60 + count * 0.02, since)
+    text = con.text(since)
+    con.run('adxl capture off', r'ADXL_CAPTURE .*')
+    rows, bad = [], 0
+    for line in text.splitlines():
+        m = re.search(r'ADXL_CAP,(.*),([0-9a-f]{8})$', line)
+        if not m:
+            continue
+        body = 'ADXL_CAP,' + m.group(1)
+        if zlib.crc32(body.encode()) != int(m.group(2), 16):
+            bad += 1
+            continue
+        rows.append(m.group(1) + ',' + m.group(2))
+    indices = [int(r.split(',', 1)[0]) for r in rows]
+    complete = indices == list(range(count))
+    name = f'capture-tc22-{step.split(".")[1]}.csv'
+    with open(os.path.join(out_dir, name), 'w') as f:
+        f.write(CAPTURE_FIELDS + '\n')
+        f.write('\n'.join(rows) + ('\n' if rows else ''))
+    res.check(step, f'capture: {count} frames to {name}, every line intact and none missing',
+              end is not None and bad == 0 and complete and count > 0,
+              f'{len(rows)} lines with a good CRC, {bad} damaged, {count - len(rows) - bad} missing')
+
+
 def adxl355_pl(con, res, args):
     if not ready(con, res, 'adxl', '[ADXL355_BENCH_READY]', args.attach):
         return
@@ -660,12 +702,15 @@ def adxl355_pl(con, res, args):
               fields(line).get('result') == 'PASS', line)
 
     # TC-22.5 4 kHz frames on the PL's sync interrupt
+    capturing = args.capture and capture_on(con, 20000)
     f, line = pl_stream(con, 20000, 30)
     res.check('TC-22.5', f'20000 frames on the PL sync interrupt, SCLK {sclk} Hz: all complete, none stale, '
               'frozen or implausible, no trigger lost, acquisition within the 250 us period', clean_stream(f, 20000),
               line)
     res.check('TC-22.5', '|a| of every sample within 0.79..1.21 g and spread below 20 mg (no corrupted first '
               'samples)', magnitudes_plausible(f), f'{f.get("mag_min_g")} to {f.get("mag_max_g")} g')
+    if capturing:
+        capture_dump(con, res, 'TC-22.5', args.out)
 
     # TC-22.6 Frame timestamps are sync instants of the PL time base
     con.run('adxl tlm off', r'ADXL_TLM .*')
@@ -727,7 +772,10 @@ def adxl355_pl(con, res, args):
     f = fields(line)
     res.check('TC-22.9', 'without EXT_CLK, DATA_RDY stays set: no STATUS read clears it',
               f.get('ready_first') == '50' and f.get('cleared_second') == '0', line)
+    capturing = args.capture and capture_on(con, 100)
     f, line = pl_stream(con, 100, 10, command='start 4000')
+    if capturing:
+        capture_dump(con, res, 'TC-22.9', args.out)
     res.check('TC-22.9', f'timer-triggered frames: the first {FROZEN_REPEAT_LIMIT} complete (the frozen sample and '
               'its repeats up to the limit), then every frame FROZEN_DATA',
               f.get('complete') == str(FROZEN_REPEAT_LIMIT) and f.get('frozen') == str(100 - FROZEN_REPEAT_LIMIT) and
@@ -746,6 +794,7 @@ def adxl355_pl(con, res, args):
     # TC-22.11 The clock stops during timer-triggered acquisition: whether the sensor
     # freezes with DATA_RDY set or clear depends on where in the period the clock stops;
     # either way no frame after it is complete, only stale or frozen
+    capturing = args.capture and capture_on(con, 8000)
     con.run('adxl stream start 4000 8000', r'ADXL_STREAM_STARTED .*|error.*')
     time.sleep(0.5)
     con.run('pl clk off', r'PL_CLK .*')
@@ -757,6 +806,8 @@ def adxl355_pl(con, res, args):
         time.sleep(0.5)
     line, _ = con.run('adxl stream stop', r'ADXL_STREAM_STOPPED .*')
     f = fields(line)
+    if capturing:
+        capture_dump(con, res, 'TC-22.11', args.out)
     partial = number(f, 'partial', -1)
     res.check('TC-22.11', 'clock stopped during a timer-triggered stream: frames after it partial, each stale or '
               'frozen, none implausible', partial > 0 and partial == number(f, 'stale', 0) + number(f, 'frozen', 0)
@@ -767,16 +818,37 @@ def adxl355_pl(con, res, args):
     con.run('pl clk on', r'PL_CLK .*')
     con.run('pl sync on 256 8', r'PL_SYNC .*')
     time.sleep(1.0)
+    capturing = args.capture and capture_on(con, 20000)
     con.run('adxl stream start-pl 20000', r'ADXL_STREAM_STARTED .*|error.*')
     time.sleep(0.5)
     con.run('pl sync off', r'PL_SYNC .*')
     time.sleep(1.0)
     line, _ = con.run('adxl stream stop', r'ADXL_STREAM_STOPPED .*')
     f = fields(line)
+    if capturing:
+        capture_dump(con, res, 'TC-22.12', args.out)
     res.check('TC-22.12', 'pulses stopped during a PL-triggered stream: triggers stop, event waits time out, '
               'every frame before complete', 0 < number(f, 'frames', 0) < 20000 and
               number(f, 'pl_timeouts', 0) >= 5 and f.get('complete') == f.get('frames') and
               f.get('implausible') == '0', line)
+
+    # TC-22.13 Phase scan (characterization, no pass criterion): the interrupt late in
+    # the period, so the read starts around the next sync instant. Before the sensor
+    # sets DATA_RDY for that instant the read finds the sample of the previous one,
+    # already read, and the frame is stale; after it, fresh. With --capture each
+    # frame's read time is known, which places that step to a fraction of a microsecond.
+    con.run('pl sync on 256 8', r'PL_SYNC .*')
+    time.sleep(1.0)
+    capturing = args.capture and capture_on(con, 26 * 400)
+    for us in range(224, 250):
+        con.run(f'pl delay {us}', r'PL_DELAY .*')
+        f, line = pl_stream(con, 400, 10)
+        frames = number(f, 'frames', 0)
+        res.info('TC-22.13', f'interrupt {us} us after the sync instant: stale share '
+                             f'{number(f, "stale", 0) / frames if frames else float("nan"):.3f}; {line}')
+    con.run('pl delay 50', r'PL_DELAY .*')
+    if capturing:
+        capture_dump(con, res, 'TC-22.13', args.out)
 
     # Leave the bench as the other test cases expect it: internal clock, default SCLK
     con.run('pl sync off', r'PL_SYNC .*')
@@ -845,6 +917,8 @@ def main():
     parser.add_argument('--ref-uncertainty', type=float, default=0.1,
                         help='reference instrument uncertainty in %% of reading (default 0.1)')
     parser.add_argument('--bit', help='adxl355-pl: the cubespec-pl bitstream to load with --elf')
+    parser.add_argument('--capture', action='store_true',
+                        help='adxl355-pl: store every frame of steps 5, 9, 11, 12 and 13 and write them as CSV')
     parser.add_argument('--port', help='UART device')
     parser.add_argument('--xsdb', help='path to xsdb')
     args = parser.parse_args()

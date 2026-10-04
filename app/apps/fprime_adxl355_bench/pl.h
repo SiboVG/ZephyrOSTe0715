@@ -66,6 +66,9 @@ bool waitEvent(SyncEvent& event, k_timeout_t timeout);
 //! Time base ticks to microseconds
 uint64_t ticksToUs(uint64_t ticks);
 
+//! Time base ticks to nanoseconds
+uint64_t ticksToNs(uint64_t ticks);
+
 //! OVERRUN interrupts seen since startEvents()
 uint32_t overruns();
 
