@@ -96,8 +96,13 @@ exceed the requested clock:
 | 9000000 | 8.929 MHz | fastest within the sensors' 10 MHz limit; soak |
 
 `ina spi` and `adxl spi` show and change the setting; the SCLK they print is the one
-the driver selects. The INA229 uses SPI mode 1 by default (SCLK idle low, MOSI
-sampled on falling edges, data sheet SLYS023A 6.7), the ADXL355 mode 0.
+the driver selects. The INA229 uses SPI mode 3 by default, the ADXL355 mode 0.
+
+!!! warning "INA229: mode 3 only"
+    In modes 1 and 2 the INA229 answers every read, so `ina id` and the soaks pass,
+    but some register writes are silently lost, depending on the data bits; mode 0
+    breaks reads as well. Only mode 3 wrote every value (2026-10-04, see
+    [Known issues](../known-issues.md)). TC-13 step 3 checks writes for this reason.
 
 ## Building
 
@@ -136,7 +141,8 @@ xsdb app/boards/trenz/te0715/support/xsdb.cfg \
 
 `app/scripts/sensor_bench.py` runs a bench's test cases and keeps the evidence. It
 loads the image (`--elf`), boots it from the SD card (`--sd-boot`) or uses the image
-already running (`--attach`); with `--interactive` it also runs the operator steps.
+already running (`--attach`); with `--interactive` it also runs the operator steps,
+and for the INA229 `--interactive TC-15` or `--interactive TC-16` runs one of them.
 
 ```bash
 out=docs/verification/evidence/$(date +%Y-%m-%d-%H%M)-ina229

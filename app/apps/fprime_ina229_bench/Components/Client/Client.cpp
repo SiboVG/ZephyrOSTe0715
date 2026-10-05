@@ -78,20 +78,24 @@ void Client::run_handler(FwIndexType portNum, U32 context) {
     char name[24];
     TeBench::enumName(status, name, sizeof(name));
     const U32 now = k_uptime_get_32();
+    if (status == Ina229::DriverStatus::NOT_READY) {
+        this->m_notReady.fetch_add(1U);
+        return;
+    }
     if (status == Ina229::DriverStatus::OK) {
         printRow(now, name, reading);
-        const U32 rows = this->m_rows.fetch_add(1U) + 1U;
-        const U32 limit = this->m_rowLimit.load();
-        if ((limit != 0U) && (rows >= limit)) {
-            this->m_sampling.store(false);
-            printk("INA_STREAM_DONE rows=%u not_ready=%u failures=%u\n", rows, this->m_notReady.load(),
-                   this->m_failures.load());
-        }
-    } else if (status == Ina229::DriverStatus::NOT_READY) {
-        this->m_notReady.fetch_add(1U);
+        this->m_rows.fetch_add(1U);
     } else {
         this->m_failures.fetch_add(1U);
         printk("INA_ROW,%u,%s\n", now, name);
+    }
+    // A failed read is a printed row too, so a stream of failures also ends at the limit
+    const U32 rows = this->m_rows.load();
+    const U32 failures = this->m_failures.load();
+    const U32 limit = this->m_rowLimit.load();
+    if ((limit != 0U) && ((rows + failures) >= limit)) {
+        this->m_sampling.store(false);
+        printk("INA_STREAM_DONE rows=%u not_ready=%u failures=%u\n", rows, this->m_notReady.load(), failures);
     }
 }
 

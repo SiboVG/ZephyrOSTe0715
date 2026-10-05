@@ -15,11 +15,12 @@ config APP_SPI_FREQUENCY
 config APP_SPI_MODE
 	int "SPI mode at boot"
 	range 0 3
-	default 1
+	default 3
 	help
-	  SPI mode 1 (CPOL 0, CPHA 1): the INA229 timing diagram (data sheet
-	  SLYS023A, 6.7) has SCLK idle low and MOSI sampled on falling edges.
-	  Mode 2 also meets the edge requirements and is what the FT232H bench
-	  uses. Change it at run time with `ina spi`.
+	  SPI mode 3 (CPOL 1, CPHA 1), the only mode in which every register
+	  write reached the INA229 on this bench (2026-10-04). In modes 1 and 2
+	  reads pass but some writes are silently lost, depending on the data
+	  bits; mode 0 breaks reads (docs/known-issues.md). Change it at run
+	  time with `ina spi`.
 
 source "Kconfig.zephyr"

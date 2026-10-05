@@ -295,6 +295,45 @@ extern "C" int ina_cmd_reg(const struct shell* sh, size_t argc, char** argv) {
     return (r.status == Drv::SpiStatus::SPI_OK) ? 0 : -EIO;
 }
 
+//! One raw 16-bit register write, optionally preceded by a device reset (CONFIG.RST) and
+//! a busy wait of rst_delay_us, then an immediate readback. write_rx is what the INA229
+//! clocked out during the write frame: the register's previous value when the frame
+//! arrived intact. A write that does not stick (match=0) with a corrupted write_rx is the
+//! signature of a wrong SPI mode (docs/known-issues.md).
+extern "C" int ina_cmd_wreg(const struct shell* sh, size_t argc, char** argv) {
+    U32 address = 0U;
+    U32 value = 0U;
+    U32 delayUs = 0U;
+    const RegisterInfo* info = nullptr;
+    if ((bench_parse_u32(argv[1], 0x3FU, &address) != 0) || ((info = findRegister(address)) == nullptr) ||
+        (info->bytes != 2U) || (bench_parse_u32(argv[2], 0xFFFFU, &value) != 0) ||
+        ((argc == 4) && (bench_parse_u32(argv[3], 1000000U, &delayUs) != 0))) {
+        shell_error(sh, "usage: ina wreg <16-bit register> <value> [rst_delay_us]");
+        return -EINVAL;
+    }
+    if (argc == 4) {
+        U8 rstTx[3] = {0x00, 0x80, 0x00};
+        U8 rstRx[3] = {};
+        if (client.transfer(rstTx, rstRx, 3) != Drv::SpiStatus::SPI_OK) {
+            shell_error(sh, "reset write failed");
+            return -EIO;
+        }
+        k_busy_wait(delayUs);
+    }
+    U8 tx[3] = {static_cast<U8>(info->address << 2), static_cast<U8>(value >> 8), static_cast<U8>(value)};
+    U8 rx[3] = {};
+    const Drv::SpiStatus status = client.transfer(tx, rx, 3);
+    const RawRead r = rawRead(*info);
+    char writeStatus[24];
+    TeBench::enumName(status, writeStatus, sizeof(writeStatus));
+    const bool match = (status == Drv::SpiStatus::SPI_OK) && (r.status == Drv::SpiStatus::SPI_OK) && (r.value == value);
+    shell_print(sh, "INA_WREG addr=0x%02x name=%s wrote=0x%04x rst_delay_us=%d write_rx=%02x%02x%02x readback=0x%04llx "
+                    "match=%d spi=%s/%s",
+                info->address, info->name, value, (argc == 4) ? static_cast<int>(delayUs) : -1, rx[0], rx[1], rx[2],
+                static_cast<unsigned long long>(r.value), match ? 1 : 0, writeStatus, spiStatusName(r.status));
+    return ((status == Drv::SpiStatus::SPI_OK) && (r.status == Drv::SpiStatus::SPI_OK)) ? 0 : -EIO;
+}
+
 extern "C" int ina_cmd_soak(const struct shell* sh, size_t argc, char** argv) {
     (void)argc;
     U32 count = 0U;

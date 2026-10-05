@@ -27,6 +27,7 @@ int ina_cmd_spi(const struct shell *sh, size_t argc, char **argv);
 int ina_cmd_id(const struct shell *sh, size_t argc, char **argv);
 int ina_cmd_reg(const struct shell *sh, size_t argc, char **argv);
 int ina_cmd_soak(const struct shell *sh, size_t argc, char **argv);
+int ina_cmd_wreg(const struct shell *sh, size_t argc, char **argv);
 int ina_cmd_init(const struct shell *sh, size_t argc, char **argv);
 int ina_cmd_read(const struct shell *sh, size_t argc, char **argv);
 int ina_cmd_timing(const struct shell *sh, size_t argc, char **argv);

@@ -7,7 +7,8 @@ the image over JTAG (--elf), resets the board so it boots from the SD card (--sd
 or uses a board that already runs it (--attach), waits for the ready marker and runs
 the automated checks over the serial shell. With --interactive it also runs the steps
 that need the operator: reference measurements, fault injection and, for the ADXL355,
-the six orientations.
+the six orientations. For the INA229, --interactive TC-16 runs the fault injection
+alone and --interactive TC-15 the reference measurements alone.
 
 adxl355-pl runs TC-22, the ADXL355 on the external clock and synchronization pulse of
 the cubespec-pl bitstream: --elf and --bit load both over JTAG with the CPU in its SD
@@ -53,9 +54,13 @@ STANDARD_GRAVITY = 9.80665
 
 # (request in Hz, SPI mode): every SCLK the controller can generate within the
 # sensors' 10 MHz limit (SPI_REF_CLK 142.86 MHz / 256 ... / 16)
-INA229_SPI_POINTS = [(600000, 1), (1200000, 1), (2300000, 1), (4500000, 1), (9000000, 1), (1200000, 2)]
+# The INA229 runs in mode 3: in modes 1 and 2 some writes are lost (docs/known-issues.md)
+INA229_SPI_POINTS = [(600000, 3), (1200000, 3), (2300000, 3), (4500000, 3), (9000000, 3)]
+# Raw writes to ADC_CONFIG for TC-13.3; 0x0b6a and 0xfb6b were lost in mode 1, the
+# last value is the reset default. TC-14 starts with a reset, so nothing is left behind.
+INA229_WRITE_PATTERNS = [0x0b6a, 0xfb6b, 0x5555, 0xaaaa, 0x0000, 0xfb68]
 ADXL355_SPI_POINTS = [(600000, 0), (1200000, 0), (2300000, 0), (4500000, 0), (9000000, 0)]
-DEFAULT_SPI = {'ina': (1200000, 1), 'adxl': (1200000, 0)}  # by shell command
+DEFAULT_SPI = {'ina': (1200000, 3), 'adxl': (1200000, 0)}  # by shell command
 TC19_BUDGET_SPI = (9000000, 0)  # 8.93 MHz, the fastest SCLK within the ADXL355's 10 MHz
 PL_DIR = os.path.join(WORKSPACE, '..', 'cubespec-pl')
 FROZEN_REPEAT_LIMIT = 8  # fprime-adxl355 Device::FROZEN_REPEAT_LIMIT
@@ -230,6 +235,7 @@ def ina229(con, res, args):
     res.check('TC-13.1', 'identity over raw SPI (MANUFACTURER_ID 0x5449, DEVICE_ID die 0x229, lead byte 0)',
               f.get('result') == 'PASS', line or 'no answer')
     spi_link(con, res, 'TC-13', 'ina', INA229_SPI_POINTS, args.soak)
+    ina229_writes(con, res)
 
     # TC-14 through the F Prime manager
     init = f'ina init {args.shunt} {args.max_current}'
@@ -300,9 +306,42 @@ def ina229(con, res, args):
     res.check('TC-14.14', 'rate-group stream: 20 rows at 10 Hz, no failures',
               fields(done).get('rows') == '20' and fields(done).get('failures') == '0', done or 'no answer')
 
-    if args.interactive:
+    if args.interactive in ('all', 'TC-15'):
         ina229_reference(con, res, args)
+    if args.interactive in ('all', 'TC-16'):
         ina229_faults(con, res, args)
+
+
+def ina229_write_pass(con, points):
+    """Raw ADC_CONFIG writes at each (hz, mode): (all stuck and intact, details)"""
+    line, _ = con.run('ina reg 0x01', r'INA_REG .*')
+    previous = int(fields(line).get('value', '0x0'), 16)
+    bad = []
+    for hz, mode in points:
+        con.run(f'ina spi {hz} {mode}', r'INA_SPI .*')
+        for value in INA229_WRITE_PATTERNS:
+            line, _ = con.run(f'ina wreg 0x01 0x{value:04x}', r'INA_WREG .*')
+            f = fields(line)
+            # write_rx is the previous value when the frame reached the INA229 intact
+            intact = f.get('write_rx') == f'00{previous:04x}'
+            if f.get('match') != '1' or not intact:
+                bad.append(f'{hz}/{mode} 0x{value:04x}: readback {f.get("readback")} write_rx {f.get("write_rx")}')
+            if f.get('readback'):
+                previous = int(f['readback'], 16)
+    return not bad, bad
+
+
+def ina229_writes(con, res):
+    """TC-13.3: register writes reach the INA229 intact (reads alone do not show a wrong SPI mode)"""
+    ok, bad = ina229_write_pass(con, INA229_SPI_POINTS)
+    res.check('TC-13.3', f'{len(INA229_WRITE_PATTERNS)} raw ADC_CONFIG writes at every SCLK in mode 3: '
+              'each read back, write frame intact', ok,
+              'all intact' if ok else '; '.join(bad))
+    # Record whether the mode 1 defect is still there; it is not a pass criterion
+    ok, bad = ina229_write_pass(con, [(1200000, 1)])
+    res.info('TC-13.3', f'mode 1 at 1.116 MHz for comparison: {"all writes intact" if ok else "; ".join(bad)}')
+    hz, mode = DEFAULT_SPI['ina']
+    con.run(f'ina spi {hz} {mode}', r'INA_SPI .*')
 
 
 def ina229_reference(con, res, args):
@@ -365,8 +404,8 @@ def ina229_faults(con, res, args):
     time.sleep(0.5)
     line, out = con.run('ina read 5 0', r'INA_READ_DONE .*', timeout=60)
     data = [r for r in rows(out, 'INA_ROW') if len(r) >= 12 and r[2] == 'OK']
-    # After a power loss the INA229 is back in its reset state (SHUNT_CAL 0), so any
-    # reading that is reported valid carries a current and power of 0
+    # After a power loss the INA229 is back in its reset state; fprime-ina229 61ecaea
+    # reports its readings as valid, with a wrong current (as-run 2026-10-04)
     res.info('TC-16.4', f'after power returns, without reinitialization: {line}; '
                         f'currents {[r[7] for r in data]}; flagged: {len(data) < 5}')
     line, _ = con.run(f'ina init {args.shunt} {args.max_current}', r'INA_INIT .*', timeout=20)
@@ -909,7 +948,8 @@ def main():
     boot.add_argument('--sd-boot', action='store_true', help='reset and boot the image on the SD card')
     boot.add_argument('--attach', action='store_true', help='use the image the board is already running')
     parser.add_argument('--out', required=True, help='directory for the evidence (created)')
-    parser.add_argument('--interactive', action='store_true', help='also run the operator steps')
+    parser.add_argument('--interactive', nargs='?', const='all', choices=['all', 'TC-15', 'TC-16'],
+                        help='also run the operator steps (INA229: all, or only TC-15 or TC-16)')
     parser.add_argument('--soak', type=int, default=20000, help='transfers per SPI clock (default 20000)')
     parser.add_argument('--shunt', type=float, help='INA229: shunt resistance in ohm')
     parser.add_argument('--max-current', type=float, help='INA229: expected maximum current in A')

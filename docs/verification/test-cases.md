@@ -136,8 +136,8 @@ Common preconditions for all test cases: the workspace built as in
 |---|---|
 | **Verifies** | `TE-SPI-001`, `TE-SPI-002`, `TE-SPI-003` |
 | **Preconditions** | INA229 wired to Pmod J1 as in [SPI sensor benches](../tests/spi-sensors.md), CAN transceiver disconnected; `apps/fprime_ina229_bench` loaded, `[INA229_BENCH_READY]` printed |
-| **Procedure** | 1. `ina id`. 2. For each SCLK of the clock table in mode 1, and 1.116 MHz in mode 2: `ina spi <hz> <mode>`, `ina soak 20000` |
-| **Pass criteria** | 1. `result=PASS` (MANUFACTURER_ID 0x5449, die 0x229, command-byte MISO byte 0). 2. Every soak `result=PASS`: no wrong value, no non-zero command byte, no driver error. Together they verify the chip select and the SPI mode by function (see [requirements](requirements.md)) |
+| **Procedure** | 1. `ina id`. 2. For each SCLK of the clock table in mode 3: `ina spi <hz> 3`, `ina soak 20000`. 3. For each SCLK in mode 3: `ina wreg 0x01 <value>` for 0x0b6a, 0xfb6b, 0x5555, 0xaaaa, 0x0000 and 0xfb68; then the same in mode 1 at 1.116 MHz, for information |
+| **Pass criteria** | 1. `result=PASS` (MANUFACTURER_ID 0x5449, die 0x229, command-byte MISO byte 0). 2. Every soak `result=PASS`: no wrong value, no non-zero command byte, no driver error. 3. In mode 3 every value reads back (`match=1`) and every `write_rx` is the previous value. Together they verify the chip select and the SPI mode by function (see [requirements](requirements.md)) |
 | **Evidence** | `sensor_bench.py ina229` package: `results.txt`, `transcript.log` |
 
 ## TC-14 INA229 through the F Prime manager
