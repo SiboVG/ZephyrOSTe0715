@@ -1,0 +1,52 @@
+ina init 0.27 0.55
+INA_INIT status=OK ms=3
+ina cmd adc 15 5 5 5 3
+[Os::Console] EVENT: (268632064) (0:815,54700) WARNING_HI: (Ina229Te0715.sensor) OperationFailed : INA229 CONFIGURE_ADC (1) failed: VERIFY_ERROR (5)
+[Os::Console] EVENT: (268443649) (0:815,54800) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030001 dispatched to port 1
+[Os::Console] EVENT: (268443651) (0:815,54900) COMMAND: (Ina229Te0715.cmdDisp) OpCodeError : Opcode 0x10030001 completed with error EXECUTION_ERROR (4)
+INA_CMD adc response=EXECUTION_ERROR
+ina reg 0x01
+INA_REG addr=0x01 name=ADC_CONFIG bytes=2 value=0xfb6a lead=0x00 spi=SPI_OK
+ina init 0.27 0.55
+INA_INIT status=OK ms=3
+[Os::Console] EVENT: (268632065) (0:817,564200) ACTIVITY_LO: (Ina229Te0715.sensor) Recovered : INA229 INITIALIZE (0) recovered
+ina cmd adc 15 5 5 5 3
+[Os::Console] EVENT: (268632064) (0:817,575800) WARNING_HI: (Ina229Te0715.sensor) OperationFailed : INA229 CONFIGURE_ADC (1) failed: VERIFY_ERROR (5)
+[Os::Console] EVENT: (268443649) (0:817,576000) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030001 dispatched to port 1
+[Os::Console] EVENT: (268443651) (0:817,576000) COMMAND: (Ina229Te0715.cmdDisp) OpCodeError : Opcode 0x10030001 completed with error EXECUTION_ERROR (4)
+INA_CMD adc response=EXECUTION_ERROR
+ina reg 0x01
+INA_REG addr=0x01 name=ADC_CONFIG bytes=2 value=0xfb6a lead=0x00 spi=SPI_OK
+ina init 0.27 0.55
+INA_INIT status=OK ms=3
+[Os::Console] EVENT: (268632065) (0:820,84200) ACTIVITY_LO: (Ina229Te0715.sensor) Recovered : INA229 INITIALIZE (0) recovered
+ina cmd adc 15 5 5 5 3
+[Os::Console] EVENT: (268632064) (0:820,101900) WARNING_HI: (Ina229Te0715.sensor) OperationFailed : INA229 CONFIGURE_ADC (1) failed: VERIFY_ERROR (5)
+[Os::Console] EVENT: (268443649) (0:820,102000) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030001 dispatched to port 1
+[Os::Console] EVENT: (268443651) (0:820,102100) COMMAND: (Ina229Te0715.cmdDisp) OpCodeError : Opcode 0x10030001 completed with error EXECUTION_ERROR (4)
+INA_CMD adc response=EXECUTION_ERROR
+ina reg 0x01
+INA_REG addr=0x01 name=ADC_CONFIG bytes=2 value=0xfb6a lead=0x00 spi=SPI_OK
+ina init 0.27 0.55
+INA_INIT status=OK ms=3
+[Os::Console] EVENT: (268632065) (0:822,614200) ACTIVITY_LO: (Ina229Te0715.sensor) Recovered : INA229 INITIALIZE (0) recovered
+ina cmd adc 15 5 5 5 3
+[Os::Console] EVENT: (268632064) (0:822,711900) WARNING_HI: (Ina229Te0715.sensor) OperationFailed : INA229 CONFIGURE_ADC (1) failed: VERIFY_ERROR (5)
+[Os::Console] EVENT: (268443649) (0:822,712000) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030001 dispatched to port 1
+[Os::Console] EVENT: (268443651) (0:822,712100) COMMAND: (Ina229Te0715.cmdDisp) OpCodeError : Opcode 0x10030001 completed with error EXECUTION_ERROR (4)
+INA_CMD adc response=EXECUTION_ERROR
+ina reg 0x01
+INA_REG addr=0x01 name=ADC_CONFIG bytes=2 value=0xfb6a lead=0x00 spi=SPI_OK
+ina init 0.27 0.55
+INA_INIT status=OK ms=3
+[Os::Console] EVENT: (268632065) (0:825,224200) ACTIVITY_LO: (Ina229Te0715.sensor) Recovered : INA229 INITIALIZE (0) recovered
+ina cmd adc 15 5 5 5 3
+[Os::Console] EVENT: (268632064) (0:825,721900) WARNING_HI: (Ina229Te0715.sensor) OperationFailed : INA229 CONFIGURE_ADC (1) failed: VERIFY_ERROR (5)
+[Os::Console] EVENT: (268443649) (0:825,722000) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030001 dispatched to port 1
+[Os::Console] EVENT: (268443651) (0:825,722100) COMMAND: (Ina229Te0715.cmdDisp) OpCodeError : Opcode 0x10030001 completed with error EXECUTION_ERROR (4)
+INA_CMD adc response=EXECUTION_ERROR
+ina reg 0x01
+INA_REG addr=0x01 name=ADC_CONFIG bytes=2 value=0xfb6a lead=0x00 spi=SPI_OK
+ina init 0.27 0.55
+INA_INIT status=OK ms=3
+[Os::Console] EVENT: (268632065) (0:828,234200) ACTIVITY_LO: (Ina229Te0715.sensor) Recovered : INA229 INITIALIZE (0) recovered

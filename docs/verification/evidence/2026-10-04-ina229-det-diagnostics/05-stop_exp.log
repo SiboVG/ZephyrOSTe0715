@@ -1,0 +1,32 @@
+ina init 0.27 0.55
+INA_INIT status=OK ms=3
+ina cmd stop
+[Os::Console] EVENT: (268632064) (0:412,331800) WARNING_HI: (Ina229Te0715.sensor) OperationFailed : INA229 STOP (3) failed: VERIFY_ERROR (5)
+[Os::Console] EVENT: (268443649) (0:412,332000) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030003 dispatched to port 1
+[Os::Console] EVENT: (268443651) (0:412,332000) COMMAND: (Ina229Te0715.cmdDisp) OpCodeError : Opcode 0x10030003 completed with error EXECUTION_ERROR (4)
+INA_CMD stop response=EXECUTION_ERROR
+ina reg 0x01
+INA_REG addr=0x01 name=ADC_CONFIG bytes=2 value=0xfb6a lead=0x00 spi=SPI_OK
+ina reg 0x0b
+INA_REG addr=0x0b name=DIAG_ALRT bytes=2 value=0x0003 lead=0x00 spi=SPI_OK
+ina reg 0x0b
+INA_REG addr=0x0b name=DIAG_ALRT bytes=2 value=0x0001 lead=0x00 spi=SPI_OK
+ina cmd alert 0x8000
+INA_CMD alert response=EXECUTION_ERROR
+[Os::Console] EVENT: (268443649) (0:418,351800) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030005 dispatched to port 1
+[Os::Console] EVENT: (268443651) (0:418,351900) COMMAND: (Ina229Te0715.cmdDisp) OpCodeError : Opcode 0x10030005 completed with error EXECUTION_ERROR (4)
+ina reg 0x0b
+INA_REG addr=0x0b name=DIAG_ALRT bytes=2 value=0x0003 lead=0x00 spi=SPI_OK
+ina init 0.27 0.55
+INA_INIT status=OK ms=3
+[Os::Console] EVENT: (268632065) (0:421,364200) ACTIVITY_LO: (Ina229Te0715.sensor) Recovered : INA229 INITIALIZE (0) recovered
+ina cmd reset-acc
+[Os::Console] EVENT: (268443649) (0:424,371900) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030004 dispatched to port 1
+[Os::Console] EVENT: (268443650) (0:424,372000) COMMAND: (Ina229Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10030004 completed
+INA_CMD reset-acc response=OK
+ina read 3 0
+INA_HEADER,time_ms,status,valid,bus_V,shunt_V,temp_C,current_A,power_W,energy_J,charge_C,diag
+INA_ROW,425885,OK,0x7f,4.994922,0.000256250,21.9453,0.000948,0.004737,0.007036,0.001430,0x0003
+INA_ROW,425913,OK,0x7f,4.994531,0.000255000,21.9375,0.000944,0.004713,0.007144,0.001456,0x0003
+INA_ROW,425964,OK,0x7f,4.994531,0.000255625,21.9531,0.000946,0.004723,0.007412,0.001504,0x0003
+INA_READ_DONE ok=3 failures=0

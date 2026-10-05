@@ -1,0 +1,15 @@
+ina spi 9000000
+INA_SPI requested_hz=9000000 sclk_hz=8928571 mode=1
+[1;32muart:~$ [mina soak 2000
+INA_SOAK n=2000 bad_value=0 bad_lead=0 spi_errors=0 min_us=13 mean_us=13 max_us=46 sclk_hz=8928571 mode=1 result=PASS
+[1;32muart:~$ [mina spi 1200000
+INA_SPI requested_hz=1200000 sclk_hz=1116071 mode=1
+[1;32muart:~$ [mina reg 0x00
+INA_REG addr=0x00 name=CONFIG bytes=2 value=0x0000 lead=0x00 spi=SPI_OK
+[1;32muart:~$ [mina reg 0x05
+INA_REG addr=0x05 name=VBUS bytes=3 value=0x063ed0 lead=0x00 spi=SPI_OK
+[1;32muart:~$ [mina reg 0x04
+INA_REG addr=0x04 name=VSHUNT bytes=3 value=0x003350 lead=0x00 spi=SPI_OK
+[1;32muart:~$ [mina reg 0x06
+INA_REG addr=0x06 name=DIETEMP bytes=2 value=0x0ae5 lead=0x00 spi=SPI_OK
+[1;32muart:~$ [m

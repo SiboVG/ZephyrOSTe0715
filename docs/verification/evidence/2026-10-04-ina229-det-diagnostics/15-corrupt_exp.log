@@ -1,0 +1,60 @@
+ina init 0.27 0.55
+INA_INIT status=OK ms=3
+ina reg 0x00
+INA_REG addr=0x00 name=CONFIG bytes=2 value=0x0000 lead=0x00 spi=SPI_OK
+ina reg 0x01
+INA_REG addr=0x01 name=ADC_CONFIG bytes=2 value=0xfb6a lead=0x00 spi=SPI_OK
+ina reg 0x02
+INA_REG addr=0x02 name=SHUNT_CAL bytes=2 value=0x0e81 lead=0x00 spi=SPI_OK
+ina reg 0x03
+INA_REG addr=0x03 name=SHUNT_TEMPCO bytes=2 value=0x0000 lead=0x00 spi=SPI_OK
+ina reg 0x0b
+INA_REG addr=0x0b name=DIAG_ALRT bytes=2 value=0x0003 lead=0x00 spi=SPI_OK
+ina reg 0x0c
+INA_REG addr=0x0c name=SOVL bytes=2 value=0x7fff lead=0x00 spi=SPI_OK
+ina reg 0x0d
+INA_REG addr=0x0d name=SUVL bytes=2 value=0x8000 lead=0x00 spi=SPI_OK
+ina reg 0x0e
+INA_REG addr=0x0e name=BOVL bytes=2 value=0x7fff lead=0x00 spi=SPI_OK
+ina reg 0x0f
+INA_REG addr=0x0f name=BUVL bytes=2 value=0x0000 lead=0x00 spi=SPI_OK
+ina reg 0x10
+INA_REG addr=0x10 name=TEMP_LIMIT bytes=2 value=0x7fff lead=0x00 spi=SPI_OK
+ina reg 0x11
+INA_REG addr=0x11 name=PWR_LIMIT bytes=2 value=0xffff lead=0x00 spi=SPI_OK
+ina wreg 0x01 0x0b6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x0b6a rst_delay_us=-1 write_rx=00f800 readback=0xfb6a match=0 spi=SPI_OK/SPI_OK
+ina reg 0x00
+INA_REG addr=0x00 name=CONFIG bytes=2 value=0x0000 lead=0x00 spi=SPI_OK
+ina reg 0x01
+INA_REG addr=0x01 name=ADC_CONFIG bytes=2 value=0xfb6a lead=0x00 spi=SPI_OK
+ina reg 0x02
+INA_REG addr=0x02 name=SHUNT_CAL bytes=2 value=0x0e81 lead=0x00 spi=SPI_OK
+ina reg 0x03
+INA_REG addr=0x03 name=SHUNT_TEMPCO bytes=2 value=0x0000 lead=0x00 spi=SPI_OK
+ina reg 0x0b
+INA_REG addr=0x0b name=DIAG_ALRT bytes=2 value=0x0003 lead=0x00 spi=SPI_OK
+ina reg 0x0c
+INA_REG addr=0x0c name=SOVL bytes=2 value=0x7fff lead=0x00 spi=SPI_OK
+ina reg 0x0d
+INA_REG addr=0x0d name=SUVL bytes=2 value=0x8000 lead=0x00 spi=SPI_OK
+ina reg 0x0e
+INA_REG addr=0x0e name=BOVL bytes=2 value=0x7fff lead=0x00 spi=SPI_OK
+ina reg 0x0f
+INA_REG addr=0x0f name=BUVL bytes=2 value=0x0000 lead=0x00 spi=SPI_OK
+ina reg 0x10
+INA_REG addr=0x10 name=TEMP_LIMIT bytes=2 value=0x7fff lead=0x00 spi=SPI_OK
+ina reg 0x11
+INA_REG addr=0x11 name=PWR_LIMIT bytes=2 value=0xffff lead=0x00 spi=SPI_OK
+ina wreg 0x01 0x0000
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x0000 rst_delay_us=-1 write_rx=00fb6a readback=0x0000 match=1 spi=SPI_OK/SPI_OK
+ina reg 0x00
+INA_REG addr=0x00 name=CONFIG bytes=2 value=0x0000 lead=0x00 spi=SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina reg 0x00
+INA_REG addr=0x00 name=CONFIG bytes=2 value=0x0000 lead=0x00 spi=SPI_OK
+ina wreg 0x01 0x0001
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x0001 rst_delay_us=-1 write_rx=00fb6a readback=0x0001 match=1 spi=SPI_OK/SPI_OK
+ina reg 0x00
+INA_REG addr=0x00 name=CONFIG bytes=2 value=0x0000 lead=0x00 spi=SPI_OK

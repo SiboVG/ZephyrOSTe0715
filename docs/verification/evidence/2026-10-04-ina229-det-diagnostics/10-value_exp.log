@@ -1,0 +1,36 @@
+ina init 0.27 0.55
+INA_INIT status=OK ms=3
+ina cmd threshold 0x0c 0xfb6b
+[Os::Console] EVENT: (268443649) (0:702,171900) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030006 dispatched to port 1
+[Os::Console] EVENT: (268443650) (0:702,172000) COMMAND: (Ina229Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10030006 completed
+INA_CMD threshold response=OK
+ina reg 0x0c
+INA_REG addr=0x0c name=SOVL bytes=2 value=0xfb6b lead=0x00 spi=SPI_OK
+ina cmd threshold 0x0c 0x8001
+[Os::Console] EVENT: (268632064) (0:704,581900) WARNING_HI: (Ina229Te0715.sensor) OperationFailed : INA229 SET_THRESHOLD (6) failed: VERIFY_ERROR (5)
+[Os::Console] EVENT: (268443649) (0:704,582100) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030006 dispatched to port 1
+[Os::Console] EVENT: (268443651) (0:704,582200) COMMAND: (Ina229Te0715.cmdDisp) OpCodeError : Opcode 0x10030006 completed with error EXECUTION_ERROR (4)
+INA_CMD threshold response=EXECUTION_ERROR
+ina reg 0x0c
+INA_REG addr=0x0c name=SOVL bytes=2 value=0xfb6b lead=0x00 spi=SPI_OK
+ina cmd threshold 0x0c 0x0b6a
+INA_CMD threshold response=EXECUTION_ERROR
+[Os::Console] EVENT: (268443649) (0:706,991900) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030006 dispatched to port 1
+[Os::Console] EVENT: (268443651) (0:706,991900) COMMAND: (Ina229Te0715.cmdDisp) OpCodeError : Opcode 0x10030006 completed with error EXECUTION_ERROR (4)
+ina reg 0x0c
+INA_REG addr=0x0c name=SOVL bytes=2 value=0xfb6b lead=0x00 spi=SPI_OK
+ina cmd threshold 0x0c 0x1001
+INA_CMD threshold response=EXECUTION_ERROR
+[Os::Console] EVENT: (268443649) (0:709,401900) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030006 dispatched to port 1
+[Os::Console] EVENT: (268443651) (0:709,401900) COMMAND: (Ina229Te0715.cmdDisp) OpCodeError : Opcode 0x10030006 completed with error EXECUTION_ERROR (4)
+ina reg 0x0c
+INA_REG addr=0x0c name=SOVL bytes=2 value=0xfb6b lead=0x00 spi=SPI_OK
+ina cmd adc 15 5 5 5 2
+INA_CMD adc response=EXECUTION_ERROR
+[Os::Console] EVENT: (268443649) (0:711,811800) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030001 dispatched to port 1
+[Os::Console] EVENT: (268443651) (0:711,811900) COMMAND: (Ina229Te0715.cmdDisp) OpCodeError : Opcode 0x10030001 completed with error EXECUTION_ERROR (4)
+ina reg 0x01
+INA_REG addr=0x01 name=ADC_CONFIG bytes=2 value=0xfb6a lead=0x00 spi=SPI_OK
+ina init 0.27 0.55
+INA_INIT status=OK ms=3
+[Os::Console] EVENT: (268632065) (0:714,224200) ACTIVITY_LO: (Ina229Te0715.sensor) Recovered : INA229 INITIALIZE (0) recovered

@@ -1,0 +1,52 @@
+ina init 0.27 0.55
+INA_INIT status=OK ms=3
+ina reg 0x0d
+INA_REG addr=0x0d name=SUVL bytes=2 value=0x8000 lead=0x00 spi=SPI_OK
+ina cmd threshold 0x0d 0x0123
+[Os::Console] EVENT: (268443649) (0:656,651900) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030006 dispatched to port 1
+[Os::Console] EVENT: (268443650) (0:656,652000) COMMAND: (Ina229Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10030006 completed
+INA_CMD threshold response=OK
+ina reg 0x0d
+INA_REG addr=0x0d name=SUVL bytes=2 value=0x0123 lead=0x00 spi=SPI_OK
+ina init 0.27 0.55
+INA_INIT status=OK ms=3
+ina reg 0x0f
+INA_REG addr=0x0f name=BUVL bytes=2 value=0x0000 lead=0x00 spi=SPI_OK
+ina cmd threshold 0x0f 0x0123
+[Os::Console] EVENT: (268443649) (0:663,281900) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030006 dispatched to port 1
+[Os::Console] EVENT: (268443650) (0:663,282000) COMMAND: (Ina229Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10030006 completed
+INA_CMD threshold response=OK
+ina reg 0x0f
+INA_REG addr=0x0f name=BUVL bytes=2 value=0x0123 lead=0x00 spi=SPI_OK
+ina init 0.27 0.55
+INA_INIT status=OK ms=3
+ina reg 0x10
+INA_REG addr=0x10 name=TEMP_LIMIT bytes=2 value=0x7fff lead=0x00 spi=SPI_OK
+ina cmd threshold 0x10 0x0123
+[Os::Console] EVENT: (268443649) (0:669,901900) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030006 dispatched to port 1
+[Os::Console] EVENT: (268443650) (0:669,902000) COMMAND: (Ina229Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10030006 completed
+INA_CMD threshold response=OK
+ina reg 0x10
+INA_REG addr=0x10 name=TEMP_LIMIT bytes=2 value=0x0123 lead=0x00 spi=SPI_OK
+ina init 0.27 0.55
+INA_INIT status=OK ms=3
+ina reg 0x11
+INA_REG addr=0x11 name=PWR_LIMIT bytes=2 value=0xffff lead=0x00 spi=SPI_OK
+ina cmd threshold 0x11 0x0123
+[Os::Console] EVENT: (268443649) (0:676,521900) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030006 dispatched to port 1
+[Os::Console] EVENT: (268443650) (0:676,522000) COMMAND: (Ina229Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10030006 completed
+INA_CMD threshold response=OK
+ina reg 0x11
+INA_REG addr=0x11 name=PWR_LIMIT bytes=2 value=0x0123 lead=0x00 spi=SPI_OK
+ina init 0.27 0.55
+INA_INIT status=OK ms=3
+ina reg 0x0c
+INA_REG addr=0x0c name=SOVL bytes=2 value=0x7fff lead=0x00 spi=SPI_OK
+ina cmd threshold 0x0c 0x0123
+[Os::Console] EVENT: (268443649) (0:683,141900) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030006 dispatched to port 1
+[Os::Console] EVENT: (268443650) (0:683,142000) COMMAND: (Ina229Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10030006 completed
+INA_CMD threshold response=OK
+ina reg 0x0c
+INA_REG addr=0x0c name=SOVL bytes=2 value=0x0123 lead=0x00 spi=SPI_OK
+ina init 0.27 0.55
+INA_INIT status=OK ms=3

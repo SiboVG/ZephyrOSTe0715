@@ -1,0 +1,256 @@
+
+[1;32muart:~$ [mina info
+INA_INFO bench=9439e136f93a-dirty library=61ecaea28b81 spi_ref_hz=142857142 requested_hz=1200000 sclk_hz=1116071 mode=3 cs=MIO13 sampling=0
+[1;32muart:~$ [mina id
+INA_ID manufacturer=0x5449 device=0x2291 die=0x229 rev=1 lead=0x00/0x00 spi=SPI_OK result=PASS
+[1;32muart:~$ [mina spi 600000 3
+INA_SPI requested_hz=600000 sclk_hz=558035 mode=3
+[1;32muart:~$ [mina soak 20000
+INA_SOAK n=20000 bad_value=0 bad_lead=0 spi_errors=0 min_us=144 mean_us=149 max_us=461 sclk_hz=558035 mode=3 result=PASS
+[1;32muart:~$ [mina spi 1200000 3
+INA_SPI requested_hz=1200000 sclk_hz=1116071 mode=3
+[1;32muart:~$ [mina soak 20000
+INA_SOAK n=20000 bad_value=0 bad_lead=0 spi_errors=0 min_us=133 mean_us=138 max_us=451 sclk_hz=1116071 mode=3 result=PASS
+[1;32muart:~$ [mina spi 2300000 3
+INA_SPI requested_hz=2300000 sclk_hz=2232142 mode=3
+[1;32muart:~$ [mina soak 20000
+INA_SOAK n=20000 bad_value=0 bad_lead=0 spi_errors=0 min_us=133 mean_us=138 max_us=451 sclk_hz=2232142 mode=3 result=PASS
+[1;32muart:~$ [mina spi 4500000 3
+INA_SPI requested_hz=4500000 sclk_hz=4464285 mode=3
+[1;32muart:~$ [mina soak 20000
+INA_SOAK n=20000 bad_value=0 bad_lead=0 spi_errors=0 min_us=98 mean_us=102 max_us=417 sclk_hz=4464285 mode=3 result=PASS
+[1;32muart:~$ [mina spi 9000000 3
+INA_SPI requested_hz=9000000 sclk_hz=8928571 mode=3
+[1;32muart:~$ [mina soak 20000
+INA_SOAK n=20000 bad_value=0 bad_lead=0 spi_errors=0 min_us=98 mean_us=101 max_us=415 sclk_hz=8928571 mode=3 result=PASS
+[1;32muart:~$ [mina spi 1200000 3
+INA_SPI requested_hz=1200000 sclk_hz=1116071 mode=3
+[1;32muart:~$ [mina reg 0x01
+INA_REG addr=0x01 name=ADC_CONFIG bytes=2 value=0xfb6a lead=0x00 spi=SPI_OK
+[1;32muart:~$ [mina spi 600000 3
+INA_SPI requested_hz=600000 sclk_hz=558035 mode=3
+[1;32muart:~$ [mina wreg 0x01 0x0b6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x0b6a rst_delay_us=-1 write_rx=00fb6a readback=0x0b6a match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina wreg 0x01 0xfb6b
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6b rst_delay_us=-1 write_rx=000b6a readback=0xfb6b match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina wreg 0x01 0x5555
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x5555 rst_delay_us=-1 write_rx=00fb6b readback=0x5555 match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina wreg 0x01 0xaaaa
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xaaaa rst_delay_us=-1 write_rx=005555 readback=0xaaaa match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina wreg 0x01 0x0000
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x0000 rst_delay_us=-1 write_rx=00aaaa readback=0x0000 match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina wreg 0x01 0xfb68
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb68 rst_delay_us=-1 write_rx=000000 readback=0xfb68 match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina spi 1200000 3
+INA_SPI requested_hz=1200000 sclk_hz=1116071 mode=3
+[1;32muart:~$ [mina wreg 0x01 0x0b6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x0b6a rst_delay_us=-1 write_rx=00fb68 readback=0x0b6a match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina wreg 0x01 0xfb6b
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6b rst_delay_us=-1 write_rx=000b6a readback=0xfb6b match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina wreg 0x01 0x5555
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x5555 rst_delay_us=-1 write_rx=00fb6b readback=0x5555 match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina wreg 0x01 0xaaaa
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xaaaa rst_delay_us=-1 write_rx=005555 readback=0xaaaa match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina wreg 0x01 0x0000
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x0000 rst_delay_us=-1 write_rx=00aaaa readback=0x0000 match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina wreg 0x01 0xfb68
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb68 rst_delay_us=-1 write_rx=000000 readback=0xfb68 match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina spi 2300000 3
+INA_SPI requested_hz=2300000 sclk_hz=2232142 mode=3
+[1;32muart:~$ [mina wreg 0x01 0x0b6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x0b6a rst_delay_us=-1 write_rx=00fb68 readback=0x0b6a match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina wreg 0x01 0xfb6b
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6b rst_delay_us=-1 write_rx=000b6a readback=0xfb6b match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina wreg 0x01 0x5555
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x5555 rst_delay_us=-1 write_rx=00fb6b readback=0x5555 match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina wreg 0x01 0xaaaa
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xaaaa rst_delay_us=-1 write_rx=005555 readback=0xaaaa match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina wreg 0x01 0x0000
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x0000 rst_delay_us=-1 write_rx=00aaaa readback=0x0000 match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina wreg 0x01 0xfb68
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb68 rst_delay_us=-1 write_rx=000000 readback=0xfb68 match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina spi 4500000 3
+INA_SPI requested_hz=4500000 sclk_hz=4464285 mode=3
+[1;32muart:~$ [mina wreg 0x01 0x0b6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x0b6a rst_delay_us=-1 write_rx=00fb68 readback=0x0b6a match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina wreg 0x01 0xfb6b
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6b rst_delay_us=-1 write_rx=000b6a readback=0xfb6b match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina wreg 0x01 0x5555
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x5555 rst_delay_us=-1 write_rx=00fb6b readback=0x5555 match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina wreg 0x01 0xaaaa
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xaaaa rst_delay_us=-1 write_rx=005555 readback=0xaaaa match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina wreg 0x01 0x0000
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x0000 rst_delay_us=-1 write_rx=00aaaa readback=0x0000 match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina wreg 0x01 0xfb68
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb68 rst_delay_us=-1 write_rx=000000 readback=0xfb68 match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina spi 9000000 3
+INA_SPI requested_hz=9000000 sclk_hz=8928571 mode=3
+[1;32muart:~$ [mina wreg 0x01 0x0b6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x0b6a rst_delay_us=-1 write_rx=00fb68 readback=0x0b6a match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina wreg 0x01 0xfb6b
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6b rst_delay_us=-1 write_rx=000b6a readback=0xfb6b match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina wreg 0x01 0x5555
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x5555 rst_delay_us=-1 write_rx=00fb6b readback=0x5555 match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina wreg 0x01 0xaaaa
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xaaaa rst_delay_us=-1 write_rx=005555 readback=0xaaaa match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina wreg 0x01 0x0000
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x0000 rst_delay_us=-1 write_rx=00aaaa readback=0x0000 match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina wreg 0x01 0xfb68
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb68 rst_delay_us=-1 write_rx=000000 readback=0xfb68 match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina reg 0x01
+INA_REG addr=0x01 name=ADC_CONFIG bytes=2 value=0xfb68 lead=0x00 spi=SPI_OK
+[1;32muart:~$ [mina spi 1200000 1
+INA_SPI requested_hz=1200000 sclk_hz=1116071 mode=1
+[1;32muart:~$ [mina wreg 0x01 0x0b6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x0b6a rst_delay_us=-1 write_rx=00f800 readback=0xfb68 match=0 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina wreg 0x01 0xfb6b
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6b rst_delay_us=-1 write_rx=000000 readback=0xfb68 match=0 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina wreg 0x01 0x5555
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x5555 rst_delay_us=-1 write_rx=00fb00 readback=0xfb68 match=0 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina wreg 0x01 0xaaaa
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xaaaa rst_delay_us=-1 write_rx=000000 readback=0xfb68 match=0 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina wreg 0x01 0x0000
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x0000 rst_delay_us=-1 write_rx=00fb68 readback=0x0000 match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina wreg 0x01 0xfb68
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb68 rst_delay_us=-1 write_rx=000000 readback=0xfb68 match=1 spi=SPI_OK/SPI_OK
+[1;32muart:~$ [mina spi 1200000 3
+INA_SPI requested_hz=1200000 sclk_hz=1116071 mode=3
+[1;32muart:~$ [mina init 0.27 0.55
+INA_INIT status=OK ms=4
+[1;32muart:~$ [mina read 20 0
+INA_HEADER,time_ms,status,valid,bus_V,shunt_V,temp_C,current_A,power_W,energy_J,charge_C,diag
+INA_ROW,310199,OK,0x7f,4.994727,0.000255938,21.4609,0.000947,0.004727,0.000913,0.000188,0x0003
+INA_ROW,310207,OK,0x7f,4.994531,0.000255313,21.4609,0.000944,0.004716,0.000913,0.000196,0x0003
+INA_ROW,310253,OK,0x7f,4.994727,0.000255938,21.4609,0.000947,0.004730,0.001128,0.000238,0x0003
+INA_ROW,310305,OK,0x7f,4.994727,0.000255313,21.4609,0.000945,0.004716,0.001396,0.000288,0x0003
+INA_ROW,310355,OK,0x7f,4.994141,0.000256250,21.4609,0.000948,0.004737,0.001611,0.000337,0x0003
+INA_ROW,310405,OK,0x7f,4.994336,0.000255938,21.4609,0.000947,0.004730,0.001880,0.000382,0x0003
+INA_ROW,310455,OK,0x7f,4.994531,0.000255000,21.4688,0.000944,0.004713,0.002095,0.000429,0x0003
+INA_ROW,310506,OK,0x7f,4.994336,0.000255313,21.4688,0.000944,0.004716,0.002310,0.000477,0x0003
+INA_ROW,310556,OK,0x7f,4.993945,0.000255313,21.4688,0.000945,0.004720,0.002578,0.000525,0x0003
+INA_ROW,310606,OK,0x7f,4.993945,0.000255313,21.4688,0.000944,0.004716,0.002793,0.000573,0x0003
+INA_ROW,310658,OK,0x7f,4.994141,0.000255313,21.4766,0.000945,0.004716,0.003008,0.000623,0x0003
+INA_ROW,310709,OK,0x7f,4.994336,0.000255938,21.4766,0.000947,0.004727,0.003276,0.000668,0x0003
+INA_ROW,310759,OK,0x7f,4.994727,0.000255313,21.4766,0.000945,0.004720,0.003491,0.000715,0x0003
+INA_ROW,310809,OK,0x7f,4.994141,0.000256875,21.4766,0.000950,0.004743,0.003760,0.000764,0x0003
+INA_ROW,310860,OK,0x7f,4.994336,0.000255625,21.4766,0.000946,0.004723,0.003975,0.000812,0x0003
+INA_ROW,310910,OK,0x7f,4.994727,0.000255313,21.4766,0.000945,0.004720,0.004189,0.000859,0x0003
+INA_ROW,310961,OK,0x7f,4.994727,0.000255938,21.4766,0.000947,0.004730,0.004458,0.000907,0x0003
+INA_ROW,311011,OK,0x7f,4.994727,0.000255313,21.4766,0.000944,0.004716,0.004673,0.000955,0x0003
+INA_ROW,311062,OK,0x7f,4.994727,0.000255625,21.4766,0.000946,0.004723,0.004941,0.001003,0x0003
+INA_ROW,311112,OK,0x7f,4.994336,0.000256250,21.4766,0.000948,0.004733,0.005156,0.001050,0x0003
+INA_READ_DONE ok=20 failures=0
+[1;32muart:~$ [mina cmd report
+INA_CMD report response=OK
+[1;32muart:~$ [mTLM sensor.Initialized = 1 (311.295400)
+TLM sensor.LastStatus = OK (0) (311.295600)
+TLM sensor.Samples = 261 (311.295900)
+TLM sensor.Errors = 0 (311.296200)
+[Os::Console] EVENT: (268443649) (0:311,296300) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030008 dispatched to port 1
+[Os::Console] EVENT: (268443650) (0:311,297100) COMMAND: (Ina229Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10030008 completed
+ina cmd snapshot
+INA_CMD snapshot response=OK
+[1;32muart:~$ [mTLM sensor.Measurement = bus=4.994336V shunt=0.000256250V temp=21.4844C current=0.000948A power=0.004733W valid=0x7f diag=0x0003 (311.446900)
+[Os::Console] EVENT: (268443649) (0:311,447100) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030007 dispatched to port 1
+[Os::Console] EVENT: (268443650) (0:311,447900) COMMAND: (Ina229Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10030007 completed
+ina cmd init 0 5
+INA_CMD init response=VALIDATION_ERROR
+[1;32muart:~$ [m[Os::Console] EVENT: (268443649) (0:311,645600) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030000 dispatched to port 1
+[Os::Console] EVENT: (268443651) (0:311,646400) COMMAND: (Ina229Te0715.cmdDisp) OpCodeError : Opcode 0x10030000 completed with error VALIDATION_ERROR (2)
+ina cmd report
+INA_CMD report response=OK
+[1;32muart:~$ [mTLM sensor.Initialized = 1 (311.845400)
+TLM sensor.LastStatus = OK (0) (311.845600)
+TLM sensor.Samples = 262 (311.845900)
+TLM sensor.Errors = 0 (311.846200)
+[Os::Console] EVENT: (268443649) (0:311,846300) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030008 dispatched to port 1
+[Os::Console] EVENT: (268443650) (0:311,847100) COMMAND: (Ina229Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10030008 completed
+ina reg 0x0b
+INA_REG addr=0x0b name=DIAG_ALRT bytes=2 value=0x0003 lead=0x00 spi=SPI_OK
+[1;32muart:~$ [mina cmd alert 0x8000
+INA_CMD alert response=OK
+[1;32muart:~$ [m[Os::Console] EVENT: (268443649) (0:312,206200) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030005 dispatched to port 1
+[Os::Console] EVENT: (268443650) (0:312,207000) COMMAND: (Ina229Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10030005 completed
+ina reg 0x0b
+INA_REG addr=0x0b name=DIAG_ALRT bytes=2 value=0x8003 lead=0x00 spi=SPI_OK
+[1;32muart:~$ [mina cmd alert 0x0000
+INA_CMD alert response=OK
+[1;32muart:~$ [m[Os::Console] EVENT: (268443649) (0:312,606200) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030005 dispatched to port 1
+[Os::Console] EVENT: (268443650) (0:312,607000) COMMAND: (Ina229Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10030005 completed
+ina cmd reset-acc
+INA_CMD reset-acc response=OK
+[1;32muart:~$ [m[Os::Console] EVENT: (268443649) (0:312,806100) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030004 dispatched to port 1
+[Os::Console] EVENT: (268443650) (0:312,806900) COMMAND: (Ina229Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10030004 completed
+ina timing 200
+INA_TIMING ok_n=200 ok_min_us=1270 ok_mean_us=1315 ok_max_us=1633 not_ready_n=19057 not_ready_max_us=508 failed_n=0 sclk_hz=1116071
+[1;32muart:~$ [mina stream start 100 20
+INA_HEADER,time_ms,status,valid,bus_V,shunt_V,temp_C,current_A,power_W,energy_J,charge_C,diag
+INA_STREAM_STARTED period_ms=100 rows=20
+[1;32muart:~$ [mINA_ROW,323305,OK,0x7f,4.994336,0.000255625,21.4922,0.000945,0.004720,0.048931,0.009926,0x0003
+INA_ROW,323405,OK,0x7f,4.994531,0.000255938,21.4922,0.000947,0.004727,0.049414,0.010018,0x0003
+INA_ROW,323505,OK,0x7f,4.994336,0.000255313,21.5000,0.000945,0.004720,0.049844,0.010114,0x0003
+INA_ROW,323605,OK,0x7f,4.994727,0.000255938,21.4922,0.000947,0.004727,0.050327,0.010206,0x0003
+INA_ROW,323705,OK,0x7f,4.994141,0.000255938,21.5000,0.000947,0.004730,0.050811,0.010303,0x0003
+INA_ROW,323805,OK,0x7f,4.994141,0.000256250,21.5000,0.000948,0.004737,0.051294,0.010398,0x0003
+INA_ROW,323905,OK,0x7f,4.994336,0.000255000,21.4922,0.000944,0.004713,0.051724,0.010490,0x0003
+INA_ROW,324005,OK,0x7f,4.994727,0.000255938,21.5000,0.000947,0.004730,0.052207,0.010586,0x0003
+INA_ROW,324105,OK,0x7f,4.994531,0.000255313,21.5000,0.000945,0.004720,0.052690,0.010681,0x0003
+INA_ROW,324205,OK,0x7f,4.994531,0.000255625,21.5000,0.000946,0.004723,0.053120,0.010775,0x0003
+INA_ROW,324305,OK,0x7f,4.994141,0.000255625,21.5000,0.000946,0.004723,0.053604,0.010869,0x0003
+INA_ROW,324405,OK,0x7f,4.993945,0.000255625,21.4922,0.000946,0.004727,0.054087,0.010966,0x0003
+INA_ROW,324505,OK,0x7f,4.994336,0.000255313,21.5000,0.000945,0.004716,0.054517,0.011058,0x0003
+INA_ROW,324605,OK,0x7f,4.994141,0.000255625,21.5000,0.000946,0.004723,0.055000,0.011153,0x0003
+INA_ROW,324705,OK,0x7f,4.994727,0.000255625,21.5000,0.000946,0.004727,0.055483,0.011249,0x0003
+INA_ROW,324805,OK,0x7f,4.994336,0.000255000,21.5000,0.000943,0.004710,0.055913,0.011341,0x0003
+INA_ROW,324905,OK,0x7f,4.994141,0.000255938,21.5000,0.000947,0.004730,0.056396,0.011437,0x0003
+INA_ROW,325005,OK,0x7f,4.993945,0.000255625,21.5000,0.000946,0.004723,0.056880,0.011532,0x0003
+INA_ROW,325105,OK,0x7f,4.994141,0.000255625,21.5000,0.000945,0.004720,0.057363,0.011625,0x0003
+INA_ROW,325205,OK,0x7f,4.994141,0.000255938,21.5000,0.000947,0.004727,0.057793,0.011721,0x0003
+INA_STREAM_DONE rows=20 not_ready=0 failures=0
+ina stream stop
+INA_STREAM_STOPPED rows=20 not_ready=0 failures=0
+[1;32muart:~$ [mina id
+INA_ID manufacturer=0xffff device=0xffff die=0xfff rev=15 lead=0xff/0xff spi=SPI_OK result=FAIL
+[1;32muart:~$ [mina read 3 0
+INA_HEADER,time_ms,status,valid,bus_V,shunt_V,temp_C,current_A,power_W,energy_J,charge_C,diag
+INA_ROW,489039,DEVICE_ERROR
+TLM sensor.LastStatus = DEVICE_ERROR (7) (489.037600)
+[Os::Console] EVENT: (268632064) (0:489,37800) WARNING_HI: (Ina229Te0715.sensor) OperationFailed : INA229 READ (7) failed: DEVICE_ERROR (7)
+INA_ROW,489057,DEVICE_ERROR
+INA_ROW,489059,DEVICE_ERROR
+INA_READ_DONE ok=0 failures=3
+[1;32muart:~$ [mina read 3 0
+INA_HEADER,time_ms,status,valid,bus_V,shunt_V,temp_C,current_A,power_W,energy_J,charge_C,diag
+INA_ROW,541871,OK,0x7f,4.993555,0.000255313,21.7578,0.000945,0.004716,1.066914,0.216313,0x0003
+TLM sensor.LastStatus = OK (0) (541.870200)
+[Os::Console] EVENT: (268632065) (0:541,870300) ACTIVITY_LO: (Ina229Te0715.sensor) Recovered : INA229 READ (7) recovered
+INA_ROW,541920,OK,0x7f,4.993750,0.000255000,21.7656,0.000944,0.004713,1.067129,0.216361,0x0003
+INA_ROW,541971,OK,0x7f,4.994336,0.000255000,21.7578,0.000943,0.004710,1.067397,0.216409,0x0003
+INA_READ_DONE ok=3 failures=0
+[1;32muart:~$ [mina read 3 0
+INA_HEADER,time_ms,status,valid,bus_V,shunt_V,temp_C,current_A,power_W,energy_J,charge_C,diag
+INA_ROW,563529,DEVICE_ERROR
+TLM sensor.LastStatus = DEVICE_ERROR (7) (563.527600)
+[Os::Console] EVENT: (268632064) (0:563,527700) WARNING_HI: (Ina229Te0715.sensor) OperationFailed : INA229 READ (7) failed: DEVICE_ERROR (7)
+INA_ROW,563547,DEVICE_ERROR
+INA_ROW,563549,DEVICE_ERROR
+INA_READ_DONE ok=0 failures=3
+[1;32muart:~$ [mina read 5 0
+INA_HEADER,time_ms,status,valid,bus_V,shunt_V,temp_C,current_A,power_W,energy_J,charge_C,diag
+INA_ROW,571010,OK,0x7f,4.991992,0.000254375,21.7344,0.000854,0.004260,0.013750,0.002790,0x0003
+TLM sensor.LastStatus = OK (0) (571.008700)
+[Os::Console] EVENT: (268632065) (0:571,8900) ACTIVITY_LO: (Ina229Te0715.sensor) Recovered : INA229 READ (7) recovered
+INA_ROW,571031,OK,0x7f,4.993164,0.000255000,21.7500,0.000856,0.004273,0.013804,0.002809,0x0003
+INA_ROW,571039,OK,0x7f,4.992969,0.000253125,21.7734,0.000850,0.004243,0.013857,0.002818,0x0003
+INA_ROW,571048,OK,0x7f,4.991992,0.000255938,21.7578,0.000858,0.004287,0.013911,0.002826,0x0003
+INA_ROW,571056,OK,0x7f,4.992188,0.000252188,21.7500,0.000847,0.004223,0.013911,0.002831,0x0003
+INA_READ_DONE ok=5 failures=0
+[1;32muart:~$ [mina init 0.27 0.55
+INA_INIT status=OK ms=4
+[1;32muart:~$ [mina read 3 0
+INA_HEADER,time_ms,status,valid,bus_V,shunt_V,temp_C,current_A,power_W,energy_J,charge_C,diag
+INA_ROW,571358,OK,0x7f,4.993555,0.000256250,21.7578,0.000948,0.004737,0.000645,0.000141,0x0003
+INA_ROW,571367,OK,0x7f,4.993555,0.000256875,21.7500,0.000950,0.004743,0.000698,0.000149,0x0003
+INA_ROW,571413,OK,0x7f,4.993555,0.000255938,21.7578,0.000947,0.004727,0.000913,0.000194,0x0003
+INA_READ_DONE ok=3 failures=0
+[1;32muart:~$ [m

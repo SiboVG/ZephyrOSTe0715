@@ -1,0 +1,13 @@
+date: 2026-10-05T10:06:11+02:00
+host: sibo-van-gool-MS-7E59 Linux-7.0.0-34-generic-x86_64-with-glibc2.39
+command: app/scripts/sensor_bench.py ina229 --elf app/apps/fprime_ina229_bench/build-fprime-automatic-zephyr/zephyr/zephyr.elf --xsdb /tools/Xilinx/Vitis/2022.1/bin/xsdb --port /dev/ttyUSB1 --shunt 0.27 --max-current 0.55 --out docs/verification/evidence/2026-10-05-1006-ina229-det-check
+app: 9439e136f93a-dirty
+fprime-ina229: 61ecaea28b81
+zephyr: 70b56a29cd7-dirty
+fprime: v4.2.0-267-g35d4c0e881
+fprime-zephyr: 6e2a411
+zephyr.elf: /home/sibo-van-gool/Desktop/PhD/CubeSpec/FlightSoftware/ZephyrOS/cubespec-flight-software/verification/benches/zephyr-te0715/app/apps/fprime_ina229_bench/build-fprime-automatic-zephyr/zephyr/zephyr.elf
+zephyr.elf sha256: 08e911ffdd78c64171ca17f9bc20acf2785abe74a73ae575d9c2e8af7e9b8cd2
+shunt: 0.27 ohm, max current 0.55 A, shunt tolerance 1.0 %
+reference uncertainty: 0.1 %
+soak transfers per point: 20000

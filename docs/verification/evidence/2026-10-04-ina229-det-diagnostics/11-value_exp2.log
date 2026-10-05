@@ -1,0 +1,98 @@
+ina init 0.27 0.55
+INA_INIT status=OK ms=3
+ina cmd threshold 0x0c 0x8001
+[Os::Console] EVENT: (268443649) (0:729,441900) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030006 dispatched to port 1
+[Os::Console] EVENT: (268443650) (0:729,442000) COMMAND: (Ina229Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10030006 completed
+INA_CMD threshold response=OK
+ina reg 0x0c
+INA_REG addr=0x0c name=SOVL bytes=2 value=0x8001 lead=0x00 spi=SPI_OK
+ina init 0.27 0.55
+INA_INIT status=OK ms=3
+ina cmd threshold 0x0c 0x0b6a
+[Os::Console] EVENT: (268443649) (0:733,461900) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030006 dispatched to port 1
+[Os::Console] EVENT: (268443650) (0:733,462000) COMMAND: (Ina229Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10030006 completed
+INA_CMD threshold response=OK
+ina reg 0x0c
+INA_REG addr=0x0c name=SOVL bytes=2 value=0x0b6a lead=0x00 spi=SPI_OK
+ina init 0.27 0.55
+INA_INIT status=OK ms=3
+ina cmd threshold 0x0c 0x1001
+[Os::Console] EVENT: (268443649) (0:737,471900) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030006 dispatched to port 1
+[Os::Console] EVENT: (268443650) (0:737,472000) COMMAND: (Ina229Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10030006 completed
+INA_CMD threshold response=OK
+ina reg 0x0c
+INA_REG addr=0x0c name=SOVL bytes=2 value=0x1001 lead=0x00 spi=SPI_OK
+ina init 0.27 0.55
+INA_INIT status=OK ms=3
+ina cmd threshold 0x0c 0xfb6b
+[Os::Console] EVENT: (268443649) (0:741,491800) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030006 dispatched to port 1
+[Os::Console] EVENT: (268443650) (0:741,491900) COMMAND: (Ina229Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10030006 completed
+INA_CMD threshold response=OK
+ina reg 0x0c
+INA_REG addr=0x0c name=SOVL bytes=2 value=0xfb6b lead=0x00 spi=SPI_OK
+ina init 0.27 0.55
+INA_INIT status=OK ms=3
+ina cmd threshold 0x0c 0x0001
+[Os::Console] EVENT: (268443649) (0:745,501900) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030006 dispatched to port 1
+[Os::Console] EVENT: (268443650) (0:745,502000) COMMAND: (Ina229Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10030006 completed
+INA_CMD threshold response=OK
+ina reg 0x0c
+INA_REG addr=0x0c name=SOVL bytes=2 value=0x0001 lead=0x00 spi=SPI_OK
+ina init 0.27 0.55
+INA_INIT status=OK ms=3
+ina cmd threshold 0x0c 0x8000
+[Os::Console] EVENT: (268443649) (0:749,511900) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030006 dispatched to port 1
+[Os::Console] EVENT: (268443650) (0:749,512000) COMMAND: (Ina229Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10030006 completed
+INA_CMD threshold response=OK
+ina reg 0x0c
+INA_REG addr=0x0c name=SOVL bytes=2 value=0x8000 lead=0x00 spi=SPI_OK
+ina init 0.27 0.55
+INA_INIT status=OK ms=3
+ina cmd threshold 0x0c 0x0100
+[Os::Console] EVENT: (268443649) (0:753,521900) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030006 dispatched to port 1
+[Os::Console] EVENT: (268443650) (0:753,522000) COMMAND: (Ina229Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10030006 completed
+INA_CMD threshold response=OK
+ina reg 0x0c
+INA_REG addr=0x0c name=SOVL bytes=2 value=0x0100 lead=0x00 spi=SPI_OK
+ina init 0.27 0.55
+INA_INIT status=OK ms=3
+ina cmd threshold 0x0c 0x0002
+[Os::Console] EVENT: (268443649) (0:757,541800) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030006 dispatched to port 1
+[Os::Console] EVENT: (268443650) (0:757,541900) COMMAND: (Ina229Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10030006 completed
+INA_CMD threshold response=OK
+ina reg 0x0c
+INA_REG addr=0x0c name=SOVL bytes=2 value=0x0002 lead=0x00 spi=SPI_OK
+ina init 0.27 0.55
+INA_INIT status=OK ms=3
+ina cmd threshold 0x0c 0x0003
+[Os::Console] EVENT: (268443649) (0:761,551900) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030006 dispatched to port 1
+[Os::Console] EVENT: (268443650) (0:761,551900) COMMAND: (Ina229Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10030006 completed
+INA_CMD threshold response=OK
+ina reg 0x0c
+INA_REG addr=0x0c name=SOVL bytes=2 value=0x0003 lead=0x00 spi=SPI_OK
+ina init 0.27 0.55
+INA_INIT status=OK ms=3
+ina cmd threshold 0x0c 0x00ff
+[Os::Console] EVENT: (268443649) (0:765,561900) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030006 dispatched to port 1
+[Os::Console] EVENT: (268443650) (0:765,562000) COMMAND: (Ina229Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10030006 completed
+INA_CMD threshold response=OK
+ina reg 0x0c
+INA_REG addr=0x0c name=SOVL bytes=2 value=0x00ff lead=0x00 spi=SPI_OK
+ina init 0.27 0.55
+INA_INIT status=OK ms=3
+ina cmd threshold 0x0c 0x0011
+[Os::Console] EVENT: (268443649) (0:769,571900) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030006 dispatched to port 1
+[Os::Console] EVENT: (268443650) (0:769,572000) COMMAND: (Ina229Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10030006 completed
+INA_CMD threshold response=OK
+ina reg 0x0c
+INA_REG addr=0x0c name=SOVL bytes=2 value=0x0011 lead=0x00 spi=SPI_OK
+ina init 0.27 0.55
+INA_INIT status=OK ms=3
+ina cmd threshold 0x0c 0x1000
+[Os::Console] EVENT: (268443649) (0:773,581900) COMMAND: (Ina229Te0715.cmdDisp) OpCodeDispatched : Opcode 0x10030006 dispatched to port 1
+[Os::Console] EVENT: (268443650) (0:773,582000) COMMAND: (Ina229Te0715.cmdDisp) OpCodeCompleted : Opcode 0x10030006 completed
+INA_CMD threshold response=OK
+ina reg 0x0c
+INA_REG addr=0x0c name=SOVL bytes=2 value=0x1000 lead=0x00 spi=SPI_OK
+ina init 0.27 0.55
+INA_INIT status=OK ms=3

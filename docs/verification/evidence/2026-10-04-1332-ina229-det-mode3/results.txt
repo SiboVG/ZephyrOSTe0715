@@ -1,0 +1,23 @@
+INFO  boot      INA_INFO bench=9439e136f93a-dirty library=61ecaea28b81 spi_ref_hz=142857142 requested_hz=1200000 sclk_hz=1116071 mode=3 cs=MIO13 sampling=0
+PASS  TC-13.1   identity over raw SPI (MANUFACTURER_ID 0x5449, DEVICE_ID die 0x229, lead byte 0): INA_ID manufacturer=0x5449 device=0x2291 die=0x229 rev=1 lead=0x00/0x00 spi=SPI_OK result=PASS
+PASS  TC-13.2   soak 20000 transfers at SCLK 558035 Hz, mode 3: bad_value=0 spi_errors=0 bad_lead=0 transfer_us=53/53/87
+PASS  TC-13.2   soak 20000 transfers at SCLK 1116071 Hz, mode 3: bad_value=0 spi_errors=0 bad_lead=0 transfer_us=31/31/64
+PASS  TC-13.2   soak 20000 transfers at SCLK 2232142 Hz, mode 3: bad_value=0 spi_errors=0 bad_lead=0 transfer_us=21/21/54
+PASS  TC-13.2   soak 20000 transfers at SCLK 4464285 Hz, mode 3: bad_value=0 spi_errors=0 bad_lead=0 transfer_us=15/15/49
+PASS  TC-13.2   soak 20000 transfers at SCLK 8928571 Hz, mode 3: bad_value=0 spi_errors=0 bad_lead=0 transfer_us=13/13/46
+PASS  TC-14.1   initialize through the manager port (ina init 0.27 0.55): INA_INIT status=OK ms=3
+PASS  TC-14.2   20 readings, all OK: INA_READ_DONE ok=20 failures=0
+PASS  TC-14.3   all seven channels valid in mode 15 (valid mask 0x7f): masks ['0x7f']
+PASS  TC-14.4   die temperature plausible (5 to 50 C): 22.382 C
+PASS  TC-14.5   current consistent with shunt voltage / shunt resistance: shunt 0.254766 mV -> 0.000944 A, reported 0.000943 A
+PASS  TC-14.6   power consistent with bus voltage x current (data sheet: +/-0.5 % TME): 0.004707 W vs 0.004709 W
+INFO  TC-14     mean bus 4.992920 V, shunt 254.766 uV, current 0.000943 A, power 0.004707 W, temperature 22.382 C
+PASS  TC-14.7   REPORT command: response OK, telemetry printed: INA_CMD report response=OK
+PASS  TC-14.8   READ_SNAPSHOT command: response OK, Measurement telemetry: INA_CMD snapshot response=OK
+PASS  TC-14.9   INITIALIZE with a zero shunt: VALIDATION_ERROR: INA_CMD init response=VALIDATION_ERROR
+PASS  TC-14.10  a rejected argument is not counted as a device error: Errors ['1'] -> ['1']
+PASS  TC-14.11  SET_ALERT_CONFIG 0x8000 sets ALATCH and leaves MEMSTAT: DIAG_ALRT 0x0003 -> 0x8003
+PASS  TC-14.12  RESET_ACCUMULATORS command: response OK: INA_CMD reset-acc response=OK
+PASS  TC-14.13  200 timed reads, none failed: INA_TIMING ok_n=200 ok_min_us=343 ok_mean_us=344 ok_max_us=360 not_ready_n=33240 not_ready_max_us=40 failed_n=0 sclk_hz=1116071
+PASS  TC-14.14  rate-group stream: 20 rows at 10 Hz, no failures: INA_STREAM_DONE rows=20 not_ready=0 failures=0
+DONE            20 passed, 0 failed

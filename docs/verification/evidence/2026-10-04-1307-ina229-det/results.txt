@@ -1,0 +1,24 @@
+INFO  boot      INA_INFO bench=887e90c8d3db library=61ecaea28b81 spi_ref_hz=142857142 requested_hz=1200000 sclk_hz=1116071 mode=1 cs=MIO13 sampling=0
+PASS  TC-13.1   identity over raw SPI (MANUFACTURER_ID 0x5449, DEVICE_ID die 0x229, lead byte 0): INA_ID manufacturer=0x5449 device=0x2291 die=0x229 rev=1 lead=0x00/0x00 spi=SPI_OK result=PASS
+PASS  TC-13.2   soak 20000 transfers at SCLK 558035 Hz, mode 1: bad_value=0 spi_errors=0 bad_lead=0 transfer_us=53/53/78
+PASS  TC-13.2   soak 20000 transfers at SCLK 1116071 Hz, mode 1: bad_value=0 spi_errors=0 bad_lead=0 transfer_us=31/31/53
+PASS  TC-13.2   soak 20000 transfers at SCLK 2232142 Hz, mode 1: bad_value=0 spi_errors=0 bad_lead=0 transfer_us=21/21/54
+PASS  TC-13.2   soak 20000 transfers at SCLK 4464285 Hz, mode 1: bad_value=0 spi_errors=0 bad_lead=0 transfer_us=15/15/48
+PASS  TC-13.2   soak 20000 transfers at SCLK 8928571 Hz, mode 1: bad_value=0 spi_errors=0 bad_lead=0 transfer_us=13/13/47
+PASS  TC-13.2   soak 20000 transfers at SCLK 1116071 Hz, mode 2: bad_value=0 spi_errors=0 bad_lead=0 transfer_us=31/31/65
+PASS  TC-14.1   initialize through the manager port (ina init 0.27 0.55): INA_INIT status=OK ms=3
+PASS  TC-14.2   20 readings, all OK: INA_READ_DONE ok=20 failures=0
+PASS  TC-14.3   all seven channels valid in mode 15 (valid mask 0x7f): masks ['0x7f']
+PASS  TC-14.4   die temperature plausible (5 to 50 C): 21.825 C
+PASS  TC-14.5   current consistent with shunt voltage / shunt resistance: shunt 0.259016 mV -> 0.000959 A, reported 0.000959 A
+PASS  TC-14.6   power consistent with bus voltage x current (data sheet: +/-0.5 % TME): 0.004788 W vs 0.004791 W
+INFO  TC-14     mean bus 4.995898 V, shunt 259.016 uV, current 0.000959 A, power 0.004788 W, temperature 21.825 C
+PASS  TC-14.7   REPORT command: response OK, telemetry printed: INA_CMD report response=OK
+PASS  TC-14.8   READ_SNAPSHOT command: response OK, Measurement telemetry: INA_CMD snapshot response=OK
+PASS  TC-14.9   INITIALIZE with a zero shunt: VALIDATION_ERROR: INA_CMD init response=VALIDATION_ERROR
+PASS  TC-14.10  a rejected argument is not counted as a device error: Errors ['0'] -> ['0']
+FAIL  TC-14.11  SET_ALERT_CONFIG 0x8000 sets ALATCH and leaves MEMSTAT: DIAG_ALRT 0x0003 -> 0x0003
+FAIL  TC-14.12  RESET_ACCUMULATORS command: response OK: INA_CMD reset-acc response=EXECUTION_ERROR
+FAIL  TC-14.13  200 timed reads, none failed: INA_TIMING ok_n=0 ok_min_us=0 ok_mean_us=0 ok_max_us=0 not_ready_n=0 not_ready_max_us=0 failed_n=8127512 sclk_hz=1116071
+FAIL  TC-14.14  rate-group stream: 20 rows at 10 Hz, no failures: no answer
+DONE            17 passed, 4 failed

@@ -1,0 +1,11 @@
+date: 2026-10-04T13:32:45+02:00
+host: sibo-van-gool-MS-7E59 Linux-7.0.0-34-generic-x86_64-with-glibc2.39
+command: /home/sibo-van-gool/Desktop/PhD/CubeSpec/FlightSoftware/ZephyrOS/cubespec-flight-software/verification/benches/zephyr-te0715/app/scripts/sensor_bench.py ina229 --attach --port /dev/ttyUSB1 --shunt 0.27 --max-current 0.55 --out docs/verification/evidence/2026-10-04-1332-ina229-det-mode3
+app: 9439e136f93a-dirty
+fprime-ina229: 61ecaea28b81
+zephyr: 70b56a29cd7-dirty
+fprime: v4.2.0-267-g35d4c0e881
+fprime-zephyr: 6e2a411
+shunt: 0.27 ohm, max current 0.55 A, shunt tolerance 1.0 %
+reference uncertainty: 0.1 %
+soak transfers per point: 20000

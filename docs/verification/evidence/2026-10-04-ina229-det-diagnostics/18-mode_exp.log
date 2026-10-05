@@ -1,0 +1,222 @@
+ina spi 600000 1
+INA_SPI requested_hz=600000 sclk_hz=558035 mode=1
+ina id
+INA_ID manufacturer=0x5449 device=0x2291 die=0x229 rev=1 lead=0x00/0x00 spi=SPI_OK result=PASS
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0x0b6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x0b6a rst_delay_us=-1 write_rx=00f800 readback=0xfb6a match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6b
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6b rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0x5555
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x5555 rst_delay_us=-1 write_rx=00fb00 readback=0xfb6a match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina spi 600000 2
+INA_SPI requested_hz=600000 sclk_hz=558035 mode=2
+ina id
+INA_ID manufacturer=0x5449 device=0x2291 die=0x229 rev=1 lead=0x00/0x00 spi=SPI_OK result=PASS
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0x0b6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x0b6a rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6b
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6b rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0x5555
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x5555 rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina spi 600000 0
+INA_SPI requested_hz=600000 sclk_hz=558035 mode=0
+ina id
+INA_ID manufacturer=0x0000 device=0x2a24 die=0x2a2 rev=4 lead=0x00/0x00 spi=SPI_OK result=FAIL
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000740 readback=0x0740 match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0x0b6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x0b6a rst_delay_us=-1 write_rx=000000 readback=0x0000 match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0x0000 match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6b
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6b rst_delay_us=-1 write_rx=000000 readback=0x0000 match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0x0000 match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0x5555
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x5555 rst_delay_us=-1 write_rx=000000 readback=0x0000 match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0x0000 match=0 spi=SPI_OK/SPI_OK
+ina spi 600000 3
+INA_SPI requested_hz=600000 sclk_hz=558035 mode=3
+ina id
+INA_ID manufacturer=0x5449 device=0x2291 die=0x229 rev=1 lead=0x00/0x00 spi=SPI_OK result=PASS
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=00fb6a readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0x0b6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x0b6a rst_delay_us=-1 write_rx=00fb6a readback=0x0b6a match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000b6a readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6b
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6b rst_delay_us=-1 write_rx=00fb6a readback=0xfb6b match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=00fb6b readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0x5555
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x5555 rst_delay_us=-1 write_rx=00fb6a readback=0x5555 match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=005555 readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina spi 1200000 1
+INA_SPI requested_hz=1200000 sclk_hz=1116071 mode=1
+ina id
+INA_ID manufacturer=0x5449 device=0x2291 die=0x229 rev=1 lead=0x00/0x00 spi=SPI_OK result=PASS
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0x0b6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x0b6a rst_delay_us=-1 write_rx=00f800 readback=0xfb6a match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6b
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6b rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0x5555
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x5555 rst_delay_us=-1 write_rx=00fb00 readback=0xfb6a match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina spi 1200000 2
+INA_SPI requested_hz=1200000 sclk_hz=1116071 mode=2
+ina id
+INA_ID manufacturer=0x5449 device=0x2291 die=0x229 rev=1 lead=0x00/0x00 spi=SPI_OK result=PASS
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0x0b6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x0b6a rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6b
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6b rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0x5555
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x5555 rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina spi 1200000 0
+INA_SPI requested_hz=1200000 sclk_hz=1116071 mode=0
+ina id
+INA_ID manufacturer=0x0000 device=0x2a24 die=0x2a2 rev=4 lead=0x00/0x00 spi=SPI_OK result=FAIL
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0x0000 match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0x0b6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x0b6a rst_delay_us=-1 write_rx=000000 readback=0x0000 match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0x0000 match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6b
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6b rst_delay_us=-1 write_rx=000000 readback=0x0000 match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0x0000 match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0x5555
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x5555 rst_delay_us=-1 write_rx=000000 readback=0x0000 match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0x0000 match=0 spi=SPI_OK/SPI_OK
+ina spi 1200000 3
+INA_SPI requested_hz=1200000 sclk_hz=1116071 mode=3
+ina id
+INA_ID manufacturer=0x5449 device=0x2291 die=0x229 rev=1 lead=0x00/0x00 spi=SPI_OK result=PASS
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=00fb6a readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0x0b6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x0b6a rst_delay_us=-1 write_rx=00fb6a readback=0x0b6a match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000b6a readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6b
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6b rst_delay_us=-1 write_rx=00fb6a readback=0xfb6b match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=00fb6b readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0x5555
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x5555 rst_delay_us=-1 write_rx=00fb6a readback=0x5555 match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=005555 readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina spi 9000000 1
+INA_SPI requested_hz=9000000 sclk_hz=8928571 mode=1
+ina id
+INA_ID manufacturer=0x5449 device=0x2291 die=0x229 rev=1 lead=0x00/0x00 spi=SPI_OK result=PASS
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0x0b6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x0b6a rst_delay_us=-1 write_rx=00f800 readback=0xfb6a match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6b
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6b rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0x5555
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x5555 rst_delay_us=-1 write_rx=00fb00 readback=0xfb6a match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina spi 9000000 2
+INA_SPI requested_hz=9000000 sclk_hz=8928571 mode=2
+ina id
+INA_ID manufacturer=0x5449 device=0x2291 die=0x229 rev=1 lead=0x00/0x00 spi=SPI_OK result=PASS
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0x0b6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x0b6a rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6b
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6b rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0x5555
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x5555 rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina spi 9000000 0
+INA_SPI requested_hz=9000000 sclk_hz=8928571 mode=0
+ina id
+INA_ID manufacturer=0x0000 device=0x2a24 die=0x2a2 rev=4 lead=0x00/0x00 spi=SPI_OK result=FAIL
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0x0000 match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0x0b6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x0b6a rst_delay_us=-1 write_rx=000000 readback=0x0000 match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0x0000 match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6b
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6b rst_delay_us=-1 write_rx=000000 readback=0x0000 match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0x0000 match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0x5555
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x5555 rst_delay_us=-1 write_rx=000000 readback=0x0000 match=0 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000000 readback=0x0000 match=0 spi=SPI_OK/SPI_OK
+ina spi 9000000 3
+INA_SPI requested_hz=9000000 sclk_hz=8928571 mode=3
+ina id
+INA_ID manufacturer=0x5449 device=0x2291 die=0x229 rev=1 lead=0x00/0x00 spi=SPI_OK result=PASS
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=00fb6a readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0x0b6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x0b6a rst_delay_us=-1 write_rx=00fb6a readback=0x0b6a match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=000b6a readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6b
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6b rst_delay_us=-1 write_rx=00fb6a readback=0xfb6b match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=00fb6b readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0x5555
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0x5555 rst_delay_us=-1 write_rx=00fb6a readback=0x5555 match=1 spi=SPI_OK/SPI_OK
+ina wreg 0x01 0xfb6a
+INA_WREG addr=0x01 name=ADC_CONFIG wrote=0xfb6a rst_delay_us=-1 write_rx=005555 readback=0xfb6a match=1 spi=SPI_OK/SPI_OK
+ina spi 1200000 1
+INA_SPI requested_hz=1200000 sclk_hz=1116071 mode=1
+ina init 0.27 0.55
+INA_INIT status=OK ms=3
+TLM sensor.LastStatus = OK (0) (126.154200)
+[Os::Console] EVENT: (268632065) (0:126,154200) ACTIVITY_LO: (Ina229Te0715.sensor) Recovered : INA229 INITIALIZE (0) recovered
