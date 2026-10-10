@@ -1,0 +1,5 @@
+#!/bin/sh
+# The pinned clang-tidy (PyPI wheel through uvx) for editors and manual runs.
+# VS Code cpptools uses this through C_Cpp.codeAnalysis.clangTidy.path so the
+# editor reports exactly what the static-analysis gate reports.
+exec uvx --quiet --from clang-tidy==22.1.8 clang-tidy "$@"

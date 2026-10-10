@@ -107,8 +107,8 @@ int main(void)
 	}
 
 	printk("CAN bring-up on %s at %u bit/s: echo 0x%03x -> 0x%03x, heartbeat 0x%03x\n",
-	       can_dev->name, DT_PROP(DT_CHOSEN(zephyr_canbus), bitrate), ECHO_RX_ID, ECHO_TX_ID,
-	       HEARTBEAT_ID);
+	       can_dev->name, (unsigned int)DT_PROP(DT_CHOSEN(zephyr_canbus), bitrate), ECHO_RX_ID,
+	       ECHO_TX_ID, HEARTBEAT_ID);
 
 	next_heartbeat = k_uptime_get();
 

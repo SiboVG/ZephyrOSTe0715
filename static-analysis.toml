@@ -1,0 +1,99 @@
+# CubeSpec static-analysis gate (cppcheck + clang-tidy) for the TE0715 bench.
+# Run from the workspace root: python3 app/scripts/static_analysis.py
+# (the runner is the vendored app/scripts/static_analysis.py; see
+# docs/getting-started/static-analysis.md).
+#
+# One build per Zephyr application that CI builds for the te0715 (the same
+# west build commands as .github/workflows/tests.yml). Each build analyses the
+# first-party sources it compiles; Zephyr, modules/ and the generated headers
+# under build/ are not analysed. The ztest suite (app/tests/) is test code and
+# is excluded; its build is used only for the bench_value.c and bench_config.c
+# it shares with the F Prime CSP bench. The F Prime applications
+# (app/apps/fprime_*_bench, app/fprime-bench/) are not built here, so they are
+# not analysed.
+#
+# The compile commands are GCC (arm-zephyr-eabi) commands. clang-tidy parses
+# them as clang for the same target; strip_flags drops the GCC-only options
+# clang rejects.
+
+local_builds = []
+
+[[build]]
+name = "demo"
+dir = "build/demo"
+configure = ["west", "build", "-b", "te0715", "app", "-d", "build/demo"]
+include = ["app/**"]
+exclude = ["app/tests/**"]
+suppress_paths = ["zephyr/*", "modules/*", "zephyr-spi-main/*"]
+strip_flags = ["-fno-reorder-functions", "-mfp16-format=*"]
+clang_tidy_extra_args = ["--target=arm-none-eabi", "--system-header-prefix=zephyr/"]
+cppcheck_args = ["--library=zephyr",
+                 "--include=app/static-analysis/arm-zephyr-eabi-gcc-predefined.h",
+                 "--include=build/demo/zephyr/include/generated/zephyr/autoconf.h",
+                 "--include=zephyr/include/zephyr/toolchain/zephyr_stdint.h",
+                 "-DCONFIG_KERNEL_VM_USE_CUSTOM_MEM_RANGE_CHECK=1"]
+
+# The LED demo with SPI1 on Pmod J1: board.c's SPI clock and pin set-up
+[[build]]
+name = "demo-spi1"
+dir = "build/demo-spi1"
+# (the overlay path must be absolute; the runner configures from the workspace root)
+configure = ["sh", "-c", """west build -b te0715 app -d build/demo-spi1 -- \
+  -DEXTRA_DTC_OVERLAY_FILE="$PWD/app/boards/te0701-spi1.overlay" -DCONFIG_SPI=y"""]
+include = ["app/**"]
+exclude = ["app/tests/**"]
+suppress_paths = ["zephyr/*", "modules/*", "zephyr-spi-main/*"]
+strip_flags = ["-fno-reorder-functions", "-mfp16-format=*"]
+clang_tidy_extra_args = ["--target=arm-none-eabi", "--system-header-prefix=zephyr/"]
+cppcheck_args = ["--library=zephyr",
+                 "--include=app/static-analysis/arm-zephyr-eabi-gcc-predefined.h",
+                 "--include=build/demo-spi1/zephyr/include/generated/zephyr/autoconf.h",
+                 "--include=zephyr/include/zephyr/toolchain/zephyr_stdint.h",
+                 "-DCONFIG_KERNEL_VM_USE_CUSTOM_MEM_RANGE_CHECK=1"]
+
+[[build]]
+name = "can_bringup"
+dir = "build/can_bringup"
+configure = ["west", "build", "-b", "te0715", "app/apps/can_bringup", "-d", "build/can_bringup"]
+include = ["app/**"]
+exclude = ["app/tests/**"]
+suppress_paths = ["zephyr/*", "modules/*", "zephyr-spi-main/*"]
+strip_flags = ["-fno-reorder-functions", "-mfp16-format=*"]
+clang_tidy_extra_args = ["--target=arm-none-eabi", "--system-header-prefix=zephyr/"]
+cppcheck_args = ["--library=zephyr",
+                 "--include=app/static-analysis/arm-zephyr-eabi-gcc-predefined.h",
+                 "--include=build/can_bringup/zephyr/include/generated/zephyr/autoconf.h",
+                 "--include=zephyr/include/zephyr/toolchain/zephyr_stdint.h",
+                 "-DCONFIG_KERNEL_VM_USE_CUSTOM_MEM_RANGE_CHECK=1"]
+
+[[build]]
+name = "csp_node"
+dir = "build/csp_node"
+configure = ["west", "build", "-b", "te0715", "app/apps/csp_node", "-d", "build/csp_node"]
+include = ["app/**"]
+exclude = ["app/tests/**"]
+suppress_paths = ["zephyr/*", "modules/*", "zephyr-spi-main/*"]
+strip_flags = ["-fno-reorder-functions", "-mfp16-format=*"]
+clang_tidy_extra_args = ["--target=arm-none-eabi", "--system-header-prefix=zephyr/"]
+cppcheck_args = ["--library=zephyr",
+                 "--include=app/static-analysis/arm-zephyr-eabi-gcc-predefined.h",
+                 "--include=build/csp_node/zephyr/include/generated/zephyr/autoconf.h",
+                 "--include=zephyr/include/zephyr/toolchain/zephyr_stdint.h",
+                 "-DCONFIG_KERNEL_VM_USE_CUSTOM_MEM_RANGE_CHECK=1"]
+
+# The ztest suite's build, for the parsers it shares with the F Prime CSP bench
+# (app/apps/fprime_csp_bench/bench_value.c, bench_config.c); the tests are excluded
+[[build]]
+name = "bench"
+dir = "build/bench"
+configure = ["west", "build", "-b", "te0715", "app/tests/bench", "-d", "build/bench"]
+include = ["app/**"]
+exclude = ["app/tests/**"]
+suppress_paths = ["zephyr/*", "modules/*", "zephyr-spi-main/*"]
+strip_flags = ["-fno-reorder-functions", "-mfp16-format=*"]
+clang_tidy_extra_args = ["--target=arm-none-eabi", "--system-header-prefix=zephyr/"]
+cppcheck_args = ["--library=zephyr",
+                 "--include=app/static-analysis/arm-zephyr-eabi-gcc-predefined.h",
+                 "--include=build/bench/zephyr/include/generated/zephyr/autoconf.h",
+                 "--include=zephyr/include/zephyr/toolchain/zephyr_stdint.h",
+                 "-DCONFIG_KERNEL_VM_USE_CUSTOM_MEM_RANGE_CHECK=1"]

@@ -24,7 +24,7 @@ static mm_reg_t psgpio_regs;
 
 static int pad_level(const struct gpio_dt_spec *spec)
 {
-	return (sys_read32(psgpio_regs + DATA_RO_0_OFF) >> spec->pin) & 1;
+	return (int)((sys_read32(psgpio_regs + DATA_RO_0_OFF) >> spec->pin) & 1U);
 }
 
 /*

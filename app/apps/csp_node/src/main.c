@@ -58,6 +58,8 @@ static void router_thread(void *p1, void *p2, void *p3)
 	}
 }
 
+/* Zephyr's macro declares router as a const k_tid_t (a constant thread pointer) */
+/* NOLINTNEXTLINE(misc-misplaced-const): K_THREAD_DEFINE declares a const k_tid_t (constant thread pointer) on purpose */
 K_THREAD_DEFINE(router, ROUTER_STACK_SIZE, router_thread, NULL, NULL, NULL, ROUTER_PRIORITY, 0,
 		SYS_FOREVER_MS);
 

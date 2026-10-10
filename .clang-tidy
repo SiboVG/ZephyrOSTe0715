@@ -1,0 +1,54 @@
+# CubeSpec reference clang-tidy rule set. Every C/C++ repository copies this
+# file to its root as .clang-tidy; only HeaderFilterRegex may differ
+# (tools/static-analysis/check_drift.py enforces this).
+#
+# Families: clang-analyzer (path-sensitive defects), bugprone, cert, misc,
+# performance and portability. Disabled checks and why:
+#   bugprone-easily-swappable-parameters  flags every pair of same-typed
+#                                         parameters, including F Prime port
+#                                         handler signatures we do not own.
+#   misc-include-cleaner                  include-what-you-use style; F Prime
+#                                         relies on transitive framework headers.
+#   misc-const-correctness                style only; not a defect detector.
+#   misc-non-private-member-variables-in-classes
+#                                         conflicts with F Prime generated and
+#                                         plain-data struct conventions.
+#   misc-use-anonymous-namespace          style only; file-local static is fine.
+#   misc-use-internal-linkage             style only; same rationale.
+#   cert-err58-cpp                        F Prime and gtest rely on static
+#                                         objects with throwing constructors
+#                                         in test-only code paths.
+#   clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling
+#                                         asks for C11 Annex K (*_s) variants
+#                                         of every memcpy/memset/printf; Annex K
+#                                         exists in neither glibc nor Zephyr's
+#                                         libc. bugprone-unsafe-functions keeps
+#                                         flagging the genuinely unsafe APIs.
+# Options:
+#   misc-override-with-different-visibility reports only widening (e.g. a
+#                                         protected base handler made public);
+#                                         F Prime's generated component templates
+#                                         implement protected handlers as private.
+Checks: >-
+  -*,
+  clang-analyzer-*,
+  bugprone-*,
+  cert-*,
+  misc-*,
+  performance-*,
+  portability-*,
+  -bugprone-easily-swappable-parameters,
+  -misc-include-cleaner,
+  -misc-const-correctness,
+  -misc-non-private-member-variables-in-classes,
+  -misc-use-anonymous-namespace,
+  -misc-use-internal-linkage,
+  -cert-err58-cpp,
+  -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling
+WarningsAsErrors: '*'
+HeaderFilterRegex: '.*/app/.*'
+ExcludeHeaderFilterRegex: '.*Ac\.hpp$|.*/build[^/]*/.*|.*/lib/.*'
+SystemHeaders: false
+FormatStyle: none
+CheckOptions:
+  misc-override-with-different-visibility.DisallowedVisibilityChange: widening

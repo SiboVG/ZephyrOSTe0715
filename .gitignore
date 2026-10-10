@@ -8,6 +8,10 @@
 !/app/
 !/docs/
 !/.github/
+!/.clang-tidy
+!/static-analysis.toml
+!/.vscode/
+!/AGENTS.md
 
 # Python venv
 **/.venv

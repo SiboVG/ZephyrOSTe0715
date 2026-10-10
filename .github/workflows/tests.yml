@@ -75,5 +75,28 @@ jobs:
           # applications are not built here)
           west build -b te0715 app -d build/demo-spi1 -- \
             -DEXTRA_DTC_OVERLAY_FILE=$PWD/app/boards/te0701-spi1.overlay -DCONFIG_SPI=y
+          # the unit tests' build, for the static analysis of the parsers they
+          # share with the F Prime CSP bench (bench_value.c, bench_config.c)
+          west build -b te0715 app/tests/bench -d build/bench
       - name: Build the unit tests for the board
         run: zephyr/scripts/twister -T app/tests -p te0715 --build-only -v -O twister-te0715
+      # Static analysis gate (cppcheck + clang-tidy, zero findings) on the
+      # builds above; see docs/getting-started/static-analysis.md
+      - name: Cache cppcheck
+        uses: actions/cache@v6
+        with:
+          path: ~/.local/cppcheck-2.22.0
+          key: cppcheck-2.22.0-${{ runner.os }}-${{ runner.arch }}
+      - name: Static analysis tools
+        run: |
+          sh app/scripts/install-cppcheck.sh
+          echo "$HOME/.local/cppcheck-2.22.0/bin" >> "$GITHUB_PATH"
+          pipx install clang-tidy==22.1.8
+      - name: Static analysis (cppcheck + clang-tidy)
+        run: python3 app/scripts/static_analysis.py --no-configure --report static-analysis-report.txt
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: static-analysis-report
+          path: static-analysis-report.txt
+          if-no-files-found: ignore

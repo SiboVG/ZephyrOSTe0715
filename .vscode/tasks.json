@@ -1,0 +1,26 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Static analysis (cppcheck + clang-tidy)",
+            "type": "shell",
+            "command": "python3 app/scripts/static_analysis.py --no-configure --build demo --build demo-spi1 --build can_bringup --build csp_node --build bench",
+            "group": "test",
+            "problemMatcher": {
+                "owner": "static-analysis",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}"
+                ],
+                "pattern": {
+                    "regexp": "^(.+?):(\\d+):(\\d+): (error|warning|style|performance|portability): (.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5
+                }
+            }
+        }
+    ]
+}

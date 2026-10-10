@@ -13,6 +13,13 @@
 
 #define MAX_LINE 80
 
+/* A 32-bit little-endian word of the configuration area (see bench_config.h) */
+static uint32_t get_le32(const uint8_t *p)
+{
+	return (uint32_t)p[0] | ((uint32_t)p[1] << 8) | ((uint32_t)p[2] << 16) |
+	       ((uint32_t)p[3] << 24);
+}
+
 static bool is_blank(char c)
 {
 	return c == ' ' || c == '\t' || c == '\r';
@@ -24,7 +31,7 @@ static int parse_line(const char *line, size_t len, struct bench_config *cfg)
 	char buf[MAX_LINE + 1];
 	const char *comment = memchr(line, '#', len);
 	char *key;
-	char *value;
+	const char *value;
 	char *eq;
 	char *end;
 	unsigned long v;
@@ -45,6 +52,7 @@ static int parse_line(const char *line, size_t len, struct bench_config *cfg)
 	if (len > MAX_LINE) {
 		return -EINVAL;
 	}
+	/* Bounded: len <= MAX_LINE < sizeof(buf), checked above */
 	memcpy(buf, line, len);
 	buf[len] = '\0';
 
@@ -89,7 +97,7 @@ int bench_config_parse(const char *text, size_t len, struct bench_config *cfg, i
 	struct bench_config parsed = {0};
 	int line_no = 1;
 
-	memset(cfg, 0, sizeof(*cfg));
+	*cfg = (struct bench_config){0};
 	while (len > 0) {
 		const char *nl = memchr(text, '\n', len);
 		size_t line_len = (nl != NULL) ? (size_t)(nl - text) : len;
@@ -115,13 +123,13 @@ int bench_config_from_area(const uint8_t *area, size_t area_size, struct bench_c
 	uint32_t magic;
 	uint32_t len;
 
-	memset(cfg, 0, sizeof(*cfg));
+	*cfg = (struct bench_config){0};
 	*bad_line = 0;
 	if (area_size < BENCH_CONFIG_TEXT_OFFSET) {
 		return -EINVAL;
 	}
-	memcpy(&magic, area, sizeof(magic));
-	memcpy(&len, area + 4, sizeof(len));
+	magic = get_le32(area);
+	len = get_le32(area + 4);
 	if (magic != BENCH_CONFIG_MAGIC) {
 		return -ENOENT;
 	}

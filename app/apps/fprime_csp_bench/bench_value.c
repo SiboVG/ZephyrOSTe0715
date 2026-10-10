@@ -33,6 +33,14 @@ const struct bench_value_type *bench_value_type_find(const char *name)
 	return NULL;
 }
 
+/* The low size bytes of v, little endian (see bench_value_parse()) */
+static void put_le(uint8_t *out, unsigned long long v, size_t size)
+{
+	for (size_t i = 0; i < size; i++) {
+		out[i] = (uint8_t)(v >> (8U * i));
+	}
+}
+
 /* strto*() skip leading white space; a typed argument has none */
 static bool starts_with_number(const char *arg)
 {
@@ -89,7 +97,7 @@ static int parse_signed(const struct bench_value_type *t, const char *arg, uint8
 	if (errno == ERANGE || v < min || v > max) {
 		return -ERANGE;
 	}
-	memcpy(out, &v, t->size); /* little endian: the low bytes */
+	put_le(out, (unsigned long long)v, t->size); /* two's complement: the low bytes */
 	return 0;
 }
 
@@ -111,15 +119,24 @@ static int parse_float(const struct bench_value_type *t, const char *arg, uint8_
 		return -ERANGE;
 	}
 	if (t->size == sizeof(float)) {
-		float f;
+		/* The IEEE 754 representation, read through a union (C11 6.5.2.3) */
+		union {
+			float value;
+			uint32_t bits;
+		} f;
 
 		if (fabs(d) > (double)FLT_MAX) {
 			return -ERANGE;
 		}
-		f = (float)d;
-		memcpy(out, &f, sizeof(f));
+		f.value = (float)d;
+		put_le(out, f.bits, sizeof(f.bits));
 	} else {
-		memcpy(out, &d, sizeof(d));
+		const union {
+			double value;
+			uint64_t bits;
+		} b = {.value = d};
+
+		put_le(out, b.bits, sizeof(b.bits));
 	}
 	return 0;
 }
@@ -144,7 +161,7 @@ int bench_value_parse(const struct bench_value_type *t, const char *arg,
 		if (t->size < sizeof(v) && v >> (8U * t->size) != 0U) {
 			return -ERANGE;
 		}
-		memcpy(out, &v, t->size);
+		put_le(out, v, t->size);
 		return 0;
 	}
 }

@@ -75,6 +75,7 @@ nav:
       - Installing the tools: getting-started/install.md
       - Building and running: getting-started/build-and-run.md
       - Building these docs: getting-started/docs.md
+      - Static analysis: getting-started/static-analysis.md
   - User guide:
       - Connecting to the board: guide/connect.md
       - The serial shell: guide/shell.md
