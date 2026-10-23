@@ -171,9 +171,57 @@ do not change them after a run.
 | Pings answered but `host received the traffic` fails | The replies left through another interface: check the host's addresses and routes (`ip route get 192.168.70.2`) |
 | A speed other than expected | The host port's advertised modes (`ethtool enx00e04c680001`); for 1000 Mbit/s, a cable with all four pairs and a gigabit adapter |
 
+## Zephyr: TC-24
+
+[TC-24](../verification/test-cases.md#tc-24-zephyr-ethernet-bring-up) verifies
+`TE-ETH-002`: Zephyr's own Ethernet driver on the same link, with the same cabling and
+host port (100 Mbit/s full duplex). The image is `apps/eth_bringup`. It has the board's
+GEM0 settings (`te0715.dts`: PHY at address 0, MDC at 2.31 MHz, 100 Mbit/s), the static
+address 192.168.70.2/24, the locally administered MAC address `02:00:00:07:15:01`
+(`mac.overlay`), and the network and kernel shells.
+
+Build it:
+
+```bash
+west build -b te0715 app/apps/eth_bringup -d build/eth_bringup
+```
+
+Load it over JTAG as usual, or, without `xsdb`, through U-Boot from the running image's
+shell. `uboot_load.py` reboots the board, sends the image with XMODEM and starts it
+(needs `pip install pyserial xmodem`):
+
+```bash
+app/scripts/uboot_load.py --port /dev/serial/by-id/usb-Digilent_*-if01-port0 \
+    --bin build/eth_bringup/zephyr/zephyr.bin --log load.log \
+    --until "[ETH_BRINGUP_READY] carrier=on"
+```
+
+The image waits up to 10 s for the link and then prints one line:
+
+```text
+[ETH_BRINGUP_READY] carrier=on mac=02:00:00:07:15:01 ipv4=192.168.70.2 waited_ms=...
+```
+
+With `carrier=off` the load step fails: check the cable and the host port first.
+Then run the check, with the board's shell free (no other program on the serial port):
+
+```bash
+app/scripts/zephyr_eth_check.py --host-if enx00e04c680001
+```
+
+It reads `net iface` on the board, pings the board from the host 100 times at each
+payload size (56, 469 to 471, 981 to 983 and 1472 bytes, with the don't-fragment flag:
+frames on either side of one and two 512-byte driver buffers, and the largest frame),
+pings the host from the board's shell 10 times with 4 and with 1472 bytes, keeps
+`net stats`, and compares the host port's counters. It writes `console.log`,
+`host-ping.txt`, `summary.txt` and `SHA256SUMS`, and ends with `PASS` or `FAIL`.
+
+Keep `load.log` with the package: it holds the boot and the `[ETH_BRINGUP_READY]` line.
+The image stays in RAM only; reset the board to boot its SD card image again.
+
 ## Next steps
 
-Once TC-23 passes, the Zephyr side follows, at 100 Mbit/s: enabling the Ethernet
-controller in the board's devicetree, IPv4 and UDP in the image, and CSP over UDP
-(fprime-csp-libparam `FCL-UDP-*`). Their requirements and test cases are added before
+Once TC-24 passes, CSP over UDP follows, at 100 Mbit/s: the UDP transport of
+fprime-csp-libparam (`FCL-UDP-*`) in the F Prime CSP bench image, against the Linux
+CspBench and csh. Its requirements and test cases are added before
 that work starts.

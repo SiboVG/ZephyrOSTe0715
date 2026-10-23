@@ -239,3 +239,13 @@ Common preconditions for all test cases: the workspace built as in
 | **Procedure** | The host port limited to 100 Mbit/s full duplex (in its NetworkManager profile, or `ethtool -s <port> speed 100 duplex full autoneg on`), then `app/scripts/uboot_eth_check.py --host-if <port> --expect-speed 100`. Optionally, for information only, the same at 1000 Mbit/s with `--expect-speed 1000`. Each run resets the board (over JTAG, from the image's shell with `--reboot`, or by hand with `--wait-reset`), stops U-Boot and pings the host 10 times from U-Boot; it changes nothing on the SD card |
 | **Pass criteria** | For the 100 Mbit/s run: 10 of 10 pings answered; after the pings the host port has carrier, full duplex at 100 Mbit/s; where U-Boot's `mii` command can read the PHY, the PHY reports the same speed and full duplex; the host received at least 10 packets on the port during the run, and its `rx_errors`, `rx_crc_errors` and `rx_frame_errors` counters did not increase; the script prints `PASS` |
 | **Evidence** | One `uboot_eth_check.py` package per run, including an optional 1000 Mbit/s run (`console.log`, `summary.txt`, `SHA256SUMS`); the PHY address and identity from `mii info`, and the board's MAC address and its source, are recorded in `summary.txt` |
+
+## TC-24 Zephyr Ethernet bring-up
+
+| | |
+|---|---|
+| **Verifies** | `TE-ETH-002` |
+| **Preconditions** | TC-23 passed; the TC-23 cabling and host port (192.168.70.1/24, advertising 100 Mbit/s full duplex only); `apps/eth_bringup` built for `te0715` |
+| **Procedure** | 1. Load `apps/eth_bringup` (over JTAG, or `app/scripts/uboot_load.py ... --until "[ETH_BRINGUP_READY]"` from the running image's shell). 2. `app/scripts/zephyr_eth_check.py --host-if <port>`: from the host, 100 echo requests with the don't-fragment flag at each ICMP payload size 56, 469, 470, 471, 981, 982, 983 and 1472 bytes (Ethernet frames of 98, 511 to 513, 1023 to 1025 and 1514 bytes: either side of one and two 512-byte buffers, and the largest frame); from the board's shell, `net ping` to the host 10 times with a 4-byte and 10 times with a 1472-byte payload |
+| **Pass criteria** | The image prints `[ETH_BRINGUP_READY]` with `carrier=on` within 10 s of starting; the board's interface reports carrier on and 192.168.70.2; the host port is at 100 Mbit/s full duplex; 100 of 100 replies at every host payload size; 10 of 10 replies to each board ping series; the host port's `rx_errors`, `rx_crc_errors` and `rx_frame_errors` do not increase; the script prints `PASS` |
+| **Evidence** | `zephyr_eth_check.py` package (`console.log`, `host-ping.txt`, `summary.txt`, `SHA256SUMS`), with the board's `net iface` and `net stats` output; the load log with the boot and `[ETH_BRINGUP_READY]` line |
