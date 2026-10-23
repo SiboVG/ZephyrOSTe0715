@@ -56,9 +56,13 @@ U-Boot, whose Zynq Ethernet driver is known to work, so that a Zephyr networking
 cannot be confused with a wiring, PHY or clocking problem. The Zephyr and CSP
 requirements follow once this one passes.
 
+100 Mbit/s full duplex is CubeSpec's baseline Ethernet speed, on the bench and on the
+FlatSat (project decision, 2026-10-23). The link is required at that speed; 1000 Mbit/s
+may be run for information.
+
 | ID | Requirement | Implementation | Verification | Status |
 |---|---|---|---|---|
-| `TE-ETH-001` | The TE0715's Ethernet path (PS GEM0 on MIO16–27, MDIO on MIO52/53, the module's Ethernet PHY and the TE0701's RJ45 jack) shall exchange frames in both directions with a directly connected host, full duplex at 1000 Mbit/s and at 100 Mbit/s, without receive errors at the host. | `ps7_init.tcl` (MIO and GEM0 clock of the reference design); U-Boot's Zynq GEM driver, driven by `uboot_eth_check.py` | [TC-23](test-cases.md#tc-23-ethernet-link-from-u-boot) | Pending hardware execution |
+| `TE-ETH-001` | The TE0715's Ethernet path (PS GEM0 on MIO16–27, MDIO on MIO52/53, the module's Ethernet PHY and the TE0701's RJ45 jack) shall exchange frames in both directions with a directly connected host at 100 Mbit/s full duplex, without receive errors at the host. | `ps7_init.tcl` (MIO and GEM0 clock of the reference design); U-Boot's Zynq GEM driver, driven by `uboot_eth_check.py` | [TC-23](test-cases.md#tc-23-ethernet-link-from-u-boot) | Pending hardware execution |
 
 ## SPI sensors
 
