@@ -62,7 +62,7 @@ may be run for information.
 
 | ID | Requirement | Implementation | Verification | Status |
 |---|---|---|---|---|
-| `TE-ETH-001` | The TE0715's Ethernet path (PS GEM0 on MIO16–27, MDIO on MIO52/53, the module's Ethernet PHY and the TE0701's RJ45 jack) shall exchange frames in both directions with a directly connected host at 100 Mbit/s full duplex, without receive errors at the host. | `ps7_init.tcl` (MIO and GEM0 clock of the reference design); U-Boot's Zynq GEM driver, driven by `uboot_eth_check.py` | [TC-23](test-cases.md#tc-23-ethernet-link-from-u-boot) | Pending hardware execution |
+| `TE-ETH-001` | The TE0715's Ethernet path (PS GEM0 on MIO16–27, MDIO on MIO52/53, the module's Ethernet PHY and the TE0701's RJ45 jack) shall exchange frames in both directions with a directly connected host at 100 Mbit/s full duplex, without receive errors at the host. | `ps7_init.tcl` (MIO and GEM0 clock of the reference design); U-Boot's Zynq GEM driver, driven by `uboot_eth_check.py` | [TC-23](test-cases.md#tc-23-ethernet-link-from-u-boot) | Verified on hardware ([as-run 2026-10-23](as-run-ethernet-2026-10-23.md)) |
 
 ## SPI sensors
 
