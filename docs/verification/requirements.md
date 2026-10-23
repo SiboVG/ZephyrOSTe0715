@@ -48,6 +48,18 @@ SN65HVD233 transceiver on a TCAN-SOIC8-EVM, Kvaser USBcan Light 2xHS (see
 | `TE-BOOT-002` | The CSP node and prefix shall be settable in a file on the SD card and apply at every boot. A file that is not exactly understood shall be refused as a whole, and a JTAG-loaded image shall not use settings left over from an earlier SD boot. | `te0715.txt`, `boot.cmd`, `bench_config.c` | [TC-11](test-cases.md#tc-11-node-from-te0715txt); unit tests `app/tests/bench`, `app/tests/scripts` | Verified on hardware |
 | `TE-CSP-005` | The CSP router task shall run above the F Prime tasks that use CSP. | `CONFIG_APP_CSP_ROUTER_PRIORITY`, fprime-csp-libparam `StackConfig::routerPriority` | `kernel thread list` in the TC-06 transcript: `CspRouter` priority 54, `cspLibparam` 57 | Verified on hardware |
 
+## Ethernet
+
+The TE0715 is to carry CSP over Ethernet as well as CAN (CSP over UDP, fprime-csp-libparam
+`FCL-UDP-*`). The first requirement covers only the hardware path. It is checked from
+U-Boot, whose Zynq Ethernet driver is known to work, so that a Zephyr networking problem
+cannot be confused with a wiring, PHY or clocking problem. The Zephyr and CSP
+requirements follow once this one passes.
+
+| ID | Requirement | Implementation | Verification | Status |
+|---|---|---|---|---|
+| `TE-ETH-001` | The TE0715's Ethernet path (PS GEM0 on MIO16–27, MDIO on MIO52/53, the module's Ethernet PHY and the TE0701's RJ45 jack) shall exchange frames in both directions with a directly connected host, full duplex at 1000 Mbit/s and at 100 Mbit/s, without receive errors at the host. | `ps7_init.tcl` (MIO and GEM0 clock of the reference design); U-Boot's Zynq GEM driver, driven by `uboot_eth_check.py` | [TC-23](test-cases.md#tc-23-ethernet-link-from-u-boot) | Pending hardware execution |
+
 ## SPI sensors
 
 These requirements use the sensor benches' own assets: an INA229 board (the one of

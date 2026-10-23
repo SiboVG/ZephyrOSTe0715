@@ -95,6 +95,7 @@ nav:
       - CAN bus: tests/can-bus.md
       - CSP and libparam with the Linux bench: tests/csp-libparam.md
       - FlatSat test: tests/flatsat.md
+      - Ethernet link: tests/ethernet.md
       - SPI sensor benches: tests/spi-sensors.md
       - INA229 bench: tests/ina229.md
       - ADXL355 bench: tests/adxl355.md
