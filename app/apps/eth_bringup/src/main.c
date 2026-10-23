@@ -4,16 +4,48 @@
  * - the image waits up to LINK_TIMEOUT_MS for the carrier and prints one line,
  *   [ETH_BRINGUP_READY] carrier=on|off mac=... ipv4=... waited_ms=...;
  * - the network shell (net iface, net ping, net stats) and the kernel shell
- *   (kernel reboot cold, used by uboot_load.py) stay available.
+ *   (kernel reboot cold, used by uboot_load.py) stay available;
+ * - a fatal error, once printed, reboots the board instead of halting it: the
+ *   board boots its SD card image again, whose shell lets the next image be
+ *   loaded without a hand on the reset button.
  */
 
+#include <zephyr/fatal.h>
 #include <zephyr/kernel.h>
+#include <zephyr/logging/log_ctrl.h>
 #include <zephyr/net/net_if.h>
 #include <zephyr/net/net_ip.h>
 #include <zephyr/sys/printk.h>
+#include <zephyr/sys/reboot.h>
 
 #define LINK_TIMEOUT_MS 10000
 #define LINK_POLL_MS    100
+
+#if defined(CONFIG_APP_BOOT_TRACE)
+#include <zephyr/init.h>
+
+#define BOOT_TRACE(level, prio, text)                                                          \
+	static int boot_trace_##level##_##prio(void)                                           \
+	{                                                                                      \
+		printk("[ETH_BRINGUP_TRACE] " text "\n");                                     \
+		return 0;                                                                      \
+	}                                                                                      \
+	SYS_INIT(boot_trace_##level##_##prio, level, prio)
+
+BOOT_TRACE(PRE_KERNEL_2, 0, "pre-kernel-2");
+BOOT_TRACE(POST_KERNEL, 0, "post-kernel: before the drivers");
+BOOT_TRACE(POST_KERNEL, 99, "post-kernel: drivers and network stack initialized");
+BOOT_TRACE(APPLICATION, 0, "application");
+#endif
+
+void k_sys_fatal_error_handler(unsigned int reason, const struct arch_esf *esf)
+{
+	ARG_UNUSED(esf);
+
+	LOG_PANIC();
+	printk("[ETH_BRINGUP_FATAL] reason=%u: rebooting\n", reason);
+	sys_reboot(SYS_REBOOT_COLD);
+}
 
 int main(void)
 {

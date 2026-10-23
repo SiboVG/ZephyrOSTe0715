@@ -82,3 +82,37 @@ patches:
       the first SPI_CONF write in spi_cdns_init() took a translation fault
       at 0xe0007000 and Zephyr halted at boot. Drop when the fork moves past
       it.
+  - path: zephyr/0002-eth-xlnx-gem-map-the-clock-control-register.patch
+    sha256sum: 23d4652f96d779b9aac67a994673fd441ecb5adf5d4489714bf38a43d482b1c0
+    module: zephyr
+    author: Sibo Van Gool
+    email: sibo.vangool@hotmail.com
+    date: 2026-10-23
+    upstreamable: false
+    comments: |
+      eth_xlnx_gem read and wrote the GEM's clock control register (Zynq-7000
+      SLCR GEM0_CLK_CTRL, 0xf8000140) through its physical address, which the
+      SoC's MMU table does not map. On the TE0715 (Cortex-A9, MMU on) the
+      first access in eth_xlnx_gem_configure_clocks() took a translation fault
+      at 0xf8000140 and Zephyr halted before its banner (TC-24 attempt on
+      2026-10-23). The patch maps the register with device_map() at init.
+      QEMU's qemu_cortex_a9 does not fault there. Upstream maps it since
+      fd9cd01ef774 (2026-06-27, the switch to the separate MDIO and PHY
+      drivers), too large to backport; drop when the fork moves past it.
+  - path: zephyr/0003-eth-xlnx-gem-dma-memory-in-ocm-on-zynq-7000.patch
+    sha256sum: d7344433400cd2fe187c45484eea1d533a70e9740520892495473d5dc03d67de
+    module: zephyr
+    author: Sibo Van Gool
+    email: sibo.vangool@hotmail.com
+    date: 2026-10-23
+    upstreamable: true
+    comments: |
+      Since upstream c206ff165f07 (2026-02, the ZynqMP DMA rework) the GEM's
+      BD rings are __nocache and its packet buffers ordinary data. A TE0715
+      image runs from DDR address 0, so both landed below 0x80000 (rings at
+      0x2e000, buffers at 0x34000), which on the Zynq-7000 only the CPUs can
+      reach (UG585, table 4-1): every DMA access ended with hresp_not_ok
+      (interrupt status 0x800). On the Zynq-7000, with a chosen zephyr,ocm,
+      the patch places both in the OCM again (__ocm_bss_section, as before
+      that rework); other SoCs keep the upstream layout. Still the same on
+      upstream main (2026-10-22).

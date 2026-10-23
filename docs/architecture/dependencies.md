@@ -29,6 +29,8 @@ and listed in `app/zephyr/patches.yml`; `west patch apply` applies them.
 | fprime-zephyr | `0002-os-task-default-stack-size` | A task started with the default stack size failed (the size was passed as `SIZE_MAX`); the CSP router could not start | could be offered |
 | fprime-zephyr | `0003-os-task-map-fprime-priorities` | All F Prime tasks ran at the same, lowest priority | could be offered; changes behaviour for existing users |
 | zephyr | `0001-spi-cdns-map-the-register-block` | The `cdns,spi` driver used its devicetree register address without mapping it: on the TE0715 (MMU on) the first register write took a translation fault at `0xe0007000` and Zephyr halted at boot | backport of upstream `1b7a2b68e0e0` (PR #115179); drop when the fork moves past it |
+| zephyr | `0002-eth-xlnx-gem-map-the-clock-control-register` | The Xilinx GEM Ethernet driver accessed its clock control register (SLCR `GEM0_CLK_CTRL`, `0xf8000140`) through the physical address, which the SoC's MMU table does not map: a translation fault at boot | fixed upstream in `fd9cd01ef774` (the switch to the separate MDIO and PHY drivers), too large to backport; drop when the fork moves past it |
+| zephyr | `0003-eth-xlnx-gem-dma-memory-in-ocm-on-zynq-7000` | The GEM's DMA descriptors and buffers landed below DDR address `0x80000`, which only the CPUs can reach on the Zynq-7000 (UG585, table 4-1): every DMA access failed with `hresp_not_ok`. On the Zynq-7000 the patch puts them in the OCM again, as before upstream `c206ff165f07` | could be offered; still so on upstream `main` (2026-10-22) |
 
 ## Other integration changes
 

@@ -76,14 +76,17 @@
  * Ethernet: PS GEM0 on MIO16-27 (RGMII) and MDIO on MIO52/53, muxed by the FSBL or
  * ps7_init.tcl; the GEM driver applies no pin configuration. The driver derives the
  * GEM reference clock from the IO PLL (1000 MHz). The module's Marvell 88E151x PHY
- * answers at MDIO address 0 (TC-23). 100 Mbit/s full duplex is CubeSpec's baseline.
+ * answers at MDIO address 0 (TC-23). The driver cannot pin address 0 (0 means
+ * auto-detection), but its scan starts at 0, so it claims this PHY: the
+ * mdio-phy-address of zynq7000.dtsi stays. 100 Mbit/s full duplex is CubeSpec's baseline.
  * The driver takes the MAC address only from local-mac-address, so an application
  * that enables networking must set it.
  */
 &gem0 {
     status = "okay";
+    /* The driver manages the PHY: reset, advertisement, link polling */
+    init-mdio-phy;
     clock-frequency = <1000000000>;
-    mdio-phy-address = <0>;
     /* MDC = CPU_1x (111 MHz) / 48 = 2.31 MHz, within the 2.5 MHz of IEEE 802.3 clause 22 */
     mdc-divider = <XLNX_GEM_MDC_DIVIDER_48>;
     link-speed = <XLNX_GEM_LINK_SPEED_100MBIT>;

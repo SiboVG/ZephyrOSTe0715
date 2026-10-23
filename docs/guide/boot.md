@@ -101,3 +101,26 @@ To boot PetaLinux once without changing the card, stop autoboot and type
 | Power cycle | Boots from the SD card |
 | `kernel reboot cold` in the shell | Software reset of the processing system; boots from the SD card |
 | JTAG reset (`sd_install.py`, `xsdb`) | Boots from the SD card, unless an image is loaded right after |
+| JTAG reset with OpenOCD (no `xsdb`) | Boots from the SD card; also when the running image has halted or has no shell |
+
+### Resetting with OpenOCD
+
+A host without Vitis can reset the board through the same Digilent cable with OpenOCD,
+for instance the one in the Zephyr SDK's host tools. `support/openocd.cfg` writes the
+same software reset as `sys_reboot()`, through the debug port, without halting a CPU:
+
+```bash
+openocd -f app/boards/trenz/te0715/support/openocd.cfg -c "init; te0715_reset; shutdown"
+```
+
+The cable's JTAG side needs USB access for the user. Once per host:
+
+```bash
+echo 'SUBSYSTEM=="usb", ATTR{idVendor}=="0403", ATTR{idProduct}=="6010", ATTR{manufacturer}=="Digilent", MODE="0660", GROUP="dialout"' \
+    | sudo tee /etc/udev/rules.d/53-digilent-ftdi.rules
+sudo udevadm control --reload
+sudo udevadm trigger --action=add --subsystem-match=usb
+```
+
+While OpenOCD runs, the cable's JTAG interface leaves the `ftdi_sio` driver; the console
+port (interface 1) is not affected.

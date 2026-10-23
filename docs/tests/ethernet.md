@@ -180,14 +180,24 @@ GEM0 settings (`te0715.dts`: PHY at address 0, MDC at 2.31 MHz, 100 Mbit/s), the
 address 192.168.70.2/24, the locally administered MAC address `02:00:00:07:15:01`
 (`mac.overlay`), and the network and kernel shells.
 
-Build it:
+The board's Ethernet needs two Zephyr patches, applied by `west patch apply`: `0002`
+maps the driver's clock register, without which the image halts at boot, and `0003`
+puts its DMA memory in the OCM, the only memory below DDR address `0x80000` the
+controller can reach. The board file lets the driver manage the PHY (`init-mdio-phy`).
+Build the image:
 
 ```bash
 west build -b te0715 app/apps/eth_bringup -d build/eth_bringup
 ```
 
+If an image stops before its banner, build it with `debug.conf`: it prints a line at
+each initialization level and logs immediately, so a fault during driver
+initialization shows (`-- -DEXTRA_CONF_FILE=debug.conf`). The image reboots the board
+after a fatal error, so the board comes back to its SD card image instead of halting.
+
 Load it over JTAG as usual, or, without `xsdb`, through U-Boot from the running image's
-shell. `uboot_load.py` reboots the board, sends the image with XMODEM and starts it
+shell. If no image with a shell runs, reset the board first ([Resetting with
+OpenOCD](../guide/boot.md#resetting-with-openocd)). `uboot_load.py` reboots the board, sends the image with XMODEM and starts it
 (needs `pip install pyserial xmodem`):
 
 ```bash

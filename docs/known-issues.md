@@ -19,6 +19,8 @@
 | The CSP node was not stored | `te0715.txt` on the SD card ([Configuration](guide/configuration.md#the-csp-node-te0715txt-on-the-sd-card)); test case TC-11 |
 | `param set` truncated out-of-range values | `bench_value.c`; TE-CSP-004 |
 | An SD boot could hang or crash depending on what was left in RAM (3 of 4 boots right after another image had run). U-Boot started Zephyr with its MMU and caches on | `boot.cmd` turns them off before `go` (`icache off; dcache off`), as for a JTAG load: 6 of 6 boots passed |
+| An image with networking halted at boot: the Ethernet driver's clock register access took a translation fault at `0xf8000140` | Zephyr patch `0002`; found with `apps/eth_bringup`'s `debug.conf` boot trace (TC-24) |
+| Ethernet DMA failed (`hresp_not_ok`, interrupt status `0x800`): the descriptors and buffers were below DDR address `0x80000`, out of the GEM's reach | Zephyr patch `0003`: DMA memory in the OCM; TC-24 |
 
 ## Board and build
 

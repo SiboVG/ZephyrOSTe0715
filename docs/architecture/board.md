@@ -17,6 +17,7 @@ to load software onto it. The `te0715` board lives outside Zephyr, in
 | LED | D4 (green, on the module) on MIO7, alias `led0` | MIO7 is output-only |
 | CAN1 | MIO12 (TX), MIO13 (RX), 3.3 V | Enabled by the carrier overlay |
 | SPI1 | MIO10 (MOSI), MIO11 (MISO), MIO12 (SCLK), chip select MIO13 (GPIO), 3.3 V | Enabled by the carrier overlay; shares MIO12/13 with CAN1 |
+| Ethernet | GEM0 on MIO16–27 (RGMII), MDIO on MIO52/53; Marvell 88E151x PHY at MDIO address 0; TE0701 RJ45 | Enabled in `te0715.dts` at 100 Mbit/s with the driver managing the PHY; built only into images with networking, which must set `local-mac-address`. DMA memory in the OCM (Zephyr patch `0003`) |
 
 ## Pin configuration
 
