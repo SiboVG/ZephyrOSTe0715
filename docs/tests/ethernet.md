@@ -178,7 +178,7 @@ do not change them after a run.
 host port (100 Mbit/s full duplex). The image is `apps/eth_bringup`. It has the board's
 GEM0 settings (`te0715.dts`: PHY at address 0, MDC at 2.31 MHz, 100 Mbit/s), the static
 address 192.168.70.2/24, the locally administered MAC address `02:00:00:07:15:01`
-(`mac.overlay`), and the network and kernel shells.
+(`app/boards/te0715-mac.overlay`), and the network and kernel shells.
 
 The board's Ethernet needs two Zephyr patches, applied by `west patch apply`: `0002`
 maps the driver's clock register, without which the image halts at boot, and `0003`
@@ -229,9 +229,32 @@ pings the host from the board's shell 10 times with 4 and with 1472 bytes, keeps
 Keep `load.log` with the package: it holds the boot and the `[ETH_BRINGUP_READY]` line.
 The image stays in RAM only; reset the board to boot its SD card image again.
 
+## CSP and libparam over Ethernet: TC-25
+
+[TC-25](../verification/test-cases.md#tc-25-csp-and-libparam-over-ethernet) verifies
+`TE-ETH-003` and `TE-ETH-004`: the F Prime CSP bench server (`apps/fprime_csp_bench`)
+built with `udp.conf` carries CSP over UDP (fprime-csp-libparam's `UdpTransport`, the
+datagram format of csh's `csp add udp`) instead of CAN. The Linux side is the bench's
+`CspBench --udp` and, for an independent implementation of the format, `CspPingClient
+--udp`, which is plain libcsp with libcsp's own `csp_if_udp`. Build both (CspLibparamFprimeTest)
+and the image ([Building and running](../getting-started/build-and-run.md)), load the image
+and wait for the server, which starts on its default node 6061 after the 10 s window:
+
+```bash
+app/scripts/uboot_load.py --port /dev/serial/by-id/usb-Digilent_*-if01-port0 \
+    --bin app/apps/fprime_csp_bench/build-fprime-udp/zephyr/zephyr.bin --log load.log \
+    --until "[CSP_BENCH_READY]"
+app/scripts/fprime_e2e.py --attach --udp 192.168.70.2 \
+    --bench <CspBench> --reference <CspPingClient> --log e2e.log
+```
+
+`--attach` uses the server that is already running (no JTAG). The script runs the
+CspBench client test against the board (parameter 200, then `led_d4`), pings it from
+plain libcsp, starts a Linux CspBench server (node 102) and runs the TC-07 shell checks
+from the board. Every check prints `PASS` or `FAIL`.
+
 ## Next steps
 
-Once TC-24 passes, CSP over UDP follows, at 100 Mbit/s: the UDP transport of
-fprime-csp-libparam (`FCL-UDP-*`) in the F Prime CSP bench image, against the Linux
-CspBench and csh. Its requirements and test cases are added before
-that work starts.
+Once TC-25 passes, the FlatSat follows: either the EGSE router reaches the TE0715 with
+`csp add udp`, or this host routes between its UDP link and the lab's ZMQ hub. Its
+requirements and test cases are added before that work starts.

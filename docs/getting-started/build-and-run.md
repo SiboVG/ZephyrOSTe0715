@@ -53,6 +53,16 @@ The results are in `build-fprime-automatic-zephyr/zephyr/`:
 | `zephyr.elf` | Load over JTAG: `xsdb ../../boards/trenz/te0715/support/xsdb.cfg build-fprime-automatic-zephyr/zephyr/zephyr.elf` |
 | `zephyr.bin` | Install on the SD card: see [Booting](../guide/boot.md) |
 
+The same server can carry CSP over UDP on the Ethernet port instead of CAN
+(`CONFIG_APP_CSP_UDP`, board 192.168.70.2, peer 192.168.70.1, port 9220 both ways; see
+[Ethernet link](../tests/ethernet.md#csp-and-libparam-over-ethernet-tc-25)). Build it in its
+own build directory:
+
+```bash
+fprime-util generate --build-cache "$PWD/build-fprime-udp" -DEXTRA_CONF_FILE=udp.conf
+fprime-util build --build-cache "$PWD/build-fprime-udp" -j16
+```
+
 Without xsdb (for example on macOS), load the image over the console instead:
 `app/scripts/uboot_load.py` reboots the running image with `kernel reboot cold`, stops
 U-Boot's autoboot, sends `zephyr.bin` with `loadx` (XMODEM, about 30 s for 300 KB),

@@ -1,0 +1,10 @@
+/*
+ * The TE0715's MAC address for images with networking (eth_bringup, the F Prime CSP
+ * bench over UDP): a locally administered, unicast address. The module's own address
+ * (in its EEPROM, which U-Boot reads) is not available to Zephyr yet, so use it only on
+ * a link without another TE0715 running such an image. Harmless in images without
+ * networking, which do not build the Ethernet driver.
+ */
+&gem0 {
+    local-mac-address = [02 00 00 07 15 01];
+};

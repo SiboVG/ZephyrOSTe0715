@@ -1,9 +1,0 @@
-/*
- * A locally administered, unicast MAC address for the bring-up image, the one
- * uboot_eth_check.py also uses. The module's own address (from its EEPROM, which
- * U-Boot reads) is not available to Zephyr yet. Use it only on a link without
- * another TE0715 running this image.
- */
-&gem0 {
-    local-mac-address = [02 00 00 07 15 01];
-};
