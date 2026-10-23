@@ -1,0 +1,59 @@
+
+[1;32muart:~$ [mkernel reboot colü
+
+U-Boot 2022.01 (Apr 04 2022 - 07:53:54 +0000)
+
+CPU:   Zynq 7z030
+Silicon: v3.1
+DRAM:  ECC disabled 1 GiB
+Flash: 0 Bytes
+NAND:  0 MiB
+MMC:   mmc@e0100000: 0
+Loading Environment from FAT... *** Error - No Valid Environment Area found
+*** Warning - bad env area, using default environment
+
+In:    serial@e0000000
+Out:   serial@e0000000
+Err:   serial@e0000000
+Net:   
+ZYNQ GEM: e000b000, mdio bus e000b000, phyaddr 0, interface rgmii-id
+zynq_gem ethernet@e000b000: Failed to read eth PHY id, err: -2
+eth0: ethernet@e000b000
+Hit any key to stop autoboot:  2  0 
+Zynq> 
+Zynq> loadx 0x0
+## Ready for binary (xmodem) download to 0x00000000 at 115200 bps...
+C
+[host] xmodem send ok: 193928 bytes in 22.2 s
+## Total Size      = 0x0002f588 = 193928 Bytes
+## Start Addr      = 0x00000000
+Zynq> crc32 0x0 0x2f588
+crc32 for 00000000 ... 0002f587 ==> 61f3fb39
+Zynq> 
+[host] crc32 local 0x61f3fb39, board 0x61f3fb39
+icache off
+Zynq> dcache off
+Zynq> go 0x0
+## Starting application at 0x00000000 ...
+[ETH_BRINGUP_TRACE] pre-kernel-2
+[ETH_BRINGUP_TRACE] post-kernel: before the drivers
+[00:00:00.013,000] [1;31m<err> os: ***** DATA ABORT *****[0m
+[00:00:00.017,000] [1;31m<err> os: 1st Level Translation Fault @ 0xf8000140[0m
+[00:00:00.024,000] [1;31m<err> os: r0/a1:  0x017d7840  r1/a2:  0x00002800  r2/a3:  0xf8000140[0m
+[00:00:00.033,000] [1;31m<err> os: r3/a4:  0x00000100 r12/ip:  0x00000115 r14/lr:  0x0001be58[0m
+[00:00:00.041,000] [1;31m<err> os:  xpsr:  0x2000011f[0m
+[00:00:00.047,000] [1;31m<err> os: s[ 0]:  0x5510c220  s[ 1]:  0x19aa0209  s[ 2]:  0xfac85009  s[ 3]:  0x25300260[0m
+[00:00:00.057,000] [1;31m<err> os: s[ 4]:  0x0a87c4c4  s[ 5]:  0x0000185e  s[ 6]:  0x45a91fdf  s[ 7]:  0x810820c1[0m
+[00:00:00.068,000] [1;31m<err> os: s[ 8]:  0x02002200  s[ 9]:  0x32040900  s[10]:  0x000058c9  s[11]:  0x13024040[0m
+[00:00:00.078,000] [1;31m<err> os: s[12]:  0x50d5565a  s[13]:  0x01f40148  s[14]:  0x0b5a0200  s[15]:  0xe040110a[0m
+[00:00:00.088,000] [1;31m<err> os: d[ 0]:  0x83107222a0440002  d[ 1]:  0x20bad0507971090a  d[ 2]:  0x8020806000024413  d[ 3]:  0x23200623148c885e[0m
+[00:00:00.102,000] [1;31m<err> os: d[ 4]:  0x18c3c800755dc600  d[ 5]:  0x7a41280093ec0b51  d[ 6]:  0x   8000004840008  d[ 7]:  0x 20642747c420204[0m
+[00:00:00.115,000] [1;31m<err> os: d[ 8]:  0xcaa78cc443251000  d[ 9]:  0x8d6889a6508a4004  d[10]:  0xc02224d800800403  d[11]:  0x591a4c2800000000[0m
+[00:00:00.128,000] [1;31m<err> os: d[12]:  0x19a8a1a200111028  d[13]:  0x5247906400010002  d[14]:  0x        15d4b04a  d[15]:  0x201a040800901144[0m
+[00:00:00.141,000] [1;31m<err> os: fpscr:  0x00000000[0m
+[00:00:00.146,000] [1;31m<err> os: Faulting instruction address (r15/pc): 0x0001be94[0m
+[00:00:00.154,000] [1;31m<err> os: >>> ZEPHYR FATAL ERROR 55: Unknown error on CPU 0[0m
+[00:00:00.162,000] [1;31m<err> os: Current thread: 0x4caf0 (main)[0m
+[00:00:00.168,000] [1;31m<err> os: Halting system[0m
+
+[host] after the loader exited:

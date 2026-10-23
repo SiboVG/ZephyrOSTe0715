@@ -1,0 +1,61 @@
+TC-24 Zephyr Ethernet bring-up (TE-ETH-002)
+date: 2026-10-23T16:54:31+0200
+host port: enxa0cec8ebc610 192.168.70.1/24; board 192.168.70.2; 100 host pings per size, 10 board pings per size
+--- board: net iface
+net iface
+Default interface: 1
+
+
+Interface eth0 (0x2f4e8) (Ethernet) [1]
+===================================
+Link addr : 02:00:00:07:15:01
+MTU       : 1500
+Flags     : AUTO_START,IPv4
+Device    : ethernet@e000b000 (0x260d8)
+Status    : oper=UP, admin=UP, carrier=ON
+Ethernet capabilities supported:
+	TX checksum offload
+	RX checksum offload
+	100 Mbits
+	Promiscuous mode
+Ethernet PHY device: <none> (0)
+IPv4 unicast addresses (max 1):
+	192.168.70.2/255.255.255.0 manual preferred infinite
+IPv4 multicast addresses (max 2):
+	224.0.0.1
+IPv4 gateway : 0.0.0.0
+uart:~$
+--- board: net stats
+net stats
+
+Interface 0x2f4e8 (Ethernet) [1]
+===================================
+IPv4 recv      820	sent	820	drop	0	forwarded	0
+IP vhlerr      0	hblener	0	lblener	0
+IP fragerr     0	chkerr	0	protoer	0
+ICMP recv      820	sent	820	drop	0
+ICMP typeer    0	chkerr	0
+IGMP recv      0	sent	0	drop	0
+UDP recv       0	sent	0	drop	0
+UDP chkerr     0
+Bytes received 637980
+Bytes sent     637768
+Processing err 0
+uart:~$
+---
+host before: carrier 1 speed 100 duplex full rx_packets=56 tx_packets=2480 rx_errors=0 rx_crc_errors=0 rx_frame_errors=0
+host after: carrier 1 speed 100 duplex full rx_packets=880 tx_packets=3318 rx_errors=0 rx_crc_errors=0 rx_frame_errors=0
+PASS  board interface up with its address: carrier on, 192.168.70.2 assigned
+PASS  host link at the baseline: carrier up, 100 Mbit/s full duplex (expected 100 full)
+PASS  host to board, 56 bytes (frame 98): 100 of 100
+PASS  host to board, 469 bytes (frame 511): 100 of 100
+PASS  host to board, 470 bytes (frame 512): 100 of 100
+PASS  host to board, 471 bytes (frame 513): 100 of 100
+PASS  host to board, 981 bytes (frame 1023): 100 of 100
+PASS  host to board, 982 bytes (frame 1024): 100 of 100
+PASS  host to board, 983 bytes (frame 1025): 100 of 100
+PASS  host to board, 1472 bytes (frame 1514): 100 of 100
+PASS  board to host, 4 bytes: 10 of 10
+PASS  board to host, 1472 bytes: 10 of 10
+PASS  no host receive errors: none
+PASS
