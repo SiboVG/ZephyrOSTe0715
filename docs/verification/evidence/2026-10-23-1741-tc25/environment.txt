@@ -1,0 +1,10 @@
+zephyr-te0715: 61365e1, 0 modified tracked files
+fprime-csp-libparam: becda86
+CspLibparamFprimeTest: 1cd24aa
+zephyr: 70b56a29 + patches:  M drivers/ethernet/eth_xlnx_gem.c  M drivers/ethernet/eth_xlnx_gem_priv.h  M drivers/spi/spi_cdns.c 
+image: apps/fprime_csp_bench with udp.conf
+zephyr.bin sha256: bfd1b3fc4f5cdc69ee002cb54a032e463cf5d447ca848a8479d9a5ea9689f7b0
+zephyr.elf sha256: 720c6297c42e05384c1ea0bcde61e1875c7c42ab18948260892bc443dfe41ae3
+CspBench sha256: 748f4acafdf8faa8d9c1f581a4cd8b1a4ba91ab29f5dbedd1a12a0b42bcd2cc4
+CspPingClient sha256: edc91c9073118bb319e30b4b950742db274fbab27217f3f9e54bc98dd9e0a695
+host: Ubuntu 26.04 LTS 7.0.0-34-generic; port enxa0cec8ebc610 100 Mbit/s full
