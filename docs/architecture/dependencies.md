@@ -32,6 +32,23 @@ and listed in `app/zephyr/patches.yml`; `west patch apply` applies them.
 | zephyr | `0002-eth-xlnx-gem-map-the-clock-control-register` | The Xilinx GEM Ethernet driver accessed its clock control register (SLCR `GEM0_CLK_CTRL`, `0xf8000140`) through the physical address, which the SoC's MMU table does not map: a translation fault at boot | fixed upstream in `fd9cd01ef774` (the switch to the separate MDIO and PHY drivers), too large to backport; drop when the fork moves past it |
 | zephyr | `0003-eth-xlnx-gem-dma-memory-in-ocm-on-zynq-7000` | The GEM's DMA descriptors and buffers landed below DDR address `0x80000`, which only the CPUs can reach on the Zynq-7000 (UG585, table 4-1): every DMA access failed with `hresp_not_ok`. On the Zynq-7000 the patch puts them in the OCM again, as before upstream `c206ff165f07` | could be offered; still so on upstream `main` (2026-10-22) |
 
+### Pending Zephyr upgrade
+
+Patch `0002-eth-xlnx-gem-map-the-clock-control-register` can be dropped once the
+Zephyr fork is based on a release that contains `fd9cd01ef774`. As of 2026-10-24 no
+release does: it is only on `main`, and v4.4.2 is the latest release. That upgrade is
+more than a rebase:
+
+- `fd9cd01ef774` moves the GEM's PHY handling into separate MDIO and PHY drivers, so
+  `te0715.dts` needs MDIO and PHY nodes. Zephyr has no driver for the board's Marvell
+  88E151x PHY, only the generic `ethernet-phy` (`phy_mii`), which still has to bring
+  the link up at 100 Mbit/s full duplex.
+- Patch `0003-eth-xlnx-gem-dma-memory-in-ocm-on-zynq-7000` has to be ported to the
+  reworked driver, unless upstream has fixed the DMA placement by then.
+- The fork's CAN driver and UART fixes (PRs #120163 and #119996) are rebased onto the
+  release, or dropped where merged.
+- TC-01 to TC-25 are rerun and the upgrade gets a regression note in the SVR.
+
 ## Other integration changes
 
 | Where | Change |
