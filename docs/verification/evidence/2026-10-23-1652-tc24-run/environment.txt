@@ -1,0 +1,5 @@
+zephyr-te0715: e086600 0 modified tracked files
+zephyr: 70b56a29 + patches:  M drivers/ethernet/eth_xlnx_gem.c  M drivers/ethernet/eth_xlnx_gem_priv.h  M drivers/spi/spi_cdns.c 
+zephyr.bin sha256: 473bcc8b62c86820028561b20e4d00cedd5d1c6f6a0cf05da8a042300d392ff9
+zephyr.elf sha256: 41db1df99dee2edfbbd3847d309687d68573e8e5ce95f471ea1b3fcbcda7028e
+host: Ubuntu 26.04 LTS 7.0.0-34-generic; port enxa0cec8ebc610 driver:r8152

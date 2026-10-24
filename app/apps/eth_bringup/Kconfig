@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: Apache-2.0
+
+mainmenu "Ethernet bring-up on the TE0715"
+
+config APP_BOOT_TRACE
+	bool "Print a line at each initialization level"
+	help
+	  For diagnosing a boot that stops before the banner: prints
+	  [ETH_BRINGUP_TRACE] lines at PRE_KERNEL_2, at the start and end of
+	  POST_KERNEL (before and after the drivers and the network stack)
+	  and at APPLICATION. Enabled by debug.conf.
+
+source "Kconfig.zephyr"

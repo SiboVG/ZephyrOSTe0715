@@ -22,7 +22,8 @@ manifest:
     # - the uart_xlnx_ps fixes of zephyrproject-rtos/zephyr#119996
     # - the Zynq-7000 PS CAN driver (upstream branch: xlnx-can, based on main)
     # Switch back to remote zephyrproject-rtos and a release tag once both
-    # are released.
+    # are released. A release with fd9cd01ef774 (Ethernet MDIO/PHY drivers)
+    # also lets patch zephyr/0002 go; see docs/architecture/dependencies.md.
     - name: zephyr
       remote: sibovg
       revision: 70b56a29cd748ee70924defea39f60f9f2ecbf70

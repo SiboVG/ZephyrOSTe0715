@@ -30,6 +30,31 @@ config APP_CSP_ROUTER_PRIORITY
 	  the libparam server, so it sits above the F Prime tasks: cmdDisp 44,
 	  rateGroup_1Hz 43, cspLibparam 42.
 
+config APP_CSP_UDP
+	bool "Carry CSP over UDP on the Ethernet port instead of CAN"
+	help
+	  The bench server uses fprime-csp-libparam's UdpTransport to one peer
+	  (CSP over UDP, as csh's `csp add udp`). Set by udp.conf, which also
+	  enables the network stack with the board's static address.
+
+if APP_CSP_UDP
+
+config APP_CSP_UDP_PEER
+	string "IPv4 address of the CSP over UDP peer"
+	default "192.168.70.1"
+
+config APP_CSP_UDP_PORT
+	int "UDP port the bench server receives on"
+	range 1 65535
+	default 9220
+
+config APP_CSP_UDP_PEER_PORT
+	int "UDP port of the peer"
+	range 1 65535
+	default 9220
+
+endif # APP_CSP_UDP
+
 config APP_BOOT_CONFIG_ADDR
 	hex "Physical address where U-Boot leaves te0715.txt"
 	default 0x0f000000

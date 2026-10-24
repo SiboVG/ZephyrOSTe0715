@@ -66,6 +66,39 @@ cppcheck_args = ["--library=zephyr",
                  "--include=zephyr/include/zephyr/toolchain/zephyr_stdint.h",
                  "-DCONFIG_KERNEL_VM_USE_CUSTOM_MEM_RANGE_CHECK=1"]
 
+# Ethernet bring-up (TE-ETH-002): GEM0 and the network stack
+[[build]]
+name = "eth_bringup"
+dir = "build/eth_bringup"
+configure = ["west", "build", "-b", "te0715", "app/apps/eth_bringup", "-d", "build/eth_bringup"]
+include = ["app/**"]
+exclude = ["app/tests/**"]
+suppress_paths = ["zephyr/*", "modules/*", "zephyr-spi-main/*"]
+strip_flags = ["-fno-reorder-functions", "-mfp16-format=*"]
+clang_tidy_extra_args = ["--target=arm-none-eabi", "--system-header-prefix=zephyr/"]
+cppcheck_args = ["--library=zephyr",
+                 "--include=app/static-analysis/arm-zephyr-eabi-gcc-predefined.h",
+                 "--include=build/eth_bringup/zephyr/include/generated/zephyr/autoconf.h",
+                 "--include=zephyr/include/zephyr/toolchain/zephyr_stdint.h",
+                 "-DCONFIG_KERNEL_VM_USE_CUSTOM_MEM_RANGE_CHECK=1"]
+
+# The same with debug.conf: its boot trace
+[[build]]
+name = "eth_bringup-debug"
+dir = "build/eth_bringup-debug"
+configure = ["west", "build", "-b", "te0715", "app/apps/eth_bringup", "-d", "build/eth_bringup-debug",
+             "--", "-DEXTRA_CONF_FILE=debug.conf"]
+include = ["app/**"]
+exclude = ["app/tests/**"]
+suppress_paths = ["zephyr/*", "modules/*", "zephyr-spi-main/*"]
+strip_flags = ["-fno-reorder-functions", "-mfp16-format=*"]
+clang_tidy_extra_args = ["--target=arm-none-eabi", "--system-header-prefix=zephyr/"]
+cppcheck_args = ["--library=zephyr",
+                 "--include=app/static-analysis/arm-zephyr-eabi-gcc-predefined.h",
+                 "--include=build/eth_bringup-debug/zephyr/include/generated/zephyr/autoconf.h",
+                 "--include=zephyr/include/zephyr/toolchain/zephyr_stdint.h",
+                 "-DCONFIG_KERNEL_VM_USE_CUSTOM_MEM_RANGE_CHECK=1"]
+
 [[build]]
 name = "csp_node"
 dir = "build/csp_node"

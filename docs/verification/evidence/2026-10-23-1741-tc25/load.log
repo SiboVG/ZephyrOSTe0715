@@ -1,0 +1,54 @@
+
+[1;32muart:~$ [mkernel reboot colô
+
+U-Boot 2022.01 (Apr 04 2022 - 07:53:54 +0000)
+
+CPU:   Zynq 7z030
+Silicon: v3.1
+DRAM:  ECC disabled 1 GiB
+Flash: 0 Bytes
+NAND:  0 MiB
+MMC:   mmc@e0100000: 0
+Loading Environment from FAT... *** Error - No Valid Environment Area found
+*** Warning - bad env area, using default environment
+
+In:    serial@e0000000
+Out:   serial@e0000000
+Err:   serial@e0000000
+Net:   
+ZYNQ GEM: e000b000, mdio bus e000b000, phyaddr 0, interface rgmii-id
+zynq_gem ethernet@e000b000: Failed to read eth PHY id, err: -2
+eth0: ethernet@e000b000
+Hit any key to stop autoboot:  2  0 
+Zynq> 
+Zynq> loadx 0x0
+## Ready for binary (xmodem) download to 0x00000000 at 115200 bps...
+C
+[host] xmodem send ok: 440368 bytes in 45.4 s
+## Total Size      = 0x0006b830 = 440368 Bytes
+## Start Addr      = 0x00000000
+Zynq> crc32 0x0 0x6b830
+crc32 for 00000000 ... 0006b82f ==> 8b7ad6aa
+Zynq> 
+[host] crc32 local 0x8b7ad6aa, board 0x8b7ad6aa
+icache off
+Zynq> dcache off
+Zynq> go 0x0
+## Starting application at 0x00000000 ...
+*** Booting Zephyr OS build 70b56a29cd74 ***
+[m
+[1;32muart:~$ [m[00:00:02.019,000] [0m<inf> eth_xlnx_gem: ethernet@e000b000 link up, 100 MBit/s[0m
+
+*** CSP bench server: node 6061/8 (default). Type `bench start [node] [prefix]` within 10 s to start (on another node), or wait. ***
+
+[Os::Console] EVENT: (268513280) (0:946652412,15200) DIAGNOSTIC: (CspBenchZephyr.cmdDisp) OpCodeRegistered : Opcode 0x10013000 registered to port 0 slot 0
+[Os::Console] EVENT: (268513280) (0:946652412,23200) DIAGNOSTIC: (CspBenchZephyr.cmdDisp) OpCodeRegistered : Opcode 0x10013001 registered to port 0 slot 1
+[Os::Console] EVENT: (268513280) (0:946652412,36700) DIAGNOSTIC: (CspBenchZephyr.cmdDisp) OpCodeRegistered : Opcode 0x10013002 registered to port 0 slot 2
+[Os::Console] EVENT: (268513280) (0:946652412,50300) DIAGNOSTIC: (CspBenchZephyr.cmdDisp) OpCodeRegistered : Opcode 0x10013003 registered to port 0 slot 3
+[Os::Console] EVENT: (268513280) (0:946652412,63800) DIAGNOSTIC: (CspBenchZephyr.cmdDisp) OpCodeRegistered : Opcode 0x10002000 registered to port 1 slot 4
+[Os::Console] EVENT: (268513280) (0:946652412,77300) DIAGNOSTIC: (CspBenchZephyr.cmdDisp) OpCodeRegistered : Opcode 0x10002001 registered to port 1 slot 5
+[Os::Console] EVENT: (268443648) (0:946652412,91400) ACTIVITY_HI: (CspBenchZephyr.cspLibparam) StackReady : CSP stack ready: local 6061 peer 6061
+[CSP_BENCH_READY] role=server udp=192.168.70.1:9220 node=6061 peer=6061 param=200 type=u32 index=0
+[Os::Console] Starting base rate group clock with period of 1000000 microseconds
+[Os::Console] CSP/libparam bench server: node 6061/8, parameters 200 bench_integer (u32), 201 led_d4 (u8)
+[Os::Console] EVENT: (268439552) (0:946652412,128800) DIAGNOSTIC: (CspBenchZephyr.rateGroup_1Hz) RateGroupStarted : Rate group started.

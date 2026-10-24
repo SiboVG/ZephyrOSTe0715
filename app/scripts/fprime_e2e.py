@@ -2,18 +2,23 @@
 # SPDX-License-Identifier: Apache-2.0
 """End-to-end test of the F Prime bench server on the TE0715 against the Linux CspBench.
 
-1. Optionally load an image over JTAG (--elf), or reset the board so it boots from
-   the SD card (--sd-boot), and wait for the server's [CSP_BENCH_READY] marker.
+1. Load an image over JTAG (--elf), or reset the board so it boots from the SD card
+   (--sd-boot), and wait for the server's [CSP_BENCH_READY] marker; or, with --attach,
+   use a server that already runs (e.g. loaded with uboot_load.py, without xsdb).
 2. Run `CspBench --role client --write-test` on the host against the board, for
    parameter 200 and for the LED parameter 201 (led_d4, u8).
 3. Start a Linux `CspBench --role server` (node 102) and exercise the board's serial
    shell: bench info, kernel thread list, csp ping (with and without CRC32),
    param get / set --confirm / read-back / restore, and can show.
 
-Exit code 0 only if the client test passes and every shell check gives the expected
-result. The full console transcript is written to --log.
+The Linux side reaches the board over SocketCAN (--can, TC-06 to TC-08) or over CSP
+over UDP (--udp BOARD_IP, TC-25). --reference adds a ping from the plain-libcsp
+CspPingClient over the same link. Exit code 0 only if the client test passes and every
+shell check gives the expected result. The full console transcript is written to --log.
 
   app/scripts/fprime_e2e.py --bench path/to/CspBench --elf path/to/zephyr.elf --log e2e.log
+  app/scripts/fprime_e2e.py --bench path/to/CspBench --attach --udp 192.168.70.2 \
+      --reference path/to/CspPingClient --log e2e.log
 """
 
 import argparse
@@ -61,14 +66,19 @@ class Console:
         return ANSI.sub('', self.buf[mark:].decode(errors='replace'))
 
 
-def main():
+def parse_args(argv=None):
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--bench', required=True, help='Linux CspBench executable')
     boot = parser.add_mutually_exclusive_group(required=True)
     boot.add_argument('--elf', help='load this zephyr.elf over JTAG')
     boot.add_argument('--sd-boot', action='store_true', help='reset and boot from the SD card')
-    parser.add_argument('--can', default='can0', help='host SocketCAN interface')
+    boot.add_argument('--attach', action='store_true',
+                      help='use the server already running on the board (no reset, no xsdb)')
+    link = parser.add_mutually_exclusive_group()
+    link.add_argument('--can', default='can0', help='host SocketCAN interface')
+    link.add_argument('--udp', metavar='BOARD_IP', help='CSP over UDP to the board at this address')
+    parser.add_argument('--reference', help='also ping the board from this CspPingClient (plain libcsp)')
     parser.add_argument('--node', type=int, default=6061, help='board CSP node')
     parser.add_argument('--source', default='default',
                         help='where the boot banner must say the node comes from '
@@ -76,14 +86,35 @@ def main():
     parser.add_argument('--log', required=True, help='transcript file')
     parser.add_argument('--port', help='UART device')
     parser.add_argument('--xsdb', help='path to xsdb')
-    args = parser.parse_args()
+    return parser.parse_args(argv)
 
-    xsdb = find_xsdb(args.xsdb)
+
+def link_args(args):
+    """How the Linux CspBench reaches the board: SocketCAN or CSP over UDP."""
+    return ['--udp', args.udp] if args.udp else ['--can', args.can]
+
+
+def needs_xsdb(args):
+    return not args.attach
+
+
+def reference_command(args):
+    """The plain-libcsp ping over the same link, or None without --reference."""
+    if not args.reference:
+        return None
+    return [args.reference, *link_args(args), '--node', '100', '--peer', str(args.node)]
+
+
+def main():
+    args = parse_args()
+    link = link_args(args)
+
+    xsdb = find_xsdb(args.xsdb) if needs_xsdb(args) else None
     console = Console(find_port(args.port))
     started = time.time()
     if args.elf:
         subprocess.run(['timeout', '120', xsdb, XSDB_CFG, args.elf], capture_output=True)
-    else:
+    elif args.sd_boot:
         subprocess.run(['timeout', '60', xsdb, '-eval',
                         'connect; targets -set -nocase -filter {name =~ "APU*"}; rst -system; '
                         'disconnect'], capture_output=True)
@@ -94,23 +125,24 @@ def main():
         checks.append((name, ok))
         print(f'{"PASS" if ok else "FAIL"}  {name}')
 
-    window = console.wait_for('within 10 s', 40)
-    check('start window announced', window)
-    banner = f'node {args.node}/8 ({args.source})'
-    check(f'boot banner: {banner}', banner in console.text())
-    if args.elf:
-        console.command(f'bench start {args.node} 8', 1)
-    ready = console.wait_for('CSP_BENCH_READY', 30)
-    check(f'server ready on node {args.node} ({time.time() - started:.1f} s after reset)', ready)
-    if not ready:
-        open(args.log, 'w').write(console.text())
-        return 1
+    if not args.attach:
+        window = console.wait_for('within 10 s', 40)
+        check('start window announced', window)
+        banner = f'node {args.node}/8 ({args.source})'
+        check(f'boot banner: {banner}', banner in console.text())
+        if args.elf:
+            console.command(f'bench start {args.node} 8', 1)
+        ready = console.wait_for('CSP_BENCH_READY', 30)
+        check(f'server ready on node {args.node} ({time.time() - started:.1f} s after reset)', ready)
+        if not ready:
+            open(args.log, 'w').write(console.text())
+            return 1
 
     info = console.command('bench info')
     check('bench info', f'node {args.node}/8 (' in info and 'started)' in info)
     console.command('kernel thread list', 3)
 
-    client = subprocess.run(['timeout', '60', args.bench, '--role', 'client', '--can', args.can,
+    client = subprocess.run(['timeout', '60', args.bench, '--role', 'client', *link,
                              '--node', '100', '--peer', str(args.node), '--write-test',
                              '--write-value', '0xA5A55A5A'], capture_output=True, text=True)
     result = [line for line in client.stdout.splitlines() if 'CSP_BENCH_RESULT' in line]
@@ -118,7 +150,7 @@ def main():
           client.returncode == 0 and bool(result) and 'PASS' in result[-1])
 
     mark = len(console.buf)
-    led = subprocess.run(['timeout', '30', args.bench, '--role', 'client', '--can', args.can,
+    led = subprocess.run(['timeout', '30', args.bench, '--role', 'client', *link,
                           '--node', '100', '--peer', str(args.node), '--param-id', '201',
                           '--param-type', 'u8', '--write-test', '--write-value', '1',
                           '--successes', '2', '--attempts', '3'], capture_output=True, text=True)
@@ -130,7 +162,16 @@ def main():
           and 'led_d4 = 1: LED D4 on' in led_log and 'led_d4 = 0: LED D4 off' in led_log)
     check('bench info: led_d4 off after the test', 'led_d4 (u8) = 0' in console.command('bench info'))
 
-    server = subprocess.Popen(['timeout', '60', args.bench, '--role', 'server', '--can', args.can,
+    reference_out = ''
+    reference = reference_command(args)
+    if reference:
+        ping = subprocess.run(['timeout', '20', *reference], capture_output=True, text=True)
+        reference_out = ping.stdout + ping.stderr
+        result = [line for line in ping.stdout.splitlines() if 'CSP_REFERENCE_PING_RESULT' in line]
+        check(f'plain libcsp pings node {args.node}: {result[-1] if result else "no result"}',
+              ping.returncode == 0 and bool(result) and 'PASS' in result[-1])
+
+    server = subprocess.Popen(['timeout', '60', args.bench, '--role', 'server', *link,
                                '--node', '102'], stdout=subprocess.PIPE,
                               stderr=subprocess.STDOUT, text=True)
     time.sleep(3)
@@ -153,8 +194,9 @@ def main():
           '(0x12345678)' in console.command('param set 102 200 u32 0x12345678 --confirm', 3))
     check('csp ping to an absent node times out',
           'no reply' in console.command('csp ping 4242 32 500'))
-    can = console.command('can show can@e0009000')
-    check('can show: no bus errors', 'rx errors:       0' in can and 'tx errors:       0' in can)
+    if not args.udp:
+        can = console.command('can show can@e0009000')
+        check('can show: no bus errors', 'rx errors:       0' in can and 'tx errors:       0' in can)
     server.terminate()
     server_out = server.communicate()[0]
 
@@ -174,6 +216,8 @@ def main():
         f.write('\n=== Linux CspBench client\n' + client.stdout + client.stderr)
         f.write('\n=== Linux CspBench client, led_d4\n' + led.stdout + led.stderr)
         f.write('\n=== Linux CspBench server (node 102)\n' + server_out)
+        if reference:
+            f.write('\n=== Plain libcsp CspPingClient\n' + reference_out)
     failed = [name for name, ok in checks if not ok]
     print(f'{len(checks) - len(failed)}/{len(checks)} checks passed')
     return 1 if failed else 0

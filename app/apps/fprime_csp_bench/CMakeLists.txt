@@ -1,8 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # CSP/libparam bench server on the TE0715: the CubeSpec.CspLibparam component
-# from CspLibparamFprimeTest over the Zephyr CAN transport of
-# fprime-csp-libparam. Build with fprime-util (see README.md).
+# from CspLibparamFprimeTest over the Zephyr CAN transport of fprime-csp-libparam,
+# or over its UDP transport on the Ethernet port with udp.conf (CONFIG_APP_CSP_UDP).
+# Build with fprime-util (see docs/getting-started/build-and-run.md).
 
 cmake_minimum_required(VERSION 3.24.2)
 
@@ -12,6 +13,7 @@ set(CSP_BENCH_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../../../CspLibparamFprimeTest"
 # Zephyr first: it selects the cross toolchain before project()
 if(NOT BUILD_TESTING)
     list(APPEND EXTRA_DTC_OVERLAY_FILE "${CMAKE_CURRENT_LIST_DIR}/../../boards/te0701-can1.overlay")
+    list(APPEND EXTRA_DTC_OVERLAY_FILE "${CMAKE_CURRENT_LIST_DIR}/../../boards/te0715-mac.overlay")
     find_package(Zephyr REQUIRED HINTS "${CMAKE_CURRENT_LIST_DIR}/../../../zephyr")
 endif()
 
@@ -28,6 +30,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # libcsp and libparam come from the Zephyr modules (CONFIG_LIBCSP, CONFIG_LIBPARAM)
 set(FPRIMECSP_ENABLE_ZEPHYR_CAN ON CACHE BOOL "Zephyr CAN transport" FORCE)
+if(CONFIG_APP_CSP_UDP)
+    set(FPRIMECSP_ENABLE_UDP ON CACHE BOOL "CSP over UDP transport" FORCE)
+else()
+    set(FPRIMECSP_ENABLE_UDP OFF CACHE BOOL "CSP over UDP transport" FORCE)
+endif()
 add_library(fprimecsp_libparam_c ALIAS libparam)
 
 include("${FPRIME_FRAMEWORK_PATH}/cmake/FPrime.cmake")

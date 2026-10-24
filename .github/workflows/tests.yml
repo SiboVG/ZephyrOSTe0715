@@ -70,6 +70,8 @@ jobs:
         run: |
           west build -b te0715 app -d build/demo
           west build -b te0715 app/apps/can_bringup -d build/can_bringup
+          west build -b te0715 app/apps/eth_bringup -d build/eth_bringup
+          west build -b te0715 app/apps/eth_bringup -d build/eth_bringup-debug -- -DEXTRA_CONF_FILE=debug.conf
           west build -b te0715 app/apps/csp_node -d build/csp_node
           # SPI1 on Pmod J1 (board support of the sensor benches, whose F Prime
           # applications are not built here)

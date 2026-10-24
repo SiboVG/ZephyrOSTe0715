@@ -1,0 +1,65 @@
+
+uart:~$ �
+
+U-Boot 2022.01 (Apr 04 2022 - 07:53:54 +0000)
+
+CPU:   Zynq 7z030
+Silicon: v3.1
+DRAM:  ECC disabled 1 GiB
+Flash: 0 Bytes
+NAND:  0 MiB
+MMC:   mmc@e0100000: 0
+Loading Environment from FAT... *** Error - No Valid Environment Area found
+*** Warning - bad env area, using default environment
+
+In:    serial@e0000000
+Out:   serial@e0000000
+Err:   serial@e0000000
+Net:   
+ZYNQ GEM: e000b000, mdio bus e000b000, phyaddr 0, interface rgmii-id
+zynq_gem ethernet@e000b000: Failed to read eth PHY id, err: -2
+eth0: ethernet@e000b000
+Hit any key to stop autoboot:  2  0 
+Zynq> printenv ethaddr
+ethaddr=fc:0f:e7:e6:16:e8
+Zynq> setenv ipaddr 192.168.70.2
+Zynq> setenv netmask 255.255.255.0
+Zynq> setenv serverip 192.168.70.1
+Zynq> mii info
+PHY 0x00: OUI = 0x5043, Model = 0x1D, Rev = 0x01,  10baseT, HDX
+Zynq> ping 192.168.70.1
+ethernet@e000b000 Waiting for PHY auto negotiation to complete...... done
+Using ethernet@e000b000 device
+host 192.168.70.1 is alive
+Zynq> ping 192.168.70.1
+Using ethernet@e000b000 device
+host 192.168.70.1 is alive
+Zynq> ping 192.168.70.1
+Using ethernet@e000b000 device
+host 192.168.70.1 is alive
+Zynq> ping 192.168.70.1
+Using ethernet@e000b000 device
+host 192.168.70.1 is alive
+Zynq> ping 192.168.70.1
+Using ethernet@e000b000 device
+host 192.168.70.1 is alive
+Zynq> ping 192.168.70.1
+Using ethernet@e000b000 device
+host 192.168.70.1 is alive
+Zynq> ping 192.168.70.1
+Using ethernet@e000b000 device
+host 192.168.70.1 is alive
+Zynq> ping 192.168.70.1
+Using ethernet@e000b000 device
+host 192.168.70.1 is alive
+Zynq> ping 192.168.70.1
+Using ethernet@e000b000 device
+host 192.168.70.1 is alive
+Zynq> ping 192.168.70.1
+Using ethernet@e000b000 device
+host 192.168.70.1 is alive
+Zynq> mii read 0x0 0x16
+0000
+Zynq> mii read 0x0 0x11
+6C08
+Zynq> 

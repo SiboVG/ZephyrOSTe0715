@@ -70,9 +70,12 @@ class UBoot:
         self.serial.reset_input_buffer()
         self.xsdb_eval('connect; targets -set -nocase -filter {name =~ "APU*"}; '
                        'rst -system; disconnect')
-        if not stop:
-            return
-        if 'Hit any key' not in self._read_until(b'Hit any key', 20):
+        if stop:
+            self.stop_autoboot(20)
+
+    def stop_autoboot(self, timeout):
+        """Wait for U-Boot's autoboot countdown and stop it at the prompt."""
+        if 'Hit any key' not in self._read_until(b'Hit any key', timeout):
             sys.exit('U-Boot did not start: is the board set to SD boot?')
         self.serial.write(b'\n')
         if 'Zynq> ' not in self._read_until(b'Zynq> ', 5):

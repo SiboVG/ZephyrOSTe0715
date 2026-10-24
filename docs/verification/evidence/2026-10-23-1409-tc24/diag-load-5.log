@@ -1,0 +1,49 @@
+
+[1;32muart:~$ [mkernel reboot colü
+
+U-Boot 2022.01 (Apr 04 2022 - 07:53:54 +0000)
+
+CPU:   Zynq 7z030
+Silicon: v3.1
+DRAM:  ECC disabled 1 GiB
+Flash: 0 Bytes
+NAND:  0 MiB
+MMC:   mmc@e0100000: 0
+Loading Environment from FAT... *** Error - No Valid Environment Area found
+*** Warning - bad env area, using default environment
+
+In:    serial@e0000000
+Out:   serial@e0000000
+Err:   serial@e0000000
+Net:   
+ZYNQ GEM: e000b000, mdio bus e000b000, phyaddr 0, interface rgmii-id
+zynq_gem ethernet@e000b000: Failed to read eth PHY id, err: -2
+eth0: ethernet@e000b000
+Hit any key to stop autoboot:  2  0 
+Zynq> 
+Zynq> loadx 0x0
+## Ready for binary (xmodem) download to 0x00000000 at 115200 bps...
+C
+[host] xmodem send ok: 193928 bytes in 22.2 s
+## Total Size      = 0x0002f588 = 193928 Bytes
+## Start Addr      = 0x00000000
+Zynq> crc32 0x0 0x2f588
+crc32 for 00000000 ... 0002f587 ==> 1a501833
+Zynq> 
+[host] crc32 local 0x1a501833, board 0x1a501833
+icache off
+Zynq> dcache off
+Zynq> go 0x0
+## Starting application at 0x00000000 ...
+[ETH_BRINGUP_TRACE] pre-kernel-2
+[ETH_BRINGUP_TRACE] post-kernel: before the drivers
+[ETH_BRINGUP_TRACE] post-kernel: drivers and network stack initialized
+*** Booting Zephyr OS build 70b56a29cd74 ***
+[ETH_BRINGUP_TRACE] application
+[00:00:00.024,000] [1;33m<wrn> eth_xlnx_gem: ethernet@e000b000 PHY not managed by the driver or no compatible PHY detected, assuming link up at 100 MBit/s[0m
+[ETH_BRINGUP_READY] carrier=on mac=02:00:00:07:15:01 ipv4=192.168.70.2 waited_ms=0
+[m
+[1;32muart:~$ [m
+[host] after the loader exited:
+[00:00:05.020,000] [1;31m<err> eth_xlnx_gem: ethernet@e000b000 error bit(s) set in Interrupt Status Reg.: 0x00000800[0m
+[00:00:07.662,000] [1;31m<err> eth_xlnx_gem: ethernet@e000b000 error bit(s) set in Interrupt Status Reg.: 0x00000800[0m

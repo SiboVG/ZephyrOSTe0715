@@ -28,6 +28,12 @@ int main() {
     state.config.parameterType = CubeSpec::CspTest::IntegerParameterType::UINT32;
     state.config.serverValue = 0x12345678;
     state.config.routerPriority = CONFIG_APP_CSP_ROUTER_PRIORITY;
+#if defined(CONFIG_APP_CSP_UDP)
+    // CSP over UDP on the Ethernet port (udp.conf) instead of CAN
+    state.config.udpPeer = CONFIG_APP_CSP_UDP_PEER;
+    state.config.udpLocalPort = CONFIG_APP_CSP_UDP_PORT;
+    state.config.udpPeerPort = CONFIG_APP_CSP_UDP_PEER_PORT;
+#endif
 
     CspBenchZephyr::setup(state);
     if (!state.startupOk) {

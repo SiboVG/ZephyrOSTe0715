@@ -1,0 +1,19 @@
+TC-23 Ethernet link from U-Boot (TE-ETH-001)
+date: 2026-10-23T13:26:56+0200
+host port: enxa0cec8ebc610 192.168.70.1/24; board 192.168.70.2; 10 pings; expected speed: 1000
+board MAC: fc:0f:e7:e6:16:e8 (environment)
+U-Boot: U-Boot 2022.01 (Apr 04 2022 - 07:53:54 +0000)
+U-Boot: Net:
+U-Boot: ZYNQ GEM: e000b000, mdio bus e000b000, phyaddr 0, interface rgmii-id
+U-Boot: zynq_gem ethernet@e000b000: Failed to read eth PHY id, err: -2
+U-Boot: eth0: ethernet@e000b000
+PHY 0x00: OUI 0x5043 model 0x1d rev 1 (Marvell 88E151x)
+pings: ..........
+host before: carrier 1 speed 1000 duplex full rx_packets=0 tx_packets=257 rx_errors=0 rx_crc_errors=0 rx_frame_errors=0
+host after: carrier 1 speed 1000 duplex full rx_packets=20 tx_packets=277 rx_errors=0 rx_crc_errors=0 rx_frame_errors=0
+PASS  pings answered: 10 of 10
+PASS  host carrier after the pings: up
+PASS  host received the traffic: 20 packets received on enxa0cec8ebc610
+PASS  no host receive errors: none
+PASS  full duplex at the expected speed: host 1000 Mbit/s full duplex (expected 1000 full); PHY 1000 Mbit/s full duplex, link up
+PASS

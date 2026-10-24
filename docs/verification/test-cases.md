@@ -229,3 +229,33 @@ Common preconditions for all test cases: the workspace built as in
 | **Procedure** | `sensor_bench.py adxl355-pl --elf <zephyr.elf> --bit <pp_te0701.bit>`, as in [ADXL355 bench, TC-22](../tests/adxl355.md#tc-22-external-synchronization): bitstream identity and build, the PL time base against the PS clock, start-up, DATA_RDY clearing, 20000 frames on the PL's sync interrupt, frame timestamps, the DATA_RDY phase before and after three restarts of the clock and pulses, the interrupt delay, the clock stopped with a sample unread, the clock's return, the clock stopped during acquisition, the pulses stopped during acquisition |
 | **Pass criteria** | Steps 1 to 12 of the guide. In short: the bitstream is the checked-out cubespec-pl commit, built clean; the time base within 1 ppm of the PS clock; every frame of every PL-triggered stream complete, none stale, frozen or implausible, no trigger lost, acquisition below 250 µs, and \|a\| of every sample within 0.79 to 1.21 g with a spread below 20 mg; frame times on the 250 µs grid; the DATA_RDY phase intervals of all four measurements overlap; with the clock stopped, STATUS reads no longer clear DATA_RDY and only the first 8 frames (`FROZEN_REPEAT_LIMIT`) are complete, the rest `FROZEN_DATA`; after the clock returns, DATA_RDY clears and frames are complete; a clock stopped mid-stream leaves only stale or frozen frames; stopped pulses stop the triggers, and the event waits time out |
 | **Evidence** | `sensor_bench.py adxl355-pl` package |
+
+## TC-23 Ethernet link from U-Boot
+
+| | |
+|---|---|
+| **Verifies** | `TE-ETH-001` |
+| **Preconditions** | The board boots from its SD card into U-Boot (any image on the card); the TE0701's RJ45 jack cabled directly to a host Ethernet port used only for this test; that port configured with 192.168.70.1/24, and no other host interface in 192.168.70.0/24 ([Ethernet link](../tests/ethernet.md)) |
+| **Procedure** | The host port limited to 100 Mbit/s full duplex (in its NetworkManager profile, or `ethtool -s <port> speed 100 duplex full autoneg on`), then `app/scripts/uboot_eth_check.py --host-if <port> --expect-speed 100`. Optionally, for information only, the same at 1000 Mbit/s with `--expect-speed 1000`. Each run resets the board (over JTAG, from the image's shell with `--reboot`, or by hand with `--wait-reset`), stops U-Boot and pings the host 10 times from U-Boot; it changes nothing on the SD card |
+| **Pass criteria** | For the 100 Mbit/s run: 10 of 10 pings answered; after the pings the host port has carrier, full duplex at 100 Mbit/s; where U-Boot's `mii` command can read the PHY, the PHY reports the same speed and full duplex; the host received at least 10 packets on the port during the run, and its `rx_errors`, `rx_crc_errors` and `rx_frame_errors` counters did not increase; the script prints `PASS` |
+| **Evidence** | One `uboot_eth_check.py` package per run, including an optional 1000 Mbit/s run (`console.log`, `summary.txt`, `SHA256SUMS`); the PHY address and identity from `mii info`, and the board's MAC address and its source, are recorded in `summary.txt` |
+
+## TC-24 Zephyr Ethernet bring-up
+
+| | |
+|---|---|
+| **Verifies** | `TE-ETH-002` |
+| **Preconditions** | TC-23 passed; the TC-23 cabling and host port (192.168.70.1/24, advertising 100 Mbit/s full duplex only); `apps/eth_bringup` built for `te0715` |
+| **Procedure** | 1. Load `apps/eth_bringup` (over JTAG, or `app/scripts/uboot_load.py ... --until "[ETH_BRINGUP_READY]"` from the running image's shell). 2. `app/scripts/zephyr_eth_check.py --host-if <port>`: from the host, 100 echo requests with the don't-fragment flag at each ICMP payload size 56, 469, 470, 471, 981, 982, 983 and 1472 bytes (Ethernet frames of 98, 511 to 513, 1023 to 1025 and 1514 bytes: either side of one and two 512-byte buffers, and the largest frame); from the board's shell, `net ping` to the host 10 times with a 4-byte and 10 times with a 1472-byte payload |
+| **Pass criteria** | The image prints `[ETH_BRINGUP_READY]` with `carrier=on` within 10 s of starting; the board's interface reports carrier on and 192.168.70.2; the host port is at 100 Mbit/s full duplex; 100 of 100 replies at every host payload size; 10 of 10 replies to each board ping series; the host port's `rx_errors`, `rx_crc_errors` and `rx_frame_errors` do not increase; the script prints `PASS` |
+| **Evidence** | `zephyr_eth_check.py` package (`console.log`, `host-ping.txt`, `summary.txt`, `SHA256SUMS`), with the board's `net iface` and `net stats` output; the load log with the boot and `[ETH_BRINGUP_READY]` line |
+
+## TC-25 CSP and libparam over Ethernet
+
+| | |
+|---|---|
+| **Verifies** | `TE-ETH-003`, `TE-ETH-004` |
+| **Preconditions** | TC-24 passed; the TC-23 cabling and host port (192.168.70.1/24, 100 Mbit/s full duplex); Linux `CspBench` and `CspPingClient` built with UDP (CspLibparamFprimeTest `5e3e108` or later); `apps/fprime_csp_bench` built with `CONFIG_APP_CSP_UDP` (board 192.168.70.2, peer 192.168.70.1, port 9220 both ways), loaded and started on node 6061/8 |
+| **Procedure** | `app/scripts/fprime_e2e.py --attach --udp 192.168.70.2 --reference <CspPingClient> --bench <CspBench>`: 1. `CspBench --role client --udp 192.168.70.2 --node 100 --peer 6061 --write-test --write-value 0xA5A55A5A`. 2. The same for parameter 201 (`u8`, value 1, 2 successes in 3 attempts). 3. `CspPingClient --udp 192.168.70.2 --node 100 --peer 6061`. 4. A Linux `CspBench --role server --udp 192.168.70.2 --node 102`, and on the board's shell the TC-07 commands (`csp ping 102`, with `--nocrc`, `param get`, `param set` without and with `--confirm`, `u8 300`, read-back, restore, `csp ping 4242`) |
+| **Pass criteria** | 1. `[CSP_BENCH_RESULT] PASS attempts=5 successes=5`. 2. `PASS` with 2 successes, and the board logs `led_d4 = 1: LED D4 on` and `led_d4 = 0: LED D4 off`. 3. `[CSP_REFERENCE_PING_RESULT] PASS`. 4. The TC-07 pass criteria, without the CAN error counters. The script prints every check `PASS` |
+| **Evidence** | `fprime_e2e.py` transcript (board console, Linux client, server and reference outputs), the load log with the image's sha256, `environment.txt` |

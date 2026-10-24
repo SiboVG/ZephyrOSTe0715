@@ -48,6 +48,25 @@ SN65HVD233 transceiver on a TCAN-SOIC8-EVM, Kvaser USBcan Light 2xHS (see
 | `TE-BOOT-002` | The CSP node and prefix shall be settable in a file on the SD card and apply at every boot. A file that is not exactly understood shall be refused as a whole, and a JTAG-loaded image shall not use settings left over from an earlier SD boot. | `te0715.txt`, `boot.cmd`, `bench_config.c` | [TC-11](test-cases.md#tc-11-node-from-te0715txt); unit tests `app/tests/bench`, `app/tests/scripts` | Verified on hardware |
 | `TE-CSP-005` | The CSP router task shall run above the F Prime tasks that use CSP. | `CONFIG_APP_CSP_ROUTER_PRIORITY`, fprime-csp-libparam `StackConfig::routerPriority` | `kernel thread list` in the TC-06 transcript: `CspRouter` priority 54, `cspLibparam` 57 | Verified on hardware |
 
+## Ethernet
+
+The TE0715 is to carry CSP over Ethernet as well as CAN (CSP over UDP, fprime-csp-libparam
+`FCL-UDP-*`). The first requirement covers only the hardware path. It is checked from
+U-Boot, whose Zynq Ethernet driver is known to work, so that a Zephyr networking problem
+cannot be confused with a wiring, PHY or clocking problem. The Zephyr and CSP
+requirements follow once this one passes.
+
+100 Mbit/s full duplex is CubeSpec's baseline Ethernet speed, on the bench and on the
+FlatSat (project decision, 2026-10-23). The link is required at that speed; 1000 Mbit/s
+may be run for information.
+
+| ID | Requirement | Implementation | Verification | Status |
+|---|---|---|---|---|
+| `TE-ETH-001` | The TE0715's Ethernet path (PS GEM0 on MIO16–27, MDIO on MIO52/53, the module's Ethernet PHY and the TE0701's RJ45 jack) shall exchange frames in both directions with a directly connected host at 100 Mbit/s full duplex, without receive errors at the host. | `ps7_init.tcl` (MIO and GEM0 clock of the reference design); U-Boot's Zynq GEM driver, driven by `uboot_eth_check.py` | [TC-23](test-cases.md#tc-23-ethernet-link-from-u-boot) | Verified on hardware ([as-run 2026-10-23](as-run-ethernet-2026-10-23.md)) |
+| `TE-ETH-002` | Zephyr on the TE0715 shall bring up the Ethernet port at 100 Mbit/s full duplex with a static IPv4 address, answer ICMP echo requests from a directly connected host for every payload up to the 1500-byte MTU, including frames that span the driver's 512-byte receive and transmit buffers, and reach the host with its own echo requests, without loss and without receive errors at the host. | Board `te0715.dts` (`gem0`), Zephyr's Xilinx GEM driver, `apps/eth_bringup`; `zephyr_eth_check.py` | [TC-24](test-cases.md#tc-24-zephyr-ethernet-bring-up) | Verified on hardware ([as-run 2026-10-23](as-run-zephyr-ethernet-2026-10-23.md)) |
+| `TE-ETH-003` | The F Prime `CspLibparam` server on the TE0715 shall carry CSP over UDP on its Ethernet port and, over the direct link at 100 Mbit/s, pass the unmodified Linux CspBench client test (ping, read, write with read-back, restore) 5 times, switch `led_d4` (201) on and off the same way, and answer pings from libcsp's own UDP interface (`csp_if_udp`, as csh's `csp add udp`). | `apps/fprime_csp_bench` with `CONFIG_APP_CSP_UDP`, fprime-csp-libparam `UdpTransport` | [TC-25](test-cases.md#tc-25-csp-and-libparam-over-ethernet) | Verified on hardware ([as-run 2026-10-23](as-run-csp-ethernet-2026-10-23.md)) |
+| `TE-ETH-004` | The TE0715 shall act as a CSP/libparam client over UDP from its serial shell: ping, read, and confirmed write with read-back, the same as over CAN (`TE-CSP-002`, `TE-CSP-003`). | `shell_cmds.c` over `UdpTransport` | [TC-25](test-cases.md#tc-25-csp-and-libparam-over-ethernet) | Verified on hardware ([as-run 2026-10-23](as-run-csp-ethernet-2026-10-23.md)) |
+
 ## SPI sensors
 
 These requirements use the sensor benches' own assets: an INA229 board (the one of
