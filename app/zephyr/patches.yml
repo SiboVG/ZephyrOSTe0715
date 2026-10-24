@@ -115,4 +115,4 @@ patches:
       (interrupt status 0x800). On the Zynq-7000, with a chosen zephyr,ocm,
       the patch places both in the OCM again (__ocm_bss_section, as before
       that rework); other SoCs keep the upstream layout. Still the same on
-      upstream main (2026-10-22).
+      upstream main (2026-10-24); reported as zephyrproject-rtos/zephyr#123456.
