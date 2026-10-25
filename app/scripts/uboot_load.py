@@ -3,9 +3,9 @@
 """Load a Zephyr image into the TE0715's RAM through U-Boot on the serial console.
 
 Reboots the running Zephyr image (`kernel reboot cold`), stops U-Boot's autoboot,
-receives the image with `loadx` (XMODEM-1K) at the address boot.cmd uses (0x0),
+receives the image with `loadx` (XMODEM-1K) at the address boot.cmd uses (LOAD_ADDR),
 checks it with U-Boot's crc32 against the local file, and starts it as boot.cmd
-does (caches off, go 0x0). Nothing is written to the SD card.
+does (caches off, go LOAD_ADDR). Nothing is written to the SD card.
 
   uboot_load.py --port /dev/cu.usbserial-...1 --bin zephyr.bin --log load.log --until MARKER
 
@@ -23,6 +23,8 @@ import serial
 import xmodem
 
 ANSI = re.compile(rb'\x1b\[[0-9;?]*[A-Za-z]')
+# Base of zephyr,sram in te0715.dts, where every image is linked (TE-BSP-004)
+LOAD_ADDR = 0x100000
 
 
 class Port:
@@ -89,7 +91,7 @@ def main():
         sys.exit('no U-Boot prompt')
     p.pump(0.5)
 
-    mark = p.send('loadx 0x0')
+    mark = p.send(f'loadx {LOAD_ADDR:#x}')
     if not p.wait(rb'Ready for binary', 10, mark):
         sys.exit('loadx did not start')
     p.pump(0.2)
@@ -116,7 +118,7 @@ def main():
     p.wait(rb'Total Size', 5, 0)
     p.pump(0.5)
 
-    mark = p.send(f'crc32 0x0 0x{len(image):x}')
+    mark = p.send(f'crc32 {LOAD_ADDR:#x} 0x{len(image):x}')
     if not p.wait(rb'==> [0-9a-f]{8}', 10, mark):
         sys.exit('no crc32 result')
     p.pump(0.3)
@@ -130,7 +132,7 @@ def main():
     for command in ('icache off', 'dcache off'):
         mark = p.send(command)
         p.wait(rb'(Zynq|=)> ?$', 5, mark)
-    mark = p.send('go 0x0')
+    mark = p.send(f'go {LOAD_ADDR:#x}')
     if args.until and not p.wait(re.escape(args.until.encode()), 40, mark):
         sys.exit(f'{args.until} not seen after go')
     p.pump(0.5)

@@ -1,0 +1,62 @@
+net iface
+Default interface: 1
+
+
+Interface eth0 (0x1304e8) (Ethernet) [1]
+===================================
+Link addr : 02:00:00:07:15:01
+MTU       : 1500
+Flags     : AUTO_START,IPv4
+Device    : ethernet@e000b000 (0x1260d8)
+Status    : oper=UP, admin=UP, carrier=ON
+Ethernet capabilities supported:
+	TX checksum offload
+	RX checksum offload
+	100 Mbits
+	Promiscuous mode
+Ethernet PHY device: <none> (0)
+IPv4 unicast addresses (max 1):
+	192.168.70.2/255.255.255.0 manual preferred infinite
+IPv4 multicast addresses (max 2):
+	224.0.0.1
+IPv4 gateway : 0.0.0.0
+[1;32muart:~$ [mnet ping -c 10 -i 200 -s 4 192.168.70.1
+PING 192.168.70.1
+28 bytes from 192.168.70.1 to 192.168.70.2: icmp_seq=1 ttl=64 time=0.35 ms
+28 bytes from 192.168.70.1 to 192.168.70.2: icmp_seq=2 ttl=64 time=0.44 ms
+28 bytes from 192.168.70.1 to 192.168.70.2: icmp_seq=3 ttl=64 time=0.37 ms
+28 bytes from 192.168.70.1 to 192.168.70.2: icmp_seq=4 ttl=64 time=0.45 ms
+28 bytes from 192.168.70.1 to 192.168.70.2: icmp_seq=5 ttl=64 time=0.34 ms
+28 bytes from 192.168.70.1 to 192.168.70.2: icmp_seq=6 ttl=64 time=0.46 ms
+28 bytes from 192.168.70.1 to 192.168.70.2: icmp_seq=7 ttl=64 time=0.56 ms
+28 bytes from 192.168.70.1 to 192.168.70.2: icmp_seq=8 ttl=64 time=0.47 ms
+28 bytes from 192.168.70.1 to 192.168.70.2: icmp_seq=9 ttl=64 time=0.38 ms
+28 bytes from 192.168.70.1 to 192.168.70.2: icmp_seq=10 ttl=64 time=0.32 ms
+[8D[J[1;32muart:~$ [mnet ping -c 10 -i 200 -s 1472 192.168.70.1
+PING 192.168.70.1
+1496 bytes from 192.168.70.1 to 192.168.70.2: icmp_seq=1 ttl=64 time=1.07 ms
+1496 bytes from 192.168.70.1 to 192.168.70.2: icmp_seq=2 ttl=64 time=1.13 ms
+1496 bytes from 192.168.70.1 to 192.168.70.2: icmp_seq=3 ttl=64 time=1.12 ms
+1496 bytes from 192.168.70.1 to 192.168.70.2: icmp_seq=4 ttl=64 time=1.04 ms
+1496 bytes from 192.168.70.1 to 192.168.70.2: icmp_seq=5 ttl=64 time=1.04 ms
+1496 bytes from 192.168.70.1 to 192.168.70.2: icmp_seq=6 ttl=64 time=1.13 ms
+1496 bytes from 192.168.70.1 to 192.168.70.2: icmp_seq=7 ttl=64 time=1.08 ms
+1496 bytes from 192.168.70.1 to 192.168.70.2: icmp_seq=8 ttl=64 time=1.07 ms
+1496 bytes from 192.168.70.1 to 192.168.70.2: icmp_seq=9 ttl=64 time=1.05 ms
+1496 bytes from 192.168.70.1 to 192.168.70.2: icmp_seq=10 ttl=64 time=1.03 ms
+[8D[J[1;32muart:~$ [mnet stats
+
+Interface 0x1304e8 (Ethernet) [1]
+===================================
+IPv4 recv      820	sent	820	drop	0	forwarded	0
+IP vhlerr      0	hblener	0	lblener	0
+IP fragerr     0	chkerr	0	protoer	0
+ICMP recv      820	sent	820	drop	0
+ICMP typeer    0	chkerr	0
+IGMP recv      0	sent	0	drop	0
+UDP recv       0	sent	0	drop	0
+UDP chkerr     0
+Bytes received 637860
+Bytes sent     637684
+Processing err 0
+[1;32muart:~$ [m

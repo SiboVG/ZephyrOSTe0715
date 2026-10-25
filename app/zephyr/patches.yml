@@ -99,20 +99,3 @@ patches:
       QEMU's qemu_cortex_a9 does not fault there. Upstream maps it since
       fd9cd01ef774 (2026-06-27, the switch to the separate MDIO and PHY
       drivers), too large to backport; drop when the fork moves past it.
-  - path: zephyr/0003-eth-xlnx-gem-dma-memory-in-ocm-on-zynq-7000.patch
-    sha256sum: d7344433400cd2fe187c45484eea1d533a70e9740520892495473d5dc03d67de
-    module: zephyr
-    author: Sibo Van Gool
-    email: sibo.vangool@hotmail.com
-    date: 2026-10-23
-    upstreamable: true
-    comments: |
-      Since upstream c206ff165f07 (2026-02, the ZynqMP DMA rework) the GEM's
-      BD rings are __nocache and its packet buffers ordinary data. A TE0715
-      image runs from DDR address 0, so both landed below 0x80000 (rings at
-      0x2e000, buffers at 0x34000), which on the Zynq-7000 only the CPUs can
-      reach (UG585, table 4-1): every DMA access ended with hresp_not_ok
-      (interrupt status 0x800). On the Zynq-7000, with a chosen zephyr,ocm,
-      the patch places both in the OCM again (__ocm_bss_section, as before
-      that rework); other SoCs keep the upstream layout. Still the same on
-      upstream main (2026-10-24); reported as zephyrproject-rtos/zephyr#123456.

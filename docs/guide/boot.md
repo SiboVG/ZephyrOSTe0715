@@ -32,7 +32,7 @@ step of the boot is redirected to Zephyr:
 ```mermaid
 flowchart LR
     ROM["Zynq BootROM"] --> FSBL["FSBL<br/>(BOOT.BIN)"] --> UB["U-Boot<br/>(BOOT.BIN)"]
-    UB -- "runs /boot.scr" --> S["boot.scr:<br/>te0715.txt to 0x0f000100,<br/>zephyr.bin to 0x0,<br/>jump to 0x0"]
+    UB -- "runs /boot.scr" --> S["boot.scr:<br/>te0715.txt to 0x0f000100,<br/>zephyr.bin to 0x100000,<br/>jump to 0x100000"]
     S --> Z["Zephyr"]
 ```
 

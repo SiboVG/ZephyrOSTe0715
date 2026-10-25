@@ -1,0 +1,16 @@
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.0.3, pluggy-1.5.0 -- /home/cubespec/Documents/cubespec-flight-software/verification/benches/zephyr-te0715/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/cubespec/Documents/cubespec-flight-software/verification/benches/zephyr-te0715
+plugins: fprime-gds-4.2.2a3
+collecting ... collected 6 items
+
+app/tests/scripts/test_memory_map.py::test_sram_excludes_the_cpu_only_ddr PASSED [ 16%]
+app/tests/scripts/test_memory_map.py::test_sram_starts_at_the_ddr_base_and_ends_with_the_ddr PASSED [ 33%]
+app/tests/scripts/test_memory_map.py::test_sd_boot_loads_and_starts_the_image_at_the_sram_base[fatload mmc 0 {addr:#x} zephyr.bin] PASSED [ 50%]
+app/tests/scripts/test_memory_map.py::test_sd_boot_loads_and_starts_the_image_at_the_sram_base[go {addr:#x}] PASSED [ 66%]
+app/tests/scripts/test_memory_map.py::test_sd_boot_loads_nothing_else_below_the_sram_base PASSED [ 83%]
+app/tests/scripts/test_memory_map.py::test_console_loader_uses_the_sram_base PASSED [100%]
+
+============================== 6 passed in 0.03s ===============================
+pytest exit 0

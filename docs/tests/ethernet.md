@@ -253,6 +253,23 @@ CspBench client test against the board (parameter 200, then `led_d4`), pings it 
 plain libcsp, starts a Linux CspBench server (node 102) and runs the TC-07 shell checks
 from the board. Every check prints `PASS` or `FAIL`.
 
+## System RAM above the CPU-only DDR: TC-26
+
+[TC-26](../verification/test-cases.md#tc-26-system-ram-above-the-cpu-only-ddr) verifies
+`TE-BSP-004`. Zephyr's system RAM starts at `0x100000`, because DDR below `0x80000` is
+out of the GEM's reach. The test runs TC-24 and TC-25 again on images built without the
+former Zephyr patch `0003`:
+
+```bash
+python -m pytest app/tests/scripts/test_memory_map.py
+arm-zephyr-eabi-readelf -lS build/eth_bringup/zephyr/zephyr.elf     # no section below 0x100000
+arm-zephyr-eabi-readelf -s build/eth_bringup/zephyr/zephyr.elf | grep eth_xlnx_gem0_
+```
+
+Then follow the TC-24 and TC-25 steps above. `uboot_load.py` loads and starts every image
+at `0x100000`. During the run, the console must not show an `Interrupt Status Reg.`
+error from `eth_xlnx_gem`.
+
 ## Next steps
 
 Once TC-25 passes, the FlatSat follows: either the EGSE router reaches the TE0715 with

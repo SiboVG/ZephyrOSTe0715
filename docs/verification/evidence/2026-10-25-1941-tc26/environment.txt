@@ -1,0 +1,14 @@
+zephyr-te0715: 5343b31 0 modified tracked files
+fprime-csp-libparam: 7258a29 (UDP sources as at merge 478420b)
+CspLibparamFprimeTest binaries: built at 1cd24aa (2026-10-23)
+zephyr: 70b56a29 + patches:  M drivers/ethernet/eth_xlnx_gem.c  M drivers/ethernet/eth_xlnx_gem_priv.h  M drivers/spi/spi_cdns.c 
+workspace patches: 8 applied; zephyr/0003 removed
+eth_bringup zephyr.bin sha256: d00d70b7e86e9f3e66de79d7f4e70dfb8e8d2fd6d376a2d85366d9a653757e9c
+eth_bringup zephyr.elf sha256: d8c8ec3e642acee56ec387aae476141abbd3b4a6478b82cbd82cbb177d7cb836
+fprime_csp_bench (udp.conf) zephyr.bin sha256: 1646ec73a7200cd6680b3d03be7e07cb4ac036710b0f20f9b2c0b415774fc105
+fprime_csp_bench (udp.conf) zephyr.elf sha256: 4602ab3dc6b17336dfa82094c3da027f9e8df58e510808c4a8c87e96070c9055
+CspBench sha256: 748f4acafdf8faa8d9c1f581a4cd8b1a4ba91ab29f5dbedd1a12a0b42bcd2cc4
+CspPingClient sha256: edc91c9073118bb319e30b4b950742db274fbab27217f3f9e54bc98dd9e0a695
+Zephyr SDK: 1.0.1
+host: Ubuntu 26.04 LTS 7.0.0-34-generic; port enxa0cec8ebc610 100 Mbit/s full
+loading: uboot_load.py (U-Boot loadx/crc32/go at 0x100000), from the running image's shell

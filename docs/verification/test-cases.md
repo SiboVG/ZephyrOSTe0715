@@ -259,3 +259,13 @@ Common preconditions for all test cases: the workspace built as in
 | **Procedure** | `app/scripts/fprime_e2e.py --attach --udp 192.168.70.2 --reference <CspPingClient> --bench <CspBench>`: 1. `CspBench --role client --udp 192.168.70.2 --node 100 --peer 6061 --write-test --write-value 0xA5A55A5A`. 2. The same for parameter 201 (`u8`, value 1, 2 successes in 3 attempts). 3. `CspPingClient --udp 192.168.70.2 --node 100 --peer 6061`. 4. A Linux `CspBench --role server --udp 192.168.70.2 --node 102`, and on the board's shell the TC-07 commands (`csp ping 102`, with `--nocrc`, `param get`, `param set` without and with `--confirm`, `u8 300`, read-back, restore, `csp ping 4242`) |
 | **Pass criteria** | 1. `[CSP_BENCH_RESULT] PASS attempts=5 successes=5`. 2. `PASS` with 2 successes, and the board logs `led_d4 = 1: LED D4 on` and `led_d4 = 0: LED D4 off`. 3. `[CSP_REFERENCE_PING_RESULT] PASS`. 4. The TC-07 pass criteria, without the CAN error counters. The script prints every check `PASS` |
 | **Evidence** | `fprime_e2e.py` transcript (board console, Linux client, server and reference outputs), the load log with the image's sha256, `environment.txt` |
+
+## TC-26 System RAM above the CPU-only DDR
+
+| | |
+|---|---|
+| **Verifies** | `TE-BSP-004` |
+| **Preconditions** | TC-23 cabling and host port as for TC-24 and TC-25; Zephyr patch `0003-eth-xlnx-gem-dma-memory-in-ocm-on-zynq-7000` removed from the workspace (`west patch clean && west patch apply`); `apps/eth_bringup` and `apps/fprime_csp_bench` with `udp.conf` built for `te0715` |
+| **Procedure** | 1. `python -m pytest app/tests/scripts/test_memory_map.py`. 2. In both images' `zephyr.map` (or `arm-zephyr-eabi-readelf -lS zephyr.elf`), read the load address of every allocated section and the addresses of `eth_xlnx_gem0_bd_rings` and `eth_xlnx_gem0_dma_area`. 3. The TC-24 procedure with `apps/eth_bringup`, loaded with `uboot_load.py`. 4. The TC-25 procedure with `apps/fprime_csp_bench` (`udp.conf`), loaded with `uboot_load.py` |
+| **Pass criteria** | 1. All tests pass. 2. No allocated section of either image starts below `0x100000`, and both GEM symbols lie at or above `0x100000` (in DDR, not in the OCM). 3. The TC-24 pass criteria, and the console shows no `Interrupt Status Reg.` error from `eth_xlnx_gem`. 4. The TC-25 pass criteria |
+| **Evidence** | The pytest output; the section and symbol listing of both images; the TC-24 and TC-25 packages of this run, with the load logs and the images' sha256 |

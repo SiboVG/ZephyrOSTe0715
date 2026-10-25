@@ -110,6 +110,7 @@ nav:
       - Ethernet link as-run record 2026-10-23: verification/as-run-ethernet-2026-10-23.md
       - Zephyr Ethernet as-run record 2026-10-23: verification/as-run-zephyr-ethernet-2026-10-23.md
       - CSP over Ethernet as-run record 2026-10-23: verification/as-run-csp-ethernet-2026-10-23.md
+      - Memory map as-run record 2026-10-25: verification/as-run-memory-map-2026-10-25.md
       - FlatSat as-run record template: verification/flatsat-record-template.md
       - Sensor bench as-run record template: verification/sensor-record-template.md
   - Known issues: known-issues.md
