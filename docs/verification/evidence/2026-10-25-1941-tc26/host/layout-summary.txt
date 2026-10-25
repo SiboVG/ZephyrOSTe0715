@@ -1,0 +1,4 @@
+# build/eth_bringup/zephyr/zephyr.elf
+allocated sections: 37 lowest: 0x100000 rom_start below 0x100000: []
+# app/apps/fprime_csp_bench/build-fprime-udp/zephyr/zephyr.elf
+allocated sections: 41 lowest: 0x100000 rom_start below 0x100000: []

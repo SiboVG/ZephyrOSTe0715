@@ -1,0 +1,88 @@
+# build/eth_bringup/zephyr/zephyr.elf
+# sha256 d8c8ec3e642acee56ec387aae476141abbd3b4a6478b82cbd82cbb177d7cb836
+
+Elf file type is EXEC (Executable file)
+Entry point 0x10c7f8
+There are 6 program headers, starting at offset 52
+
+Program Headers:
+  Type           Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg Align
+  ARM_EXIDX      0x0260f8 0x00126000 0x00126000 0x00008 0x00008 R   0x4
+  LOAD           0x0000f8 0x00100000 0x00100000 0x2f000 0x30000 RWE 0x8
+  LOAD           0x02f0f8 0x00130000 0x00130000 0x005e0 0x005e0 RW  0x8
+  LOAD           0x000000 0x00134000 0x00134000 0x00000 0x131000 RW  0x4000
+  TLS            0x026a4c 0x00126954 0x00126954 0x00000 0x00008 R   0x4
+  GNU_STACK      0x000000 0x00000000 0x00000000 0x00000 0x00000 RW  0x10
+
+ Section to Segment mapping:
+  Segment Sections...
+   00     .ARM.exidx 
+   01     rom_start text .ARM.exidx initlevel device_area sw_isr_table syscon_driver_api_area uart_driver_api_area net_l3_register_area log_const_area log_backend_area shell_area shell_root_cmds_area shell_subcmds_area shell_dynamic_subcmds_area rodata nocache nocache_load 
+   02     datas device_states log_mpsc_pbuf_area log_msg_ptr_area log_dynamic_area k_mem_slab_area k_heap_area k_mutex_area k_msgq_area k_sem_area net_buf_pool_area net_if_area net_if_dev_area net_l2_area .last_section 
+   03     bss noinit .last_ram_section 
+   04     tbss 
+   05     
+There are 52 section headers, starting at offset 0x3f8138:
+
+Section Headers:
+  [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al
+  [ 0]                   NULL            00000000 000000 000000 00      0   0  0
+  [ 1] rom_start         PROGBITS        00100000 0000f8 00003c 00  AX  0   0  4
+  [ 2] text              PROGBITS        00100040 000138 025fc0 00  AX  0   0  8
+  [ 3] rodata_start      PROGBITS        00126000 02f6d8 000000 00   W  0   0  1
+  [ 4] .ARM.exidx        ARM_EXIDX       00126000 0260f8 000008 00  AL  2   0  4
+  [ 5] initlevel         PROGBITS        00126008 026100 000070 00   A  0   0  4
+  [ 6] device_area       PROGBITS        00126078 026170 000080 00   A  0   0  4
+  [ 7] sw_isr_table      PROGBITS        001260f8 0261f0 000300 00   A  0   0  4
+  [ 8] syscon_driver_api_area PROGBITS        001263f8 0264f0 000010 00   A  0   0  4
+  [ 9] uart_driver_api_area PROGBITS        00126408 026500 00004c 00   A  0   0  4
+  [10] net_l3_register_area PROGBITS        00126454 02654c 000020 00   A  0   0  4
+  [11] log_const_area    PROGBITS        00126474 02656c 000078 00   A  0   0  4
+  [12] log_backend_area  PROGBITS        001264ec 0265e4 000010 00   A  0   0  4
+  [13] shell_area        PROGBITS        001264fc 0265f4 000030 00   A  0   0  4
+  [14] shell_root_cmds_area PROGBITS        0012652c 026624 000030 00   A  0   0  4
+  [15] shell_subcmds_area PROGBITS        0012655c 026654 0003e8 00   A  0   0  4
+  [16] shell_dynamic_subcmds_area PROGBITS        00126944 026a3c 000010 00   A  0   0  4
+  [17] tbss              NOBITS          00126954 026a4c 000008 00 WAT  0   0  4
+  [18] rodata            PROGBITS        00126958 026a50 0086a8 00   A  0   0  8
+  [19] nocache           NOBITS          0012f000 02f0f8 000210 00  WA  0   0  4
+  [20] nocache_load      NOBITS          0012f210 02f0f8 000df0 00  WA  0   0  1
+  [21] datas             PROGBITS        00130000 02f0f8 0002ac 00  WA  0   0  8
+  [22] device_states     PROGBITS        001302ac 02f3a4 000008 00  WA  0   0  1
+  [23] log_mpsc_pbuf_area PROGBITS        001302b4 02f3ac 000040 00  WA  0   0  4
+  [24] log_msg_ptr_area  PROGBITS        001302f4 02f3ec 000004 00  WA  0   0  4
+  [25] log_dynamic_area  PROGBITS        001302f8 02f3f0 00003c 00  WA  0   0  4
+  [26] k_mem_slab_area   PROGBITS        00130334 02f42c 000038 00  WA  0   0  4
+  [27] k_heap_area       PROGBITS        0013036c 02f464 000014 00  WA  0   0  4
+  [28] k_mutex_area      PROGBITS        00130380 02f478 000064 00  WA  0   0  4
+  [29] k_msgq_area       PROGBITS        001303e4 02f4dc 000030 00  WA  0   0  4
+  [30] k_sem_area        PROGBITS        00130414 02f50c 000078 00  WA  0   0  4
+  [31] net_buf_pool_area PROGBITS        0013048c 02f584 000058 00  WA  0   0  4
+  [32] net_if_area       PROGBITS        001304e8 02f5e0 0000b8 00  WA  0   0  8
+  [33] net_if_dev_area   PROGBITS        001305a0 02f698 000028 00  WA  0   0  8
+  [34] net_l2_area       PROGBITS        001305c8 02f6c0 000014 00   A  0   0  4
+  [35] .comment          PROGBITS        00000000 02f6d8 00001f 01  MS  0   0  1
+  [36] .debug_aranges    PROGBITS        00000000 02f6f8 003c70 00      0   0  8
+  [37] .debug_info       PROGBITS        00000000 033368 2433e7 00      0   0  1
+  [38] .debug_abbrev     PROGBITS        00000000 27674f 02b8e0 00      0   0  1
+  [39] .debug_line       PROGBITS        00000000 2a202f 08b4de 00      0   0  1
+  [40] .debug_frame      PROGBITS        00000000 32d510 00a0a4 00      0   0  4
+  [41] .debug_str        PROGBITS        00000000 3375b4 01bb25 01  MS  0   0  1
+  [42] .debug_loc        PROGBITS        00000000 3530d9 0711d4 00      0   0  1
+  [43] .debug_ranges     PROGBITS        00000000 3c42b0 0132e0 00      0   0  8
+  [44] .ARM.attributes   ARM_ATTRIBUTES  00000000 3d7590 00003b 00      0   0  1
+  [45] .last_section     PROGBITS        001305dc 02f6d4 000004 00  WA  0   0  4
+  [46] bss               NOBITS          00134000 030000 11db45 00  WA  0   0 16384
+  [47] noinit            NOBITS          00251b48 030000 012790 00  WA  0   0  8
+  [48] .last_ram_section NOBITS          002642d8 030000 000d28 00  WA  0   0  1
+  [49] .symtab           SYMTAB          00000000 3d75cc 013650 10     50 3387  4
+  [50] .strtab           STRTAB          00000000 3eac1c 00d27b 00      0   0  1
+  [51] .shstrtab         STRTAB          00000000 3f7e97 00029e 00      0   0  1
+Key to Flags:
+  W (write), A (alloc), X (execute), M (merge), S (strings), I (info),
+  L (link order), O (extra OS processing required), G (group), T (TLS),
+  C (compressed), x (unknown), o (OS specific), E (exclude),
+  D (mbind), y (purecode), p (processor specific)
+# GEM DMA symbols
+   152: 0012f000   528 OBJECT  LOCAL  DEFAULT   19 eth_xlnx_gem0_bd_rings
+   153: 00138000 33792 OBJECT  LOCAL  DEFAULT   46 eth_xlnx_gem0_dma_area
