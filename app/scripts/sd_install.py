@@ -4,7 +4,7 @@
 
 The SD card keeps its FSBL + U-Boot (BOOT.BIN). U-Boot's distro boot runs boot.scr
 from the FAT partition; this script replaces it with one that loads zephyr.bin to
-address 0 and jumps there. The card does not have to be removed:
+0x100000 (the base of zephyr,sram) and jumps there. The card does not have to be removed:
 
 1. reset the board over JTAG and stop U-Boot's autoboot on the serial console;
 2. keep PetaLinux's boot.scr as boot_petalinux.scr (only if no backup exists yet);

@@ -20,7 +20,7 @@
 | `param set` truncated out-of-range values | `bench_value.c`; TE-CSP-004 |
 | An SD boot could hang or crash depending on what was left in RAM (3 of 4 boots right after another image had run). U-Boot started Zephyr with its MMU and caches on | `boot.cmd` turns them off before `go` (`icache off; dcache off`), as for a JTAG load: 6 of 6 boots passed |
 | An image with networking halted at boot: the Ethernet driver's clock register access took a translation fault at `0xf8000140` | Zephyr patch `0002`; found with `apps/eth_bringup`'s `debug.conf` boot trace (TC-24) |
-| Ethernet DMA failed (`hresp_not_ok`, interrupt status `0x800`): the descriptors and buffers were below DDR address `0x80000`, out of the GEM's reach | Zephyr patch `0003`: DMA memory in the OCM; TC-24 |
+| Ethernet DMA failed (`hresp_not_ok`, interrupt status `0x800`): the descriptors and buffers were below DDR address `0x80000`, out of the GEM's reach The board's system RAM starts at `0x100000` (`TE-BSP-004`, TC-26), so DMA memory in system RAM is reachable. Until 2026-10-25 Zephyr patch `0003` put the GEM's DMA memory in the OCM instead (TC-24); upstream's view in [zephyr#123456](https://github.com/zephyrproject-rtos/zephyr/issues/123456) is that system RAM must be DMA-visible |
 
 ## Board and build
 

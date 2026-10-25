@@ -121,9 +121,9 @@ def test_boot_script_hands_the_config_to_zephyr():
     clear = script.index('mw.l 0x0f000000 0')
     load = script.index('fatload mmc 0 0x0f000100 te0715.txt')
     stamp = script.index('mw.l 0x0f000000 0x37304554')
-    assert clear < load < stamp < script.index('go 0x0')
+    assert clear < load < stamp < script.index('go 0x100000')
     # MMU and caches off before the jump, after everything is loaded
-    assert script.index('fatload mmc 0 0x0 zephyr.bin') < script.index('dcache off') < script.index('go 0x0')
+    assert script.index('fatload mmc 0 0x100000 zephyr.bin') < script.index('dcache off') < script.index('go 0x100000')
     assert 'icache off' in script
 
 

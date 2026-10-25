@@ -42,11 +42,17 @@
         };
     };
 
-    /* 1 GB DDR3 SDRAM */    
-    sram0: memory@0 {
+    /*
+     * 1 GB DDR3 SDRAM, used from 0x100000. DDR below 0x80000 is reachable by the
+     * CPUs only, not by the GEMs or other bus masters (UG585, table 4-1), and
+     * Zephyr places DMA memory in system RAM (TE-BSP-004). 0x100000 is the DDR
+     * base of Xilinx's BSPs and of qemu_cortex_a9. Zephyr copies its vector
+     * table to address 0 at boot.
+     */
+    sram0: memory@100000 {
         device_type = "memory";
         compatible = "mmio-sram";
-        reg = <0x00000000 0x40000000>;
+        reg = <0x00100000 0x3ff00000>;
     };
 
     leds {

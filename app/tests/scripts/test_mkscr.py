@@ -53,6 +53,6 @@ def test_repository_boot_cmd_builds():
     from sd_install import BOOT_CMD
     with open(BOOT_CMD, 'rb') as f:
         script = f.read()
-    assert b'zephyr.bin' in script and b'go 0x0' in script
+    assert b'zephyr.bin' in script and b'go 0x100000' in script
     image = make_script_image(script)
     assert parse(image)['data'][8:] == script

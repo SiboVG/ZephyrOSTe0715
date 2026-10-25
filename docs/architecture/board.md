@@ -12,12 +12,12 @@ to load software onto it. The `te0715` board lives outside Zephyr, in
 | SoC | `xc7z030` | Confirmed on the module: `PSS_IDCODE` reads `0x1372C093` (part `0x372C`) |
 | CPU clock | 666.67 MHz | From the reference design |
 | System timer | ARM global timer, 333.33 MHz | Always runs at half the CPU clock; checked with `timer_api` and a 1 Hz heartbeat measured on the host |
-| Memory | 1 GiB DDR3 at address 0 | |
+| Memory | 1 GiB DDR3 at address 0 | Zephyr's system RAM starts at `0x100000`: DDR below `0x80000` is reachable by the CPUs only, not by the GEMs or other bus masters (UG585, table 4-1; `TE-BSP-004`). Images are linked, loaded and started at `0x100000`; Zephyr copies its vector table to address 0 |
 | Console | UART0 on MIO14 (RX) and MIO15 (TX), 3.3 V, 115200 8N1 | |
 | LED | D4 (green, on the module) on MIO7, alias `led0` | MIO7 is output-only |
 | CAN1 | MIO12 (TX), MIO13 (RX), 3.3 V | Enabled by the carrier overlay |
 | SPI1 | MIO10 (MOSI), MIO11 (MISO), MIO12 (SCLK), chip select MIO13 (GPIO), 3.3 V | Enabled by the carrier overlay; shares MIO12/13 with CAN1 |
-| Ethernet | GEM0 on MIO16–27 (RGMII), MDIO on MIO52/53; Marvell 88E151x PHY at MDIO address 0; TE0701 RJ45 | Enabled in `te0715.dts` at 100 Mbit/s with the driver managing the PHY; built only into images with networking, which must set `local-mac-address`. DMA memory in the OCM (Zephyr patch `0003`) |
+| Ethernet | GEM0 on MIO16–27 (RGMII), MDIO on MIO52/53; Marvell 88E151x PHY at MDIO address 0; TE0701 RJ45 | Enabled in `te0715.dts` at 100 Mbit/s with the driver managing the PHY; built only into images with networking, which must set `local-mac-address`. Its DMA memory is in system RAM, which the GEM reaches (`TE-BSP-004`) |
 
 ## Pin configuration
 
